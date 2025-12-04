@@ -145,13 +145,18 @@
 .yf-logo-header {
     display: flex;
     justify-content: center;
-    padding-bottom: var(--yf-space-md);
+    align-items: center;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto var(--yf-space-md) auto;
     border-bottom: 1px solid var(--yf-border-subtle);
+    padding-bottom: var(--yf-space-md);
 }
 
 .yf-logo {
-    max-width: 180px;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
     transition: var(--yf-transition);
 }
