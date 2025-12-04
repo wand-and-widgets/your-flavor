@@ -1169,3 +1169,24 @@
 .yf-layout-option:nth-child(4) { animation-delay: 0.08s; }
 .yf-layout-option:nth-child(5) { animation-delay: 0.10s; }
 .yf-layout-option:nth-child(6) { animation-delay: 0.12s; }
+
+/* ============================================= */
+/*  Module Logo in Setup/Module Management       */
+/* ============================================= */
+
+/* Foundry v13 Setup screen - package thumbnail */
+.package[data-package-id="your-flavor"] .thumbnail,
+.package[data-package-id="your-flavor"] .package-thumbnail {
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+.package[data-package-id="your-flavor"] .thumbnail img,
+.package[data-package-id="your-flavor"] .package-thumbnail img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
