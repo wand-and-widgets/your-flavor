@@ -56,12 +56,12 @@
     --yf-transition: all 0.2s ease;
     --yf-transition-slow: all 0.3s ease;
 
-    /* Spacing */
-    --yf-space-xs: 4px;
-    --yf-space-sm: 8px;
-    --yf-space-md: 12px;
-    --yf-space-lg: 16px;
-    --yf-space-xl: 24px;
+    /* Spacing - Compact */
+    --yf-space-xs: 3px;
+    --yf-space-sm: 6px;
+    --yf-space-md: 10px;
+    --yf-space-lg: 14px;
+    --yf-space-xl: 20px;
 
     /* Border Radius */
     --yf-radius-sm: 4px;
@@ -83,6 +83,7 @@
 /* ============================================= */
 
 .your-flavor-config {
+    --yf-ui-scale: 1;
     background: linear-gradient(180deg, var(--yf-bg-panel) 0%, var(--yf-bg-deep) 100%);
     border: 1px solid var(--yf-border-medium);
     border-radius: var(--yf-radius-lg);
@@ -116,13 +117,13 @@
 
 .yf-config-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 240px 1fr;
     grid-template-rows: 1fr auto;
     gap: 0;
     height: 100%;
     max-height: calc(100vh - 80px);
     font-family: var(--yf-font-body);
-    font-size: 14px;
+    font-size: calc(14px * var(--yf-ui-scale, 1));
     color: var(--yf-text-primary);
     overflow: hidden;
 }
@@ -146,8 +147,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 180px;
-    height: 180px;
+    width: calc(140px * var(--yf-ui-scale, 1));
+    height: calc(140px * var(--yf-ui-scale, 1));
     margin: 0 auto var(--yf-space-md) auto;
     border-bottom: 1px solid var(--yf-border-subtle);
     padding-bottom: var(--yf-space-md);
@@ -233,7 +234,7 @@
     font-family: var(--yf-font-family, var(--yf-font-display));
     font-weight: 600;
     font-size: calc(var(--yf-font-size, 14px));
-    color: var(--yf-border-color, #d4872c);
+    color: var(--yf-name-color, var(--yf-border-color, #d4872c));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -241,8 +242,8 @@
 
 .yf-preview-time {
     font-size: 10px;
-    color: var(--yf-text-color, #f0e6d8);
-    opacity: 0.5;
+    color: var(--yf-timestamp-color, var(--yf-text-color, #f0e6d8));
+    opacity: 0.7;
 }
 
 .yf-preview-content {
@@ -442,41 +443,42 @@
 }
 
 /* ============================================= */
-/*  Layout Tabs - Category Navigation            */
+/*  Category Tags - Compact Filtering            */
 /* ============================================= */
 
-.yf-layout-tabs {
+.yf-category-tags {
     display: flex;
-    gap: 2px;
+    flex-wrap: wrap;
+    gap: 5px;
     margin-bottom: var(--yf-space-md);
-    background: var(--yf-bg-deep);
-    padding: 3px;
-    border-radius: var(--yf-radius-md);
+    padding: 4px 0;
 }
 
-.yf-tab {
-    flex: 1;
-    padding: var(--yf-space-sm) var(--yf-space-xs);
-    background: transparent;
-    border: none;
-    border-radius: var(--yf-radius-sm);
-    font-family: var(--yf-font-body);
-    font-size: 11px;
+.yf-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: var(--yf-bg-elevated);
+    border: 1px solid var(--yf-border-subtle);
+    border-radius: 12px;
+    font-size: calc(10px * var(--yf-ui-scale, 1));
     font-weight: 500;
     color: var(--yf-text-muted);
     cursor: pointer;
     transition: var(--yf-transition-fast);
-    white-space: nowrap;
+    user-select: none;
 }
 
-.yf-tab:hover {
-    color: var(--yf-text-secondary);
+.yf-tag:hover {
     background: var(--yf-bg-hover);
+    color: var(--yf-text-secondary);
+    border-color: var(--yf-border-medium);
 }
 
-.yf-tab.active {
+.yf-tag.active {
     background: var(--yf-accent-primary);
     color: var(--yf-bg-deep);
+    border-color: var(--yf-accent-primary);
     font-weight: 600;
 }
 
@@ -486,8 +488,8 @@
 
 .yf-layout-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-    gap: var(--yf-space-sm);
+    grid-template-columns: repeat(auto-fill, minmax(calc(56px * var(--yf-ui-scale, 1)), 1fr));
+    gap: 5px;
 }
 
 .yf-layout-option {
@@ -495,13 +497,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--yf-space-sm);
+    padding: 5px;
     background: var(--yf-bg-elevated);
     border: 2px solid transparent;
     border-radius: var(--yf-radius-md);
     cursor: pointer;
     transition: var(--yf-transition);
-    min-height: 64px;
+    min-height: calc(56px * var(--yf-ui-scale, 1));
 }
 
 .yf-layout-option:hover {
@@ -517,8 +519,8 @@
 }
 
 .yf-layout-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
+    font-size: calc(18px * var(--yf-ui-scale, 1));
+    margin-bottom: 3px;
     color: var(--yf-text-secondary);
     transition: var(--yf-transition-fast);
 }
@@ -532,7 +534,7 @@
 }
 
 .yf-layout-name {
-    font-size: 9px;
+    font-size: calc(8px * var(--yf-ui-scale, 1));
     font-weight: 500;
     text-align: center;
     color: var(--yf-text-muted);
@@ -936,7 +938,7 @@
 .chat-message.yf-card .message-header .message-sender a,
 .chat-message.yf-card .message-header .name-stacked .title {
     font-family: var(--yf-font-family) !important;
-    color: var(--yf-border-color) !important;
+    color: var(--yf-name-color, var(--yf-border-color)) !important;
     font-weight: 600 !important;
     font-size: calc(var(--yf-font-size) + 1px) !important;
 }
@@ -945,7 +947,7 @@
 .chat-message.yf-card .message-header .message-metadata *,
 .chat-message.yf-card .message-header time,
 .chat-message.yf-card .message-header .name-stacked .subtitle {
-    color: var(--yf-text-color) !important;
+    color: var(--yf-timestamp-color, var(--yf-text-color)) !important;
     opacity: 0.7;
 }
 

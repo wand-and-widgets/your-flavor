@@ -70,13 +70,14 @@
                     <h3>{{localize "YOUR_FLAVOR.Config.LayoutSection"}}</h3>
                 </div>
 
-                {{!-- Category Tabs --}}
-                <div class="yf-layout-tabs">
-                    <button type="button" class="yf-tab active" data-category="basic">{{localize "YOUR_FLAVOR.Categories.Basic"}}</button>
-                    <button type="button" class="yf-tab" data-category="class">{{localize "YOUR_FLAVOR.Categories.Classes"}}</button>
-                    <button type="button" class="yf-tab" data-category="race">{{localize "YOUR_FLAVOR.Categories.Races"}}</button>
-                    <button type="button" class="yf-tab" data-category="theme">{{localize "YOUR_FLAVOR.Categories.Themes"}}</button>
-                    <button type="button" class="yf-tab" data-category="misc">{{localize "YOUR_FLAVOR.Categories.Misc"}}</button>
+                {{!-- Category Tags --}}
+                <div class="yf-category-tags">
+                    <span class="yf-tag" data-category="basic">{{localize "YOUR_FLAVOR.Categories.Basic"}}</span>
+                    <span class="yf-tag" data-category="class">{{localize "YOUR_FLAVOR.Categories.Classes"}}</span>
+                    <span class="yf-tag" data-category="race">{{localize "YOUR_FLAVOR.Categories.Races"}}</span>
+                    <span class="yf-tag" data-category="theme">{{localize "YOUR_FLAVOR.Categories.Themes"}}</span>
+                    <span class="yf-tag" data-category="modern">{{localize "YOUR_FLAVOR.Categories.Modern"}}</span>
+                    <span class="yf-tag" data-category="misc">{{localize "YOUR_FLAVOR.Categories.Misc"}}</span>
                 </div>
 
                 {{!-- Layout Grid --}}
@@ -134,6 +135,15 @@
                             <input type="color" name="customizations.textColor" class="yf-color-swatch" value="{{config.customizations.textColor}}" title="{{localize 'YOUR_FLAVOR.Config.TextColor'}}">
                             <input type="color" name="customizations.backgroundColor" class="yf-color-swatch" value="{{backgroundColorHex}}" title="{{localize 'YOUR_FLAVOR.Config.BackgroundColor'}}">
                             <input type="color" name="customizations.borderColor" class="yf-color-swatch" value="{{config.customizations.borderColor}}" title="{{localize 'YOUR_FLAVOR.Config.BorderColor'}}">
+                        </div>
+                    </div>
+
+                    {{!-- Name/Timestamp Colors Row --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.NameTimestampColors"}}</label>
+                        <div class="yf-color-row">
+                            <input type="color" name="customizations.nameColor" class="yf-color-swatch" value="{{#if config.customizations.nameColor}}{{config.customizations.nameColor}}{{else}}{{config.customizations.borderColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.NameColor'}}">
+                            <input type="color" name="customizations.timestampColor" class="yf-color-swatch" value="{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.TimestampColor'}}">
                         </div>
                     </div>
 

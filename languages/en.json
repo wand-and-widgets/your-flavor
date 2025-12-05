@@ -24,6 +24,10 @@
                 "Name": "Apply to Whispers",
                 "Hint": "Apply flavor styling to whisper messages as well."
             },
+            "UIScale": {
+                "Name": "Config Window Scale",
+                "Hint": "Scale the configuration window for better readability (80%-150%). Changes apply when opening the config window."
+            },
             "Configure": {
                 "Name": "Configure Your Flavor",
                 "Label": "Open Configuration",
@@ -60,6 +64,9 @@
             "GlowColor": "Glow Color",
             "GlowIntensity": "Intensity",
             "ShadowEnabled": "Shadow",
+            "NameTimestampColors": "Name / Time",
+            "NameColor": "Player Name",
+            "TimestampColor": "Timestamp",
             "AdvancedSection": "Advanced",
             "AdvancedWarning": "Custom HTML can break chat rendering. Use with caution.",
             "CustomHtmlPlaceholder": "Custom HTML template...",
@@ -76,6 +83,7 @@
             "Classes": "Classes",
             "Races": "Races",
             "Themes": "Themes",
+            "Modern": "Modern",
             "Misc": "Other"
         },
         "Layouts": {
@@ -242,6 +250,46 @@
             "Bland": {
                 "Name": "Bland",
                 "Description": "Simple and clean, minimalist gray"
+            },
+            "Steampunk": {
+                "Name": "Steampunk",
+                "Description": "Brass gears and Victorian machinery, copper and bronze tones"
+            },
+            "Eldritch": {
+                "Name": "Eldritch",
+                "Description": "Cosmic horror and unfathomable knowledge, dark teal madness"
+            },
+            "Feywild": {
+                "Name": "Feywild",
+                "Description": "Whimsical fey magic, vibrant violet and pink enchantment"
+            },
+            "Celestial": {
+                "Name": "Celestial",
+                "Description": "Divine radiance and heavenly light, golden and white glory"
+            },
+            "Pirate": {
+                "Name": "Pirate",
+                "Description": "Weathered seas and plundered gold, salty brown wood"
+            },
+            "Noir": {
+                "Name": "Noir",
+                "Description": "Black and white shadows, mysterious detective style"
+            },
+            "Alchemist": {
+                "Name": "Alchemist",
+                "Description": "Bubbling potions and mystical science, green experimentation"
+            },
+            "Infernal": {
+                "Name": "Infernal",
+                "Description": "Hellfire and brimstone, burning red corruption"
+            },
+            "Merchant": {
+                "Name": "Merchant",
+                "Description": "Wealthy elegance and ornate gold, noble commerce"
+            },
+            "Tribal": {
+                "Name": "Tribal",
+                "Description": "Primal spirits and earth tones, shamanic power"
             },
             "Custom": {
                 "Name": "Custom",

@@ -63,10 +63,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _workingConfig = null;
 
     /**
-     * Current active category tab
-     * @type {string}
+     * Current active category tag (null = show all)
+     * @type {string|null}
      */
-    _activeCategory = 'basic';
+    _activeCategory = null;
 
     constructor(options = {}) {
         super(options);
@@ -82,11 +82,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         await this.manager.initialize();
         this._workingConfig = foundry.utils.deepClone(this.manager.getCurrentConfig());
 
-        // Set active category based on current layout
-        const currentLayout = LAYOUTS[this._workingConfig.layout];
-        if (currentLayout?.category) {
-            this._activeCategory = currentLayout.category;
-        }
+        // Start with all layouts visible (no category filter)
+        this._activeCategory = null;
     }
 
     async _prepareContext(options) {
@@ -151,14 +148,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         const html = this.element;
 
+        // Apply UI scale setting
+        const uiScale = game.settings.get(MODULE_ID, 'uiScale');
+        this.element.style.setProperty('--yf-ui-scale', uiScale / 100);
+
         // Register Handlebars helper for equality check
         this._registerLocalHelpers();
 
         // Setup event listeners
         this._setupEventListeners(html);
 
-        // Apply initial tab filter
-        this._filterLayoutsByCategory(this._activeCategory);
+        // Apply initial category filter (null = show all)
+        if (this._activeCategory) {
+            this._filterLayoutsByCategory(this._activeCategory);
+        }
 
         // Apply preview styles
         this._updatePreview();
@@ -174,9 +177,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             el.addEventListener('click', (e) => this._onLayoutClick(e));
         });
 
-        // Tab navigation
-        html.querySelectorAll('.yf-tab').forEach(el => {
-            el.addEventListener('click', (e) => this._onTabClick(e));
+        // Tag navigation
+        html.querySelectorAll('.yf-tag').forEach(el => {
+            el.addEventListener('click', (e) => this._onTagClick(e));
         });
 
         // Form inputs
@@ -187,37 +190,41 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         });
 
-        // Advanced toggle
-        html.querySelectorAll('.yf-advanced-toggle').forEach(el => {
-            el.addEventListener('click', (e) => this._onAdvancedToggle(e));
-        });
     }
 
-    _onTabClick(event) {
+    _onTagClick(event) {
         event.preventDefault();
-        const tab = event.currentTarget;
-        const category = tab.dataset.category;
+        const tag = event.currentTarget;
+        const category = tag.dataset.category;
 
-        // Update active tab UI
-        this.element.querySelectorAll('.yf-tab').forEach(t => {
-            t.classList.toggle('active', t.dataset.category === category);
+        // Toggle: clicking active tag deselects it (show all)
+        if (this._activeCategory === category) {
+            this._activeCategory = null;
+        } else {
+            this._activeCategory = category;
+        }
+
+        // Update active tag UI
+        this.element.querySelectorAll('.yf-tag').forEach(t => {
+            t.classList.toggle('active', t.dataset.category === this._activeCategory);
         });
 
-        // Store active category
-        this._activeCategory = category;
-
         // Filter layouts
-        this._filterLayoutsByCategory(category);
+        this._filterLayoutsByCategory(this._activeCategory);
     }
 
     _filterLayoutsByCategory(category) {
         const layouts = this.element.querySelectorAll('.yf-layout-option');
         layouts.forEach(layout => {
             const layoutCategory = layout.dataset.category;
-            // Show layouts that match the category, or show 'none' and 'custom' in all tabs
-            const shouldShow = layoutCategory === category ||
-                               layout.dataset.layout === 'none' ||
-                               layout.dataset.layout === 'custom';
+            const layoutId = layout.dataset.layout;
+
+            // If no category selected (null), show all
+            // Always show 'none' and 'custom' options
+            const shouldShow = category === null ||
+                               layoutCategory === category ||
+                               layoutId === 'none' ||
+                               layoutId === 'custom';
             layout.style.display = shouldShow ? '' : 'none';
         });
     }
@@ -286,14 +293,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         }
         // Live update preview while dragging
         this._onInputChange(event);
-    }
-
-    _onAdvancedToggle(event) {
-        const toggle = event.currentTarget;
-        const content = toggle.nextElementSibling;
-
-        toggle.classList.toggle('open');
-        content.classList.toggle('open');
     }
 
     /* -------------------------------------------- */
@@ -398,6 +397,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             previewCard.style.setProperty('--yf-border-style', c.borderStyle || 'solid');
             previewCard.style.setProperty('--yf-border-radius', `${c.borderRadius || 8}px`);
             previewCard.style.setProperty('--yf-padding', `${c.padding || 12}px`);
+
+            // Name and timestamp colors for preview
+            const nameColor = c.nameColor || c.borderColor || '#d4872c';
+            const timestampColor = c.timestampColor || c.textColor || '#f0e6d8';
+            previewCard.style.setProperty('--yf-name-color', nameColor);
+            previewCard.style.setProperty('--yf-timestamp-color', timestampColor);
 
             // Build box-shadow
             let shadows = [];

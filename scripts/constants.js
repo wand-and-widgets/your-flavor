@@ -42,7 +42,9 @@ export const DEFAULT_CONFIG = {
         glowColor: '#c9a227',
         glowIntensity: 10,
         shadowEnabled: true,
-        padding: 12
+        padding: 12,
+        nameColor: null,      // Player name color (fallback: borderColor)
+        timestampColor: null  // Timestamp color (fallback: textColor)
     },
     customHtml: null
 };

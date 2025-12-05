@@ -85,7 +85,18 @@ export function registerSettings() {
             'professor': game.i18n.localize('YOUR_FLAVOR.Layouts.Professor.Name'),
             'punk': game.i18n.localize('YOUR_FLAVOR.Layouts.Punk.Name'),
             'hiphop': game.i18n.localize('YOUR_FLAVOR.Layouts.HipHop.Name'),
-            'bland': game.i18n.localize('YOUR_FLAVOR.Layouts.Bland.Name')
+            'bland': game.i18n.localize('YOUR_FLAVOR.Layouts.Bland.Name'),
+            // New themes
+            'steampunk': game.i18n.localize('YOUR_FLAVOR.Layouts.Steampunk.Name'),
+            'eldritch': game.i18n.localize('YOUR_FLAVOR.Layouts.Eldritch.Name'),
+            'feywild': game.i18n.localize('YOUR_FLAVOR.Layouts.Feywild.Name'),
+            'celestial': game.i18n.localize('YOUR_FLAVOR.Layouts.Celestial.Name'),
+            'pirate': game.i18n.localize('YOUR_FLAVOR.Layouts.Pirate.Name'),
+            'noir': game.i18n.localize('YOUR_FLAVOR.Layouts.Noir.Name'),
+            'alchemist': game.i18n.localize('YOUR_FLAVOR.Layouts.Alchemist.Name'),
+            'infernal': game.i18n.localize('YOUR_FLAVOR.Layouts.Infernal.Name'),
+            'merchant': game.i18n.localize('YOUR_FLAVOR.Layouts.Merchant.Name'),
+            'tribal': game.i18n.localize('YOUR_FLAVOR.Layouts.Tribal.Name')
         },
         default: 'none',
         requiresReload: false
@@ -111,6 +122,27 @@ export function registerSettings() {
         type: Boolean,
         default: true,
         requiresReload: false
+    });
+
+    // Client Setting: UI Scale for accessibility
+    game.settings.register(MODULE_ID, 'uiScale', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.UIScale.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.UIScale.Hint'),
+        scope: 'client',
+        config: true,
+        type: Number,
+        range: {
+            min: 80,
+            max: 150,
+            step: 5
+        },
+        default: 100,
+        requiresReload: false,
+        onChange: value => {
+            document.querySelectorAll('.your-flavor-config').forEach(el => {
+                el.style.setProperty('--yf-ui-scale', value / 100);
+            });
+        }
     });
 
     // Client Setting: User's flavor configuration (stored as JSON string)

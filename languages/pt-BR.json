@@ -24,6 +24,10 @@
                 "Name": "Aplicar em Sussurros",
                 "Hint": "Aplicar estilização também em mensagens sussurradas."
             },
+            "UIScale": {
+                "Name": "Escala da Janela",
+                "Hint": "Ajusta a escala da janela de configuração para melhor legibilidade (80%-150%). Alterações aplicam ao abrir a janela."
+            },
             "Configure": {
                 "Name": "Configurar Your Flavor",
                 "Label": "Abrir Configuração",
@@ -60,6 +64,9 @@
             "GlowColor": "Cor do Brilho",
             "GlowIntensity": "Intensidade",
             "ShadowEnabled": "Sombra",
+            "NameTimestampColors": "Nome / Hora",
+            "NameColor": "Nome do Jogador",
+            "TimestampColor": "Horário",
             "AdvancedSection": "Avançado",
             "AdvancedWarning": "HTML personalizado pode quebrar a renderização. Use com cautela.",
             "CustomHtmlPlaceholder": "Template HTML personalizado...",
@@ -76,6 +83,7 @@
             "Classes": "Classes",
             "Races": "Raças",
             "Themes": "Temas",
+            "Modern": "Moderno",
             "Misc": "Outros"
         },
         "Layouts": {
@@ -242,6 +250,46 @@
             "Bland": {
                 "Name": "Sem Graça",
                 "Description": "Simples e limpo, cinza minimalista"
+            },
+            "Steampunk": {
+                "Name": "Steampunk",
+                "Description": "Engrenagens de latão e maquinaria vitoriana, tons de cobre e bronze"
+            },
+            "Eldritch": {
+                "Name": "Eldritch",
+                "Description": "Horror cósmico e conhecimento inefável, loucura verde-azulada"
+            },
+            "Feywild": {
+                "Name": "Feérico",
+                "Description": "Magia fey caprichosa, encantamento violeta e rosa vibrante"
+            },
+            "Celestial": {
+                "Name": "Celestial",
+                "Description": "Radiância divina e luz celestial, glória dourada e branca"
+            },
+            "Pirate": {
+                "Name": "Pirata",
+                "Description": "Mares desgastados e ouro saqueado, madeira marrom salgada"
+            },
+            "Noir": {
+                "Name": "Noir",
+                "Description": "Sombras em preto e branco, estilo detetive misterioso"
+            },
+            "Alchemist": {
+                "Name": "Alquimista",
+                "Description": "Poções borbulhantes e ciência mística, experimentação verde"
+            },
+            "Infernal": {
+                "Name": "Infernal",
+                "Description": "Fogo do inferno e enxofre, corrupção vermelha ardente"
+            },
+            "Merchant": {
+                "Name": "Mercador",
+                "Description": "Elegância rica e ouro ornamentado, comércio nobre"
+            },
+            "Tribal": {
+                "Name": "Tribal",
+                "Description": "Espíritos primais e tons terrosos, poder xamânico"
             },
             "Custom": {
                 "Name": "Personalizado",

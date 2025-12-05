@@ -198,6 +198,12 @@ class YourFlavor {
         card.style.setProperty('--yf-border-radius', `${styles.borderRadius || 8}px`);
         card.style.setProperty('--yf-padding', `${styles.padding || 12}px`);
 
+        // Name and timestamp colors with fallbacks
+        const nameColor = styles.nameColor || styles.borderColor || '#c9a227';
+        const timestampColor = styles.timestampColor || styles.textColor || '#e8dcc8';
+        card.style.setProperty('--yf-name-color', nameColor);
+        card.style.setProperty('--yf-timestamp-color', timestampColor);
+
         // Build box-shadow
         let shadows = [];
         if (styles.glowEnabled && styles.glowColor) {

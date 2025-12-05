@@ -2,7 +2,7 @@
   "id": "your-flavor",
   "title": "Your Flavor",
   "description": "Customize your chat messages with beautiful layouts and styles. Each player can personalize how their messages appear in the chat without affecting system rolls or item cards. Features include multiple layout presets, custom fonts from Google Fonts, color customization, glows and shadows, and GM controls for player styling.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13",

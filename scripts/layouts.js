@@ -105,7 +105,9 @@ export const LAYOUTS = {
             borderRadius: 4,
             padding: 14,
             glowEnabled: false,
-            shadowEnabled: true
+            shadowEnabled: true,
+            nameColor: '#888888',
+            timestampColor: '#666666'
         }
     },
 
@@ -151,7 +153,9 @@ export const LAYOUTS = {
             borderRadius: 2,
             padding: 12,
             glowEnabled: false,
-            shadowEnabled: true
+            shadowEnabled: true,
+            nameColor: '#888888',
+            timestampColor: '#666666'
         }
     },
 
@@ -678,7 +682,9 @@ export const LAYOUTS = {
             glowEnabled: true,
             glowColor: '#add8e6',
             glowIntensity: 10,
-            shadowEnabled: false
+            shadowEnabled: false,
+            nameColor: '#1a5276',
+            timestampColor: '#2980b9'
         }
     },
 
@@ -724,7 +730,9 @@ export const LAYOUTS = {
             glowEnabled: true,
             glowColor: '#fffacd',
             glowIntensity: 15,
-            shadowEnabled: false
+            shadowEnabled: false,
+            nameColor: '#8b6914',
+            timestampColor: '#6b5a4a'
         }
     },
 
@@ -932,6 +940,254 @@ export const LAYOUTS = {
             padding: 12,
             glowEnabled: false,
             shadowEnabled: false
+        }
+    },
+
+    // ==========================================
+    // NEW CREATIVE LAYOUTS
+    // ==========================================
+
+    steampunk: {
+        id: 'steampunk',
+        name: 'YOUR_FLAVOR.Layouts.Steampunk.Name',
+        description: 'YOUR_FLAVOR.Layouts.Steampunk.Description',
+        icon: 'fas fa-cog',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'IM Fell English',
+            fontSize: 14,
+            textColor: '#d4c4a8',
+            backgroundColor: 'rgba(45, 35, 25, 0.95)',
+            borderColor: '#b87333',
+            borderStyle: 'ridge',
+            borderWidth: 4,
+            borderRadius: 6,
+            padding: 14,
+            glowEnabled: true,
+            glowColor: '#cd7f32',
+            glowIntensity: 8,
+            shadowEnabled: true,
+            nameColor: '#cd9b4a',
+            timestampColor: '#a89070'
+        }
+    },
+
+    eldritch: {
+        id: 'eldritch',
+        name: 'YOUR_FLAVOR.Layouts.Eldritch.Name',
+        description: 'YOUR_FLAVOR.Layouts.Eldritch.Description',
+        icon: 'fas fa-brain',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Almendra',
+            fontSize: 14,
+            textColor: '#8fbc8f',
+            backgroundColor: 'rgba(10, 15, 20, 0.98)',
+            borderColor: '#2f4f4f',
+            borderStyle: 'double',
+            borderWidth: 3,
+            borderRadius: 2,
+            padding: 14,
+            glowEnabled: true,
+            glowColor: '#006666',
+            glowIntensity: 12,
+            shadowEnabled: true,
+            nameColor: '#20b2aa',
+            timestampColor: '#5f9ea0'
+        }
+    },
+
+    feywild: {
+        id: 'feywild',
+        name: 'YOUR_FLAVOR.Layouts.Feywild.Name',
+        description: 'YOUR_FLAVOR.Layouts.Feywild.Description',
+        icon: 'fas fa-seedling',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Tangerine',
+            fontSize: 20,
+            textColor: '#e6e6fa',
+            backgroundColor: 'rgba(40, 20, 60, 0.92)',
+            borderColor: '#dda0dd',
+            borderStyle: 'solid',
+            borderWidth: 2,
+            borderRadius: 20,
+            padding: 16,
+            glowEnabled: true,
+            glowColor: '#ee82ee',
+            glowIntensity: 15,
+            shadowEnabled: true,
+            nameColor: '#ff69b4',
+            timestampColor: '#da70d6'
+        }
+    },
+
+    celestial: {
+        id: 'celestial',
+        name: 'YOUR_FLAVOR.Layouts.Celestial.Name',
+        description: 'YOUR_FLAVOR.Layouts.Celestial.Description',
+        icon: 'fas fa-star',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Cinzel',
+            fontSize: 14,
+            textColor: '#fffaf0',
+            backgroundColor: 'rgba(20, 30, 60, 0.95)',
+            borderColor: '#ffd700',
+            borderStyle: 'double',
+            borderWidth: 3,
+            borderRadius: 10,
+            padding: 14,
+            glowEnabled: true,
+            glowColor: '#fffacd',
+            glowIntensity: 18,
+            shadowEnabled: true,
+            nameColor: '#ffd700',
+            timestampColor: '#f0e68c'
+        }
+    },
+
+    pirate: {
+        id: 'pirate',
+        name: 'YOUR_FLAVOR.Layouts.Pirate.Name',
+        description: 'YOUR_FLAVOR.Layouts.Pirate.Description',
+        icon: 'fas fa-skull-crossbones',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Pirata One',
+            fontSize: 15,
+            textColor: '#deb887',
+            backgroundColor: 'rgba(40, 30, 20, 0.95)',
+            borderColor: '#8b4513',
+            borderStyle: 'ridge',
+            borderWidth: 4,
+            borderRadius: 4,
+            padding: 14,
+            glowEnabled: false,
+            shadowEnabled: true,
+            nameColor: '#d2691e',
+            timestampColor: '#a0522d'
+        }
+    },
+
+    noir: {
+        id: 'noir',
+        name: 'YOUR_FLAVOR.Layouts.Noir.Name',
+        description: 'YOUR_FLAVOR.Layouts.Noir.Description',
+        icon: 'fas fa-user-secret',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'inherit',
+            fontSize: 14,
+            textColor: '#c0c0c0',
+            backgroundColor: 'rgba(15, 15, 15, 0.98)',
+            borderColor: '#404040',
+            borderStyle: 'solid',
+            borderWidth: 2,
+            borderRadius: 2,
+            padding: 14,
+            glowEnabled: false,
+            shadowEnabled: true,
+            nameColor: '#ffffff',
+            timestampColor: '#808080'
+        }
+    },
+
+    alchemist: {
+        id: 'alchemist',
+        name: 'YOUR_FLAVOR.Layouts.Alchemist.Name',
+        description: 'YOUR_FLAVOR.Layouts.Alchemist.Description',
+        icon: 'fas fa-vial',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Almendra',
+            fontSize: 14,
+            textColor: '#e0d8b8',
+            backgroundColor: 'rgba(30, 35, 25, 0.95)',
+            borderColor: '#8fbc8f',
+            borderStyle: 'solid',
+            borderWidth: 2,
+            borderRadius: 8,
+            padding: 14,
+            glowEnabled: true,
+            glowColor: '#98fb98',
+            glowIntensity: 10,
+            shadowEnabled: true,
+            nameColor: '#9acd32',
+            timestampColor: '#6b8e23'
+        }
+    },
+
+    infernal: {
+        id: 'infernal',
+        name: 'YOUR_FLAVOR.Layouts.Infernal.Name',
+        description: 'YOUR_FLAVOR.Layouts.Infernal.Description',
+        icon: 'fas fa-fire-alt',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Cinzel Decorative',
+            fontSize: 14,
+            textColor: '#ff6347',
+            backgroundColor: 'rgba(25, 5, 5, 0.98)',
+            borderColor: '#8b0000',
+            borderStyle: 'ridge',
+            borderWidth: 4,
+            borderRadius: 4,
+            padding: 14,
+            glowEnabled: true,
+            glowColor: '#ff4500',
+            glowIntensity: 15,
+            shadowEnabled: true,
+            nameColor: '#ff6600',
+            timestampColor: '#cc3300'
+        }
+    },
+
+    merchant: {
+        id: 'merchant',
+        name: 'YOUR_FLAVOR.Layouts.Merchant.Name',
+        description: 'YOUR_FLAVOR.Layouts.Merchant.Description',
+        icon: 'fas fa-coins',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'Cinzel',
+            fontSize: 14,
+            textColor: '#2f2f2f',
+            backgroundColor: 'rgba(250, 245, 235, 0.95)',
+            borderColor: '#b8860b',
+            borderStyle: 'double',
+            borderWidth: 4,
+            borderRadius: 8,
+            padding: 16,
+            glowEnabled: true,
+            glowColor: '#ffd700',
+            glowIntensity: 8,
+            shadowEnabled: true,
+            nameColor: '#8b6914',
+            timestampColor: '#a0522d'
+        }
+    },
+
+    tribal: {
+        id: 'tribal',
+        name: 'YOUR_FLAVOR.Layouts.Tribal.Name',
+        description: 'YOUR_FLAVOR.Layouts.Tribal.Description',
+        icon: 'fas fa-feather-alt',
+        category: 'theme',
+        defaults: {
+            fontFamily: 'MedievalSharp',
+            fontSize: 14,
+            textColor: '#f5deb3',
+            backgroundColor: 'rgba(50, 35, 25, 0.95)',
+            borderColor: '#cd853f',
+            borderStyle: 'ridge',
+            borderWidth: 4,
+            borderRadius: 2,
+            padding: 14,
+            glowEnabled: false,
+            shadowEnabled: true,
+            nameColor: '#d2691e',
+            timestampColor: '#a0522d'
         }
     },
 
