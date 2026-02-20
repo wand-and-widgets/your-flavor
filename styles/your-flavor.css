@@ -986,7 +986,7 @@
     background: var(--yf-bg-color) !important;
     border: var(--yf-border-width) var(--yf-border-style) var(--yf-border-color) !important;
     border-radius: var(--yf-border-radius) !important;
-    box-shadow: var(--yf-box-shadow) !important;
+    box-shadow: var(--yf-box-shadow);
     margin: 8px 4px !important;
     overflow: visible;
 }
