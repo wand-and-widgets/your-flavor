@@ -1,0 +1,439 @@
+{
+    "YOUR_FLAVOR": {
+        "Settings": {
+            "ModuleEnabled": {
+                "Name": "Ativar Módulo",
+                "Hint": "Ativa ou desativa o módulo Your Flavor globalmente."
+            },
+            "AllowPlayerCustomization": {
+                "Name": "Permitir Customização dos Jogadores",
+                "Hint": "Permite que jogadores personalizem suas próprias mensagens de chat. Quando desativado, apenas o GM pode personalizar o chat."
+            },
+            "ForcePlayerLayout": {
+                "Name": "Forçar Layout dos Jogadores",
+                "Hint": "Força todos os jogadores a usarem um layout específico. Isso sobrescreve as configurações individuais dos jogadores.",
+                "Choices": {
+                    "None": "Não Forçar (Usar Config do Jogador)"
+                }
+            },
+            "AllowCustomHtml": {
+                "Name": "Permitir HTML Personalizado (Jogadores)",
+                "Hint": "Permite que jogadores usem templates HTML personalizados. GMs sempre têm essa habilidade. Use com cautela."
+            },
+            "ApplyToWhispers": {
+                "Name": "Aplicar em Sussurros",
+                "Hint": "Aplicar estilização também em mensagens sussurradas."
+            },
+            "UIScale": {
+                "Name": "Escala da Janela",
+                "Hint": "Ajusta a escala da janela de configuração para melhor legibilidade (80%-150%). Alterações aplicam ao abrir a janela."
+            },
+            "Configure": {
+                "Name": "Configurar Your Flavor",
+                "Label": "Abrir Configuração",
+                "Hint": "Abre o painel de configuração do Your Flavor para personalizar seu estilo de chat."
+            }
+        },
+        "Controls": {
+            "Configure": "Configurar Your Flavor"
+        },
+        "Config": {
+            "Title": "Your Flavor",
+            "Subtitle": "Personalize como suas mensagens aparecem no chat",
+            "Enable": "Ativar estilização personalizada",
+            "LayoutSection": "Layouts",
+            "Preview": "Prévia",
+            "PreviewText": "É assim que suas mensagens aparecerão no chat!",
+            "PreviewTime": "agora",
+            "StatusEnabled": "Ativo",
+            "StatusDisabled": "Inativo",
+            "CustomizeSection": "Personalização",
+            "FontFamily": "Fonte",
+            "FontSize": "Tamanho",
+            "Colors": "Cores",
+            "TextColor": "Texto",
+            "BackgroundColor": "Fundo",
+            "BorderColor": "Borda",
+            "BorderStyle": "Estilo Borda",
+            "BorderWidth": "Espessura",
+            "BorderRadius": "Cantos",
+            "Effects": "Efeitos",
+            "Glow": "Brilho",
+            "Shadow": "Sombra",
+            "GlowEnabled": "Ativar Brilho",
+            "GlowColor": "Cor do Brilho",
+            "GlowIntensity": "Intensidade",
+            "ShadowEnabled": "Sombra",
+            "NameTimestampColors": "Nome / Hora",
+            "NameColor": "Nome do Jogador",
+            "TimestampColor": "Horário",
+            "AdvancedSection": "Avançado",
+            "AdvancedWarning": "HTML personalizado pode quebrar a renderização. Use com cautela.",
+            "CustomHtmlPlaceholder": "Template HTML personalizado...",
+            "Opacity": "Opacidade",
+            "TestButton": "Testar",
+            "ResetButton": "Resetar",
+            "SaveButton": "Salvar",
+            "CloseButton": "Fechar",
+            "ExportButton": "Exportar config",
+            "ImportButton": "Importar config",
+            "Favorite": "Favorito",
+            "ConfigFor": "Estilo para",
+            "DefaultStyle": "Estilo Padrão",
+            "TestMessage": "Esta é uma mensagem de teste do Your Flavor! Ficou incrível!",
+            "NoPermission": "O GM desativou a personalização do chat para jogadores.",
+            "ForcedLayout": "O GM definiu seu layout para:"
+        },
+        "Categories": {
+            "Favorites": "Favoritos",
+            "Basic": "Básicos",
+            "Classes": "Classes",
+            "Races": "Raças",
+            "Themes": "Temas",
+            "Modern": "Moderno",
+            "Misc": "Outros"
+        },
+        "Layouts": {
+            "None": {
+                "Name": "Nenhum",
+                "Description": "Sem estilização - usar aparência padrão do chat"
+            },
+            "Elegant": {
+                "Name": "Elegante",
+                "Description": "Bordas douradas refinadas com gradientes escuros"
+            },
+            "Parchment": {
+                "Name": "Pergaminho",
+                "Description": "Rolo medieval com textura de papel envelhecido"
+            },
+            "Royal": {
+                "Name": "Real",
+                "Description": "Carmesim nobre e dourado com emblema de coroa"
+            },
+            "Shadow": {
+                "Name": "Sombrio",
+                "Description": "Escuro e misterioso com bordas que se dissolvem"
+            },
+            "Warrior": {
+                "Name": "Guerreiro",
+                "Description": "Forte e resistente, forjado em batalha"
+            },
+            "Thief": {
+                "Name": "Ladino",
+                "Description": "Sombrio e elusivo, oculto nas trevas"
+            },
+            "Bard": {
+                "Name": "Bardo",
+                "Description": "Melódico e encantador, tocado pela música"
+            },
+            "Druid": {
+                "Name": "Druida",
+                "Description": "Natural e orgânico, abençoado pela natureza"
+            },
+            "Barbarian": {
+                "Name": "Bárbaro",
+                "Description": "Feroz e primitivo, ardendo em fúria"
+            },
+            "Cleric": {
+                "Name": "Clérigo",
+                "Description": "Sagrado e radiante, abençoado pelo divino"
+            },
+            "Paladin": {
+                "Name": "Paladino",
+                "Description": "Justo e luminoso, brilhando com justiça"
+            },
+            "Monk": {
+                "Name": "Monge",
+                "Description": "Sereno e equilibrado, em paz com o mundo"
+            },
+            "Sorcerer": {
+                "Name": "Feiticeiro",
+                "Description": "Caótico e poderoso, flamejando com magia inata"
+            },
+            "Mage": {
+                "Name": "Mago",
+                "Description": "Místico e arcano, portador de conhecimento antigo"
+            },
+            "Ranger": {
+                "Name": "Patrulheiro",
+                "Description": "Selvagem e vigilante, um com a floresta"
+            },
+            "Warlock": {
+                "Name": "Bruxo",
+                "Description": "Sombrio e misterioso, ligado por pactos eldritch"
+            },
+            "Elf": {
+                "Name": "Elfo",
+                "Description": "Gracioso e etéreo, antigo e sábio"
+            },
+            "Orc": {
+                "Name": "Orc",
+                "Description": "Brutal e poderoso, guerreiros orgulhosos"
+            },
+            "Dwarf": {
+                "Name": "Anão",
+                "Description": "Robusto e firme, mestres da pedra e do metal"
+            },
+            "Dragon": {
+                "Name": "Dragão",
+                "Description": "Majestoso e poderoso, antigo e temível"
+            },
+            "Necromancer": {
+                "Name": "Necromante",
+                "Description": "Magia negra e morte, brilho eldritch verde"
+            },
+            "Vampire": {
+                "Name": "Vampiro",
+                "Description": "Elegante e mortal, escuridão vermelho sangue"
+            },
+            "Beholder": {
+                "Name": "Observador",
+                "Description": "Alienígena e bizarro, loucura púrpura aberrante"
+            },
+            "Zombie": {
+                "Name": "Zumbi",
+                "Description": "Decadente e cambaleante, verde podre"
+            },
+            "Fire": {
+                "Name": "Fogo",
+                "Description": "Ardente e intenso, chamas laranja queimando"
+            },
+            "Cold": {
+                "Name": "Gelo",
+                "Description": "Congelante e nítido, frio azul gelado"
+            },
+            "Acid": {
+                "Name": "Ácido",
+                "Description": "Corrosivo e tóxico, verde borbulhante"
+            },
+            "Desert": {
+                "Name": "Deserto",
+                "Description": "Árido e antigo, areias douradas"
+            },
+            "Glacial": {
+                "Name": "Glacial",
+                "Description": "Puro e intocado, gelo cristalino"
+            },
+            "Evil": {
+                "Name": "Maligno",
+                "Description": "Malévolo e sombrio, vermelho sinistro"
+            },
+            "Good": {
+                "Name": "Bondoso",
+                "Description": "Puro e justo, luz divina"
+            },
+            "Futuristic": {
+                "Name": "Futurista",
+                "Description": "Elegante e avançado, tecnologia neon ciano"
+            },
+            "Cyberpunk": {
+                "Name": "Cyberpunk",
+                "Description": "Sujo e neon, circuitos rosa pink"
+            },
+            "Military": {
+                "Name": "Militar",
+                "Description": "Tático e disciplinado, verde exército"
+            },
+            "Girly": {
+                "Name": "Menininha",
+                "Description": "Doce e fofa, rosa e adorável"
+            },
+            "Rebel": {
+                "Name": "Rebelde",
+                "Description": "Desafiador e ousado, vermelho anarquista"
+            },
+            "Professor": {
+                "Name": "Professor",
+                "Description": "Acadêmico e refinado, pergaminho erudito"
+            },
+            "Punk": {
+                "Name": "Punk",
+                "Description": "Alto e agressivo, amarelo elétrico"
+            },
+            "HipHop": {
+                "Name": "Hip Hop",
+                "Description": "Fresh e ousado, bling dourado"
+            },
+            "Bland": {
+                "Name": "Sem Graça",
+                "Description": "Simples e limpo, cinza minimalista"
+            },
+            "Steampunk": {
+                "Name": "Steampunk",
+                "Description": "Engrenagens de latão e maquinaria vitoriana, tons de cobre e bronze"
+            },
+            "Eldritch": {
+                "Name": "Eldritch",
+                "Description": "Horror cósmico e conhecimento inefável, loucura verde-azulada"
+            },
+            "Feywild": {
+                "Name": "Feérico",
+                "Description": "Magia fey caprichosa, encantamento violeta e rosa vibrante"
+            },
+            "Celestial": {
+                "Name": "Celestial",
+                "Description": "Radiância divina e luz celestial, glória dourada e branca"
+            },
+            "Pirate": {
+                "Name": "Pirata",
+                "Description": "Mares desgastados e ouro saqueado, madeira marrom salgada"
+            },
+            "Noir": {
+                "Name": "Noir",
+                "Description": "Sombras em preto e branco, estilo detetive misterioso"
+            },
+            "Alchemist": {
+                "Name": "Alquimista",
+                "Description": "Poções borbulhantes e ciência mística, experimentação verde"
+            },
+            "Infernal": {
+                "Name": "Infernal",
+                "Description": "Fogo do inferno e enxofre, corrupção vermelha ardente"
+            },
+            "Merchant": {
+                "Name": "Mercador",
+                "Description": "Elegância rica e ouro ornamentado, comércio nobre"
+            },
+            "Tribal": {
+                "Name": "Tribal",
+                "Description": "Espíritos primais e tons terrosos, poder xamânico"
+            },
+            "Cosmic": {
+                "Name": "Cósmico",
+                "Description": "Nebulosa do espaço profundo com brilho estelar"
+            },
+            "Blueprint": {
+                "Name": "Planta",
+                "Description": "Design arquitetônico com linhas brancas limpas"
+            },
+            "Sketch": {
+                "Name": "Rascunho",
+                "Description": "Estilo de lápis desenhado à mão"
+            },
+            "Comic": {
+                "Name": "Quadrinhos",
+                "Description": "Estilo pop-art ousado com cores vibrantes"
+            },
+            "Arcade": {
+                "Name": "Arcade",
+                "Description": "Neon e pixels de jogos retrô"
+            },
+            "Biohazard": {
+                "Name": "Perigo Biológico",
+                "Description": "Aviso industrial com listras de perigo"
+            },
+            "Spectral": {
+                "Name": "Espectral",
+                "Description": "Brilho etéreo fantasmagórico do além"
+            },
+            "Magma": {
+                "Name": "Magma",
+                "Description": "Terra rachada revelando lava fluindo"
+            },
+            "Abyssal": {
+                "Name": "Abissal",
+                "Description": "Bioluminescência submarina profunda"
+            },
+            "Jungle": {
+                "Name": "Selva",
+                "Description": "Folhagem densa vibrante e natureza"
+            },
+            "Pharaoh": {
+                "Name": "Faraó",
+                "Description": "Ouro e lápis-lazúli do Egito antigo"
+            },
+            "Matrix": {
+                "Name": "Matrix",
+                "Description": "Cascata de código de chuva digital"
+            },
+            "Vaporwave": {
+                "Name": "Vaporwave",
+                "Description": "Estética nostálgica dos anos 80 com neon pastel"
+            },
+            "Gothic": {
+                "Name": "Gótico",
+                "Description": "Ferraria medieval escura e pedra"
+            },
+            "Harrowed": {
+                "Name": "Atormentado",
+                "Description": "Horror psicológico instável e riscado"
+            },
+            "Solar": {
+                "Name": "Solar",
+                "Description": "Anima dourada flamejante do Sol Inconquistável"
+            },
+            "Lunar": {
+                "Name": "Lunar",
+                "Description": "Luar prateado e mutável, essência metamórfica"
+            },
+            "Sidereal": {
+                "Name": "Sideral",
+                "Description": "Luz violeta estelar das aranhas padrão do destino"
+            },
+            "DragonBlooded": {
+                "Name": "Sangue de Dragão",
+                "Description": "Poder elemental de jade dos Exaltados Terrestres"
+            },
+            "Sakura": {
+                "Name": "Sakura",
+                "Description": "Delicadas flores de cerejeira sobre pergaminho marfim"
+            },
+            "Thunderstorm": {
+                "Name": "Tempestade",
+                "Description": "Relâmpagos azuis elétricos crepitando em céus escuros"
+            },
+            "Bloodmoon": {
+                "Name": "Lua de Sangue",
+                "Description": "Eclipse carmesim lançando um brilho vermelho ominoso"
+            },
+            "Crystalline": {
+                "Name": "Cristalino",
+                "Description": "Luz prismática refratando através de cristal puro"
+            },
+            "Sandstorm": {
+                "Name": "Tempestade de Areia",
+                "Description": "Ventos âmbar varrendo dunas ancestrais"
+            },
+            "Plague": {
+                "Name": "Peste",
+                "Description": "Miasma doentio de pestilência e decomposição"
+            },
+            "Runic": {
+                "Name": "Rúnico",
+                "Description": "Runas nórdicas antigas entalhadas em pedra fria"
+            },
+            "Synthwave": {
+                "Name": "Synthwave",
+                "Description": "Neon retrô anos 80 em rosa e ciano"
+            },
+            "Tavern": {
+                "Name": "Taverna",
+                "Description": "Luz de velas quentes e madeira de carvalho envelhecida"
+            },
+            "Enchanted": {
+                "Name": "Encantado",
+                "Description": "Magia iridescente mutável em todas as cores"
+            },
+            "Witchcraft": {
+                "Name": "Bruxaria",
+                "Description": "Ervas de lua escura e ritual arcano violeta"
+            },
+            "Custom": {
+                "Name": "Personalizado",
+                "Description": "Crie seu próprio estilo único"
+            }
+        },
+        "Dialog": {
+            "ResetTitle": "Resetar Configuração",
+            "ResetContent": "Tem certeza que deseja resetar sua configuração de flavor para os padrões? Esta ação não pode ser desfeita."
+        },
+        "Notifications": {
+            "Saved": "Configuração salva com sucesso!",
+            "SaveError": "Erro ao salvar. Verifique o console.",
+            "Reset": "Configuração resetada.",
+            "Exported": "Configuração exportada!",
+            "Imported": "Configuração importada! Clique Salvar para aplicar.",
+            "ImportError": "Falha ao importar configuração. Arquivo inválido."
+        }
+    }
+}

@@ -1,0 +1,309 @@
+<div class="yf-config-container">
+    {{!-- Left Panel - Live Preview --}}
+    <aside class="yf-preview-panel">
+        <h4 class="yf-preview-title">{{localize "YOUR_FLAVOR.Config.Preview"}}</h4>
+
+        <div class="yf-preview-container">
+            <div class="yf-preview-card yf-card yf-card-{{config.layout}}">
+                <div class="yf-preview-header">
+                    <img src="{{playerAvatar}}" alt="{{playerName}}" class="yf-preview-avatar">
+                    <div class="yf-preview-header-text">
+                        <span class="yf-preview-name">{{playerName}}</span>
+                        <span class="yf-preview-time">{{localize "YOUR_FLAVOR.Config.PreviewTime"}}</span>
+                    </div>
+                </div>
+                <div class="yf-preview-content">
+                    {{localize "YOUR_FLAVOR.Config.PreviewText"}}
+                </div>
+            </div>
+        </div>
+
+        <div class="yf-preview-status {{#if config.enabled}}enabled{{else}}disabled{{/if}}">
+            {{#if config.enabled}}
+                <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.StatusEnabled"}}
+            {{else}}
+                <i class="fas fa-times-circle"></i> {{localize "YOUR_FLAVOR.Config.StatusDisabled"}}
+            {{/if}}
+        </div>
+    </aside>
+
+    {{!-- Right Panel - Controls --}}
+    <main class="yf-controls-panel">
+        <div class="yf-controls-scroll">
+            {{!-- Permission Notice for Players --}}
+            {{#unless canCustomize}}
+            <div class="yf-notice yf-notice-warning">
+                <i class="fas fa-lock"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.NoPermission"}}</span>
+            </div>
+            {{else}}
+                {{#if hasForcedLayout}}
+                <div class="yf-notice yf-notice-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>{{localize "YOUR_FLAVOR.Config.ForcedLayout"}} <strong>{{forcedLayoutName}}</strong></span>
+                </div>
+                {{/if}}
+            {{/unless}}
+
+            {{!-- Actor Selector --}}
+            {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            {{#if hasActors}}
+            <div class="yf-actor-selector">
+                <label><i class="fas fa-user"></i> {{localize "YOUR_FLAVOR.Config.ConfigFor"}}</label>
+                <select class="yf-actor-select yf-select">
+                    <option value="">{{localize "YOUR_FLAVOR.Config.DefaultStyle"}} ({{playerName}})</option>
+                    {{#each ownedActors}}
+                    <option value="{{this.id}}" {{#if (eq this.id ../editingActorId)}}selected{{/if}}>{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            {{/if}}
+            {{/unless}}
+            {{/if}}
+
+            {{!-- Enable Toggle --}}
+            {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            <div class="yf-enable-row">
+                <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.Enable"}}</span>
+                <label class="yf-toggle-switch">
+                    <input type="checkbox" name="enabled" {{#if config.enabled}}checked{{/if}}>
+                    <span class="yf-toggle-slider"></span>
+                </label>
+            </div>
+            {{/unless}}
+            {{/if}}
+
+            {{!-- Layout Selection with Tabs --}}
+            {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-th-large"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.LayoutSection"}}</h3>
+                </div>
+
+                {{!-- Category Tags --}}
+                <div class="yf-category-tags">
+                    {{#if hasFavorites}}<span class="yf-tag yf-tag-fav" data-category="favorites"><i class="fas fa-star"></i> {{localize "YOUR_FLAVOR.Categories.Favorites"}}</span>{{/if}}
+                    <span class="yf-tag" data-category="basic">{{localize "YOUR_FLAVOR.Categories.Basic"}}</span>
+                    <span class="yf-tag" data-category="class">{{localize "YOUR_FLAVOR.Categories.Classes"}}</span>
+                    <span class="yf-tag" data-category="race">{{localize "YOUR_FLAVOR.Categories.Races"}}</span>
+                    <span class="yf-tag" data-category="theme">{{localize "YOUR_FLAVOR.Categories.Themes"}}</span>
+                    <span class="yf-tag" data-category="modern">{{localize "YOUR_FLAVOR.Categories.Modern"}}</span>
+                    <span class="yf-tag" data-category="misc">{{localize "YOUR_FLAVOR.Categories.Misc"}}</span>
+                </div>
+
+                {{!-- Layout Grid --}}
+                <div class="yf-layout-grid">
+                    {{#each layouts}}
+                    <div class="yf-layout-option {{#if (eq this.id ../config.layout)}}selected{{/if}}"
+                         data-layout="{{this.id}}"
+                         data-category="{{this.category}}"
+                         title="{{this.name}} — {{this.description}}">
+                        <div class="yf-layout-icon"><i class="{{this.icon}}"></i></div>
+                        <div class="yf-layout-name">{{this.name}}</div>
+                        {{#unless (eq this.id "none")}}
+                        <button type="button" class="yf-fav-btn {{#if this.isFavorite}}active{{/if}}" data-action="toggleFavorite" title="{{localize 'YOUR_FLAVOR.Config.Favorite'}}">
+                            <i class="{{#if this.isFavorite}}fas{{else}}far{{/if}} fa-star"></i>
+                        </button>
+                        {{/unless}}
+                    </div>
+                    {{/each}}
+                </div>
+            </section>
+            {{/unless}}
+            {{/if}}
+
+            {{!-- Customization Options --}}
+            {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            {{#if showCustomization}}
+            <section class="yf-section yf-customization-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.CustomizeSection"}}</h3>
+                </div>
+
+                <div class="yf-customize-grid">
+                    {{!-- Font Family --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.FontFamily"}}</label>
+                        <select name="customizations.fontFamily" class="yf-select">
+                            {{#each fonts}}
+                            <option value="{{this.family}}" {{#if (eq this.family ../config.customizations.fontFamily)}}selected{{/if}}>
+                                {{this.name}}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    {{!-- Font Size --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.FontSize"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="customizations.fontSize" class="yf-range" min="10" max="24" value="{{config.customizations.fontSize}}">
+                            <span class="yf-range-value">{{config.customizations.fontSize}}px</span>
+                        </div>
+                    </div>
+
+                    {{!-- Colors Row --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Colors"}}</label>
+                        <div class="yf-color-row">
+                            <input type="color" name="customizations.textColor" class="yf-color-swatch" value="{{config.customizations.textColor}}" title="{{localize 'YOUR_FLAVOR.Config.TextColor'}}">
+                            <input type="color" name="customizations.backgroundColor" class="yf-color-swatch" value="{{backgroundColorHex}}" title="{{localize 'YOUR_FLAVOR.Config.BackgroundColor'}}">
+                            <input type="color" name="customizations.borderColor" class="yf-color-swatch" value="{{config.customizations.borderColor}}" title="{{localize 'YOUR_FLAVOR.Config.BorderColor'}}">
+                        </div>
+                    </div>
+
+                    {{!-- Background Opacity --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Opacity"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="customizations.backgroundOpacity" class="yf-range" min="0" max="100" step="5" value="{{config.customizations.backgroundOpacity}}">
+                            <span class="yf-range-value">{{config.customizations.backgroundOpacity}}%</span>
+                        </div>
+                    </div>
+
+                    {{!-- Name/Timestamp Colors Row --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.NameTimestampColors"}}</label>
+                        <div class="yf-color-row">
+                            <input type="color" name="customizations.nameColor" class="yf-color-swatch" value="{{#if config.customizations.nameColor}}{{config.customizations.nameColor}}{{else}}{{config.customizations.borderColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.NameColor'}}">
+                            <input type="color" name="customizations.timestampColor" class="yf-color-swatch" value="{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.TimestampColor'}}">
+                        </div>
+                    </div>
+
+                    {{!-- Border Style --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.BorderStyle"}}</label>
+                        <select name="customizations.borderStyle" class="yf-select">
+                            <option value="solid" {{#if (eq config.customizations.borderStyle "solid")}}selected{{/if}}>Solid</option>
+                            <option value="dashed" {{#if (eq config.customizations.borderStyle "dashed")}}selected{{/if}}>Dashed</option>
+                            <option value="dotted" {{#if (eq config.customizations.borderStyle "dotted")}}selected{{/if}}>Dotted</option>
+                            <option value="double" {{#if (eq config.customizations.borderStyle "double")}}selected{{/if}}>Double</option>
+                            <option value="groove" {{#if (eq config.customizations.borderStyle "groove")}}selected{{/if}}>Groove</option>
+                            <option value="ridge" {{#if (eq config.customizations.borderStyle "ridge")}}selected{{/if}}>Ridge</option>
+                        </select>
+                    </div>
+
+                    {{!-- Border Width --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.BorderWidth"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="customizations.borderWidth" class="yf-range" min="0" max="8" value="{{config.customizations.borderWidth}}">
+                            <span class="yf-range-value">{{config.customizations.borderWidth}}px</span>
+                        </div>
+                    </div>
+
+                    {{!-- Border Radius --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.BorderRadius"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="customizations.borderRadius" class="yf-range" min="0" max="50" value="{{config.customizations.borderRadius}}">
+                            <span class="yf-range-value">{{config.customizations.borderRadius}}px</span>
+                        </div>
+                    </div>
+
+                    {{!-- Effects Toggles --}}
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Effects"}}</label>
+                        <div class="yf-effects-row">
+                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.GlowEnabled'}}">
+                                <input type="checkbox" name="customizations.glowEnabled" {{#if config.customizations.glowEnabled}}checked{{/if}}>
+                                <span class="yf-toggle-slider"></span>
+                            </label>
+                            <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Glow"}}</span>
+
+                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.ShadowEnabled'}}">
+                                <input type="checkbox" name="customizations.shadowEnabled" {{#if config.customizations.shadowEnabled}}checked{{/if}}>
+                                <span class="yf-toggle-slider"></span>
+                            </label>
+                            <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Shadow"}}</span>
+                        </div>
+                    </div>
+
+                    {{!-- Glow Sub-options --}}
+                    {{#if config.customizations.glowEnabled}}
+                    <div class="yf-sub-options">
+                        <div class="yf-control-row">
+                            <label>{{localize "YOUR_FLAVOR.Config.GlowColor"}}</label>
+                            <div class="yf-color-row">
+                                <input type="color" name="customizations.glowColor" class="yf-color-swatch" value="{{config.customizations.glowColor}}">
+                            </div>
+                        </div>
+                        <div class="yf-control-row">
+                            <label>{{localize "YOUR_FLAVOR.Config.GlowIntensity"}}</label>
+                            <div class="yf-range-wrapper">
+                                <input type="range" name="customizations.glowIntensity" class="yf-range" min="5" max="25" value="{{config.customizations.glowIntensity}}">
+                                <span class="yf-range-value">{{config.customizations.glowIntensity}}px</span>
+                            </div>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+            </section>
+            {{/if}}
+            {{/unless}}
+            {{/if}}
+
+            {{!-- Advanced: Custom HTML --}}
+            {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            {{#if allowCustomHtml}}
+            <section class="yf-section yf-advanced-section">
+                <div class="yf-advanced-toggle" data-action="toggleAdvanced">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>{{localize "YOUR_FLAVOR.Config.AdvancedSection"}}</span>
+                </div>
+                <div class="yf-advanced-content">
+                    <div class="yf-warning-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>{{localize "YOUR_FLAVOR.Config.AdvancedWarning"}}</span>
+                    </div>
+                    <textarea name="customHtml" class="yf-textarea" placeholder="{{localize 'YOUR_FLAVOR.Config.CustomHtmlPlaceholder'}}">{{config.customHtml}}</textarea>
+                </div>
+            </section>
+            {{/if}}
+            {{/unless}}
+            {{/if}}
+        </div>
+
+        {{!-- Footer Actions --}}
+        <footer class="yf-config-footer">
+            {{#if canCustomize}}
+            <div class="yf-footer-left">
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}">
+                    <i class="fas fa-comment-dots"></i>
+                </button>
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ExportButton'}}">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}">
+                    <i class="fas fa-file-import"></i>
+                </button>
+                {{/unless}}
+            </div>
+            <div class="yf-footer-right">
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="reset">
+                    <i class="fas fa-undo"></i> {{localize "YOUR_FLAVOR.Config.ResetButton"}}
+                </button>
+                <button type="button" class="yf-btn yf-btn-primary" data-action="save">
+                    <i class="fas fa-save"></i> {{localize "YOUR_FLAVOR.Config.SaveButton"}}
+                </button>
+                {{/unless}}
+            </div>
+            {{else}}
+            <div class="yf-footer-right">
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="close">
+                    <i class="fas fa-times"></i> {{localize "YOUR_FLAVOR.Config.CloseButton"}}
+                </button>
+            </div>
+            {{/if}}
+        </footer>
+    </main>
+</div>
