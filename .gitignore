@@ -1,0 +1,17 @@
+# Claude Code workspace
+.claude/
+
+# Windows artifacts
+nul
+Thumbs.db
+Desktop.ini
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
