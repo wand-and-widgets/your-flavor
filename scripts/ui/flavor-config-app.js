@@ -4,7 +4,15 @@
  * @module your-flavor/ui/flavor-config-app
  */
 
-import { MODULE_ID, MODULE_NAME, GOOGLE_FONTS, DEFAULT_CONFIG } from '../constants.js';
+import {
+    MODULE_ID,
+    MODULE_NAME,
+    GOOGLE_FONTS,
+    DEFAULT_CONFIG,
+    DEFAULT_FOUNDRY_CUSTOMIZATION,
+    FOUNDRY_UI_COMPONENTS,
+    PAUSE_EFFECTS
+} from '../constants.js';
 import { LAYOUTS, getLayoutChoices } from '../layouts.js';
 import { FlavorManager } from '../flavor-manager.js';
 import { applyFlavorStyles } from '../style-utils.js';
@@ -42,7 +50,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             toggleAdvanced: FlavorConfigApp.#onToggleAdvanced,
             exportConfig: FlavorConfigApp.#onExport,
             importConfig: FlavorConfigApp.#onImport,
-            toggleFavorite: FlavorConfigApp.#onToggleFavorite
+            toggleFavorite: FlavorConfigApp.#onToggleFavorite,
+            switchTab: FlavorConfigApp.#onSwitchTab,
+            browsePauseAsset: FlavorConfigApp.#onBrowsePauseAsset,
+            clearPauseAsset: FlavorConfigApp.#onClearPauseAsset,
+            toggleArrangeMode: FlavorConfigApp.#onToggleArrangeMode,
+            resetFoundryComponent: FlavorConfigApp.#onResetFoundryComponent
         }
     };
 
@@ -59,6 +72,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
      * @type {FlavorManager}
      */
     manager = null;
+
+    /**
+     * The Foundry shell customizer instance.
+     */
+    foundryCustomizer = null;
 
     /**
      * Current working configuration
@@ -78,9 +96,34 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
      */
     _editingActorId = null;
 
+    /**
+     * Current working Foundry customization.
+     * @type {Object}
+     */
+    _workingFoundryConfig = null;
+
+    /**
+     * Snapshot used to restore live Foundry changes when closing without saving.
+     * @type {Object}
+     */
+    _savedFoundryConfigSnapshot = null;
+
+    /**
+     * Active top-level tab.
+     * @type {'chat'|'foundry'}
+     */
+    _activeTab = 'chat';
+
+    /**
+     * Whether close should revert live Foundry changes.
+     * @type {boolean}
+     */
+    _shouldRevertFoundryOnClose = true;
+
     constructor(options = {}) {
         super(options);
         this.manager = game.modules.get(MODULE_ID)?.api?.getManager() || new FlavorManager();
+        this.foundryCustomizer = game.modules.get(MODULE_ID)?.api?.getFoundryCustomizer?.() || null;
     }
 
     /* -------------------------------------------- */
@@ -92,6 +135,14 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         await this.manager.initialize();
         this._editingActorId = null;
         this._workingConfig = foundry.utils.deepClone(this.manager.getCurrentConfig());
+        this._workingFoundryConfig = this.foundryCustomizer
+            ? foundry.utils.deepClone(this.foundryCustomizer.getConfig())
+            : foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+        this._savedFoundryConfigSnapshot = this.foundryCustomizer
+            ? foundry.utils.deepClone(this.foundryCustomizer.getEffectiveConfig())
+            : foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+        this._activeTab = options?.tab === 'foundry' ? 'foundry' : 'chat';
+        this._shouldRevertFoundryOnClose = true;
 
         // Start with all layouts visible (no category filter)
         this._activeCategory = null;
@@ -99,9 +150,18 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     async _prepareContext(options) {
         const config = this._workingConfig || this.manager.getCurrentConfig();
+        const isGM = game.user.isGM;
+        const foundryCustomizationUnlocked = game.settings.get(MODULE_ID, 'enableFoundryCustomization');
+        const showFoundryTab = foundryCustomizationUnlocked && isGM;
+        if (!showFoundryTab) {
+            this._activeTab = 'chat';
+        }
+
+        const foundryConfig = this._workingFoundryConfig || foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+        const viewportWidth = globalThis.innerWidth || 1920;
+        const viewportHeight = globalThis.innerHeight || 1080;
 
         // Check GM permission settings for players
-        const isGM = game.user.isGM;
         const allowPlayerCustomization = game.settings.get(MODULE_ID, 'allowPlayerCustomization');
         const forcedLayout = game.settings.get(MODULE_ID, 'forcePlayerLayout');
 
@@ -156,10 +216,51 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         }
 
+        const foundryComponents = FOUNDRY_UI_COMPONENTS
+            .filter(component => component.id !== 'pause')
+            .map(component => ({
+                ...component,
+                label: game.i18n.localize(`YOUR_FLAVOR.Foundry.Components.${component.id}`),
+                hasWidthControl: component.resize === 'width' || component.resize === 'both',
+                hasHeightControl: component.resize === 'both',
+                widthMin: component.minWidth ?? 120,
+                widthMax: Math.max(component.maxWidth ?? 1600, Math.round(viewportWidth * 0.9)),
+                heightMin: component.minHeight ?? 160,
+                heightMax: Math.max(component.maxHeight ?? 1600, Math.round(viewportHeight * 1.5)),
+                visible: foundryConfig.visibility[component.id],
+                width: foundryConfig.layout[component.id]?.width ?? component.minWidth ?? 120,
+                height: foundryConfig.layout[component.id]?.height
+                    ?? Math.max(component.minHeight ?? 160, Math.round(viewportHeight - 160)),
+                scale: foundryConfig.layout[component.id]?.scale
+            }));
+
+        const foundryPreviewStyle = [
+            `--yf-foundry-preview-font-color:${foundryConfig.theme.fontColor}`,
+            `--yf-foundry-preview-font-secondary:${foundryConfig.theme.secondaryFontColor}`,
+            `--yf-foundry-preview-surface:${foundryConfig.theme.surfaceBackground}`,
+            `--yf-foundry-preview-window:${foundryConfig.theme.windowBackground}`,
+            `--yf-foundry-preview-header:${foundryConfig.theme.windowHeaderBackground}`,
+            `--yf-foundry-preview-accent:${foundryConfig.theme.accentColor}`,
+            `--yf-foundry-preview-chat:${foundryConfig.theme.chatTint}`,
+            `--yf-foundry-preview-icon:${foundryConfig.theme.iconColor}`,
+            `--yf-foundry-preview-icon-hover:${foundryConfig.theme.iconHoverColor}`,
+            `--yf-foundry-preview-scrollbar:${foundryConfig.theme.scrollbarColor}`,
+            `--yf-foundry-preview-pause-bar:${this._hexToRgba(foundryConfig.pause.barColor, foundryConfig.pause.barOpacity / 100)}`,
+            `--yf-foundry-preview-pause-bar-height:${Math.round(Math.min(110, Math.max(26, foundryConfig.pause.barHeight * 0.32)))}px`,
+            `--yf-foundry-preview-pause-label-color:${foundryConfig.pause.labelColor}`,
+            `--yf-foundry-preview-pause-label-size:${Math.round(Math.min(22, Math.max(10, foundryConfig.pause.labelSize * 0.45)))}px`,
+            `--yf-foundry-preview-pause-label-spacing:${Math.round(Math.min(10, Math.max(0, foundryConfig.pause.labelLetterSpacing * 0.4)))}px`,
+            `--yf-foundry-preview-pause-label-offset:${Math.round(foundryConfig.pause.labelOffsetY * 0.35)}px`,
+            `--yf-foundry-preview-pause-scale:${foundryConfig.pause.scale / 100}`,
+            `--yf-foundry-preview-pause-font:${this._pauseFontStack(foundryConfig.pause.labelFont)}`
+        ].join(';');
+
         return {
             config,
+            foundryConfig,
             layouts,
             fonts: GOOGLE_FONTS,
+            foundryFonts: GOOGLE_FONTS,
             playerName: previewName,
             playerAvatar: previewAvatar,
             showCustomization: config.layout !== 'none',
@@ -174,7 +275,18 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             ownedActors,
             editingActorId: this._editingActorId,
             hasActors: ownedActors.length > 0,
-            hasFavorites: favorites.length > 0
+            hasFavorites: favorites.length > 0,
+            activeTab: this._activeTab,
+            showFoundryTab,
+            arrangeModeActive: this.foundryCustomizer?.isArrangeModeActive?.() ?? false,
+            foundryComponents,
+            foundryPreviewStyle,
+            pauseEffects: PAUSE_EFFECTS.map(effect => ({
+                ...effect,
+                label: game.i18n.localize(effect.labelKey)
+            })),
+            pausePreviewClass: this._getPausePreviewClass(foundryConfig.pause),
+            pausePreviewLabel: this._getPausePreviewLabel(foundryConfig.pause)
         };
     }
 
@@ -194,12 +306,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this._setupEventListeners(html);
 
         // Apply initial category filter (null = show all)
-        if (this._activeCategory) {
+        if (this._activeTab === 'chat' && this._activeCategory) {
             this._filterLayoutsByCategory(this._activeCategory);
         }
 
         // Apply preview styles
         this._updatePreview();
+    }
+
+    async close(options = {}) {
+        this.foundryCustomizer?.disableArrangeMode?.();
+        if (this._shouldRevertFoundryOnClose && this.foundryCustomizer) {
+            this.foundryCustomizer.applyConfig(this._savedFoundryConfigSnapshot);
+        }
+        return super.close(options);
     }
 
     /* -------------------------------------------- */
@@ -228,9 +348,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             el.addEventListener('change', (e) => this._onInputChange(e));
             if (el.type === 'range') {
                 el.addEventListener('input', (e) => this._onRangeInput(e));
+            } else if (el.type === 'color' || el.classList.contains('yf-live-input')) {
+                el.addEventListener('input', (e) => this._onInputChange(e));
             }
         });
-
     }
 
     _onActorChange(event) {
@@ -318,11 +439,24 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _onInputChange(event) {
         const input = event.currentTarget;
         const name = input.name;
+        if (!name) return;
+
         let value = input.type === 'checkbox' ? input.checked : input.value;
 
         // Handle numeric values
         if (input.type === 'range' || input.type === 'number') {
             value = parseFloat(value);
+        }
+
+        if (name.startsWith('foundry.')) {
+            const foundryPath = name.replace(/^foundry\./, '');
+            this._setNestedProperty(this._workingFoundryConfig, foundryPath, value);
+            this._applyWorkingFoundryConfig();
+
+            if (foundryPath === 'pause.enabled') {
+                this.render();
+            }
+            return;
         }
 
         // Handle color picker for background (convert to rgba using current opacity)
@@ -350,7 +484,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const input = event.currentTarget;
         const valueDisplay = input.parentElement.querySelector('.yf-range-value');
         if (valueDisplay) {
-            const suffix = input.name.includes('Opacity') ? '%' : 'px';
+            let suffix = 'px';
+            if (input.name.includes('Opacity') || input.name.includes('scale')) {
+                suffix = '%';
+            }
             valueDisplay.textContent = `${input.value}${suffix}`;
         }
         // Live update preview while dragging
@@ -376,6 +513,13 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             } else {
                 await this.manager.saveConfig(this._workingConfig);
             }
+
+            if (game.user.isGM && game.settings.get(MODULE_ID, 'enableFoundryCustomization') && this.foundryCustomizer) {
+                this._workingFoundryConfig = await this.foundryCustomizer.saveConfig(this._workingFoundryConfig);
+                this._savedFoundryConfigSnapshot = foundry.utils.deepClone(this.foundryCustomizer.getEffectiveConfig());
+            }
+
+            this._shouldRevertFoundryOnClose = false;
             ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.Saved'));
             this.close();
         } catch (error) {
@@ -385,6 +529,34 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async #onReset(event, target) {
+        if (this._activeTab === 'foundry') {
+            const confirmed = await Dialog.confirm({
+                title: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryTitle'),
+                content: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryContent'),
+                yes: () => true,
+                no: () => false,
+                defaultYes: false
+            });
+
+            if (confirmed) {
+                if (this.foundryCustomizer?.resetConfig) {
+                    this._workingFoundryConfig = await this.foundryCustomizer.resetConfig();
+                } else {
+                    const defaults = foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+                    await game.settings.set(MODULE_ID, 'sharedFoundryCustomization', defaults);
+                    await game.settings.set(MODULE_ID, 'foundryCustomization', foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION));
+                    this.foundryCustomizer?.applyConfig?.(defaults);
+                    this._workingFoundryConfig = defaults;
+                }
+                this._savedFoundryConfigSnapshot = this.foundryCustomizer
+                    ? foundry.utils.deepClone(this.foundryCustomizer.getEffectiveConfig())
+                    : foundry.utils.deepClone(this._workingFoundryConfig);
+                this.render();
+                ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.FoundryReset'));
+            }
+            return;
+        }
+
         const confirmed = await Dialog.confirm({
             title: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetTitle'),
             content: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetContent'),
@@ -402,6 +574,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async #onTest(event, target) {
+        if (this._activeTab === 'foundry') return;
+
         // Save config first so the test message uses the current settings
         try {
             await this.manager.saveConfig(this._workingConfig);
@@ -417,6 +591,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async #onClose(event, target) {
+        this._shouldRevertFoundryOnClose = true;
         this.close();
     }
 
@@ -435,15 +610,25 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async #onExport(event, target) {
-        const json = this.manager.exportConfig();
+        const json = this._activeTab === 'foundry'
+            ? JSON.stringify(this._workingFoundryConfig, null, 2)
+            : this.manager.exportConfig();
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `your-flavor-${game.user.name}.json`;
+        a.download = this._activeTab === 'foundry'
+            ? `your-flavor-foundry-${game.user.name}.json`
+            : `your-flavor-${game.user.name}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.Exported'));
+        ui.notifications.info(
+            game.i18n.localize(
+                this._activeTab === 'foundry'
+                    ? 'YOUR_FLAVOR.Notifications.FoundryExported'
+                    : 'YOUR_FLAVOR.Notifications.Exported'
+            )
+        );
     }
 
     static async #onImport(event, target) {
@@ -456,16 +641,84 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             try {
                 const text = await file.text();
                 const config = JSON.parse(text);
-                this._workingConfig = foundry.utils.deepClone(config);
-                this._activeCategory = null;
-                this.render();
-                ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.Imported'));
+                if (this._activeTab === 'foundry') {
+                    this._workingFoundryConfig = foundry.utils.deepClone(config);
+                    this._applyWorkingFoundryConfig();
+                    this.render();
+                    ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.FoundryImported'));
+                } else {
+                    this._workingConfig = foundry.utils.deepClone(config);
+                    this._activeCategory = null;
+                    this.render();
+                    ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.Imported'));
+                }
             } catch (error) {
                 console.error(`${MODULE_NAME} | Import failed:`, error);
-                ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.ImportError'));
+                ui.notifications.error(
+                    game.i18n.localize(
+                        this._activeTab === 'foundry'
+                            ? 'YOUR_FLAVOR.Notifications.FoundryImportError'
+                            : 'YOUR_FLAVOR.Notifications.ImportError'
+                    )
+                );
             }
         });
         input.click();
+    }
+
+    static async #onSwitchTab(event, target) {
+        const tab = target.dataset.tab;
+        if (!tab || tab === this._activeTab) return;
+        this._activeTab = tab;
+        this.render();
+    }
+
+    static async #onBrowsePauseAsset(event, target) {
+        const picker = new FilePicker({
+            type: 'imagevideo',
+            callback: path => {
+                this._workingFoundryConfig.pause.assetPath = path;
+                this._applyWorkingFoundryConfig();
+                this.render();
+            }
+        });
+        picker.render(true);
+    }
+
+    static async #onClearPauseAsset(event, target) {
+        this._workingFoundryConfig.pause.assetPath = '';
+        this._applyWorkingFoundryConfig();
+        this.render();
+    }
+
+    static async #onToggleArrangeMode(event, target) {
+        if (!game.user.isGM || !this.foundryCustomizer || !game.settings.get(MODULE_ID, 'enableFoundryCustomization')) return;
+
+        if (this.foundryCustomizer.isArrangeModeActive()) {
+            this.foundryCustomizer.disableArrangeMode();
+            ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.ArrangeModeDisabled'));
+        } else {
+            const started = this.foundryCustomizer.enableArrangeMode(this._workingFoundryConfig, () => {
+                this._syncFoundryLayoutControls();
+            });
+            if (!started) {
+                ui.notifications.warn(game.i18n.localize('YOUR_FLAVOR.Notifications.ArrangeModeUnavailable'));
+            }
+        }
+
+        this.render();
+    }
+
+    static async #onResetFoundryComponent(event, target) {
+        const componentId = target.dataset.component;
+        if (!componentId || componentId === 'pause') return;
+
+        const defaults = DEFAULT_FOUNDRY_CUSTOMIZATION.layout[componentId];
+        if (!defaults) return;
+
+        this._workingFoundryConfig.layout[componentId] = foundry.utils.deepClone(defaults);
+        this._applyWorkingFoundryConfig();
+        this.render();
     }
 
     /* -------------------------------------------- */
@@ -482,7 +735,90 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         current[keys[keys.length - 1]] = value;
     }
 
+    _applyWorkingFoundryConfig() {
+        if (!this.foundryCustomizer) return;
+        this.foundryCustomizer.applyConfig(this._workingFoundryConfig);
+        this._updatePreview();
+    }
+
+    _syncFoundryLayoutControls() {
+        const html = this.element;
+        if (!html) return;
+
+        for (const component of FOUNDRY_UI_COMPONENTS) {
+            if (component.id === 'pause') continue;
+
+            const layout = this._workingFoundryConfig?.layout?.[component.id];
+            if (!layout) continue;
+
+            const widthInput = html.querySelector(`[name="foundry.layout.${component.id}.width"]`);
+            const widthValue = widthInput?.parentElement?.querySelector('.yf-range-value');
+            if (widthInput && Number.isFinite(layout.width)) {
+                widthInput.value = layout.width;
+                if (widthValue) widthValue.textContent = `${layout.width}px`;
+            }
+
+            const heightInput = html.querySelector(`[name="foundry.layout.${component.id}.height"]`);
+            const heightValue = heightInput?.parentElement?.querySelector('.yf-range-value');
+            if (heightInput && Number.isFinite(layout.height)) {
+                heightInput.value = layout.height;
+                if (heightValue) heightValue.textContent = `${layout.height}px`;
+            }
+
+            const scaleInput = html.querySelector(`[name="foundry.layout.${component.id}.scale"]`);
+            const scaleValue = scaleInput?.parentElement?.querySelector('.yf-range-value');
+            if (scaleInput && Number.isFinite(layout.scale)) {
+                scaleInput.value = layout.scale;
+                if (scaleValue) scaleValue.textContent = `${layout.scale}%`;
+            }
+        }
+    }
+
     _updatePreview() {
+        if (this._activeTab === 'foundry') {
+            const shellPreview = this.element?.querySelector('.yf-foundry-preview-shell');
+            if (!shellPreview) return;
+
+            const foundryConfig = this._workingFoundryConfig;
+            shellPreview.style.setProperty('--yf-foundry-preview-font-color', foundryConfig.theme.fontColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-font-secondary', foundryConfig.theme.secondaryFontColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-surface', foundryConfig.theme.surfaceBackground);
+            shellPreview.style.setProperty('--yf-foundry-preview-window', foundryConfig.theme.windowBackground);
+            shellPreview.style.setProperty('--yf-foundry-preview-header', foundryConfig.theme.windowHeaderBackground);
+            shellPreview.style.setProperty('--yf-foundry-preview-accent', foundryConfig.theme.accentColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-chat', foundryConfig.theme.chatTint);
+            shellPreview.style.setProperty('--yf-foundry-preview-icon', foundryConfig.theme.iconColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-icon-hover', foundryConfig.theme.iconHoverColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-scrollbar', foundryConfig.theme.scrollbarColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-bar', this._hexToRgba(foundryConfig.pause.barColor, foundryConfig.pause.barOpacity / 100));
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-bar-height', `${Math.round(Math.min(110, Math.max(26, foundryConfig.pause.barHeight * 0.32)))}px`);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-label-color', foundryConfig.pause.labelColor);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-label-size', `${Math.round(Math.min(22, Math.max(10, foundryConfig.pause.labelSize * 0.45)))}px`);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-label-spacing', `${Math.round(Math.min(10, Math.max(0, foundryConfig.pause.labelLetterSpacing * 0.4)))}px`);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-label-offset', `${Math.round(foundryConfig.pause.labelOffsetY * 0.35)}px`);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-scale', `${foundryConfig.pause.scale / 100}`);
+            shellPreview.style.setProperty('--yf-foundry-preview-pause-font', this._pauseFontStack(foundryConfig.pause.labelFont));
+
+            const pausePreview = this.element?.querySelector('.yf-foundry-preview-pause');
+            if (pausePreview) {
+                pausePreview.className = `yf-foundry-preview-pause ${this._getPausePreviewClass(foundryConfig.pause)}`.trim();
+            }
+
+            const pauseLabel = this.element?.querySelector('.yf-foundry-preview-pause-label');
+            if (pauseLabel) {
+                pauseLabel.textContent = this._getPausePreviewLabel(foundryConfig.pause);
+            }
+
+            const statusEl = this.element?.querySelector('.yf-preview-status');
+            if (statusEl) {
+                statusEl.className = `yf-preview-status ${foundryConfig.enabled ? 'enabled' : 'disabled'}`;
+                statusEl.innerHTML = foundryConfig.enabled
+                    ? `<i class="fas fa-wand-magic-sparkles"></i> ${game.i18n.localize('YOUR_FLAVOR.Config.Foundry.LiveApplied')}`
+                    : `<i class="fas fa-power-off"></i> ${game.i18n.localize('YOUR_FLAVOR.Config.Foundry.DisabledState')}`;
+            }
+            return;
+        }
+
         const previewCard = this.element?.querySelector('.yf-preview-card');
         if (!previewCard) return;
 
@@ -513,5 +849,44 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (typeof Handlebars !== 'undefined' && !Handlebars.helpers.eq) {
             Handlebars.registerHelper('eq', (a, b) => a === b);
         }
+    }
+
+    _getPausePreviewClass(pauseConfig = {}) {
+        const classes = [];
+        if (pauseConfig.enabled) classes.push('is-custom');
+        if (pauseConfig.hideLabel) classes.push('is-label-hidden');
+        if (pauseConfig.effect) classes.push(`effect-${pauseConfig.effect}`);
+        return classes.join(' ');
+    }
+
+    _getPausePreviewLabel(pauseConfig = {}) {
+        return pauseConfig.labelText?.trim() || game.i18n.localize('GAME.Paused');
+    }
+
+    _hexToRgba(hex, alpha = 1) {
+        const normalized = String(hex || '').trim().replace('#', '');
+        if (!/^[0-9a-f]{3}([0-9a-f]{3})?$/i.test(normalized)) {
+            return `rgba(0, 0, 0, ${alpha})`;
+        }
+
+        const factor = normalized.length === 3 ? 1 : 2;
+        const read = (start) => {
+            const chunk = factor === 1 ? normalized[start] : normalized.slice(start * 2, start * 2 + 2);
+            return parseInt(factor === 1 ? `${chunk}${chunk}` : chunk, 16);
+        };
+
+        return `rgba(${read(0)}, ${read(1)}, ${read(2)}, ${alpha})`;
+    }
+
+    _fontStack(fontFamily) {
+        return fontFamily && fontFamily !== 'inherit'
+            ? `"${fontFamily}", serif`
+            : 'inherit';
+    }
+
+    _pauseFontStack(fontFamily) {
+        return fontFamily && fontFamily !== 'inherit'
+            ? this._fontStack(fontFamily)
+            : 'var(--font-serif)';
     }
 }

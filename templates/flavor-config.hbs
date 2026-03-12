@@ -1,8 +1,47 @@
 <div class="yf-config-container">
-    {{!-- Left Panel - Live Preview --}}
     <aside class="yf-preview-panel">
+        {{#if (eq activeTab "foundry")}}
+        <h4 class="yf-preview-title">{{localize "YOUR_FLAVOR.Config.Foundry.Preview"}}</h4>
+        <div class="yf-preview-container">
+            <div class="yf-foundry-preview-shell {{#unless foundryConfig.visibility.navigation}}is-nav-hidden{{/unless}} {{#unless foundryConfig.visibility.controls}}is-controls-hidden{{/unless}} {{#unless foundryConfig.visibility.players}}is-players-hidden{{/unless}} {{#unless foundryConfig.visibility.hotbar}}is-hotbar-hidden{{/unless}} {{#unless foundryConfig.visibility.sidebar}}is-sidebar-hidden{{/unless}} {{#unless foundryConfig.visibility.pause}}is-pause-hidden{{/unless}}" style="{{foundryPreviewStyle}}">
+                <div class="yf-foundry-preview-nav"></div>
+                <div class="yf-foundry-preview-controls"></div>
+                <div class="yf-foundry-preview-players"></div>
+                <div class="yf-foundry-preview-window">
+                    <div class="yf-foundry-preview-window-header">
+                        <div class="yf-foundry-preview-window-title"></div>
+                    </div>
+                    <div class="yf-foundry-preview-window-body">
+                        <div class="yf-foundry-preview-window-line is-primary"></div>
+                        <div class="yf-foundry-preview-window-line is-secondary"></div>
+                        <div class="yf-foundry-preview-window-line is-secondary short"></div>
+                    </div>
+                </div>
+                <div class="yf-foundry-preview-chat">
+                    <div class="yf-foundry-preview-chat-line is-primary"></div>
+                    <div class="yf-foundry-preview-chat-line is-secondary"></div>
+                </div>
+                <div class="yf-foundry-preview-hotbar"></div>
+                <div class="yf-foundry-preview-pause {{pausePreviewClass}}">
+                    <div class="yf-foundry-preview-pause-bar"></div>
+                    <div class="yf-foundry-preview-pause-media"></div>
+                    <div class="yf-foundry-preview-pause-label">{{pausePreviewLabel}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="yf-preview-note">
+            <i class="fas fa-bolt"></i>
+            <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+        </div>
+        <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+            {{#if foundryConfig.enabled}}
+                <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+            {{else}}
+                <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+            {{/if}}
+        </div>
+        {{else}}
         <h4 class="yf-preview-title">{{localize "YOUR_FLAVOR.Config.Preview"}}</h4>
-
         <div class="yf-preview-container">
             <div class="yf-preview-card yf-card yf-card-{{config.layout}}">
                 <div class="yf-preview-header">
@@ -12,12 +51,9 @@
                         <span class="yf-preview-time">{{localize "YOUR_FLAVOR.Config.PreviewTime"}}</span>
                     </div>
                 </div>
-                <div class="yf-preview-content">
-                    {{localize "YOUR_FLAVOR.Config.PreviewText"}}
-                </div>
+                <div class="yf-preview-content">{{localize "YOUR_FLAVOR.Config.PreviewText"}}</div>
             </div>
         </div>
-
         <div class="yf-preview-status {{#if config.enabled}}enabled{{else}}disabled{{/if}}">
             {{#if config.enabled}}
                 <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.StatusEnabled"}}
@@ -25,12 +61,276 @@
                 <i class="fas fa-times-circle"></i> {{localize "YOUR_FLAVOR.Config.StatusDisabled"}}
             {{/if}}
         </div>
+        {{/if}}
     </aside>
 
-    {{!-- Right Panel - Controls --}}
     <main class="yf-controls-panel">
         <div class="yf-controls-scroll">
-            {{!-- Permission Notice for Players --}}
+            <div class="yf-tab-bar">
+                <button type="button" class="yf-tab {{#if (eq activeTab 'chat')}}active{{/if}}" data-action="switchTab" data-tab="chat">
+                    <i class="fas fa-comment-dots"></i> {{localize "YOUR_FLAVOR.Config.Tabs.Chat"}}
+                </button>
+                {{#if showFoundryTab}}
+                <button type="button" class="yf-tab {{#if (eq activeTab 'foundry')}}active{{/if}}" data-action="switchTab" data-tab="foundry">
+                    <i class="fas fa-wand-magic-sparkles"></i> {{localize "YOUR_FLAVOR.Config.Tabs.Foundry"}}
+                </button>
+                {{/if}}
+            </div>
+
+            {{#if (eq activeTab "foundry")}}
+            <div class="yf-notice yf-notice-warning">
+                <i class="fas fa-radiation"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.Foundry.Warning"}}</span>
+            </div>
+
+            <div class="yf-enable-row">
+                <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.Foundry.Enable"}}</span>
+                <label class="yf-toggle-switch">
+                    <input type="checkbox" name="foundry.enabled" {{#if foundryConfig.enabled}}checked{{/if}}>
+                    <span class="yf-toggle-slider"></span>
+                </label>
+            </div>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-palette"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.ThemeSection"}}</h3>
+                </div>
+                <div class="yf-customize-grid">
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.InterfaceFont"}}</label>
+                        <select name="foundry.theme.interfaceFont" class="yf-select">
+                            {{#each foundryFonts}}
+                            <option value="{{this.family}}" {{#if (eq this.family ../foundryConfig.theme.interfaceFont)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.WindowFont"}}</label>
+                        <select name="foundry.theme.windowFont" class="yf-select">
+                            {{#each foundryFonts}}
+                            <option value="{{this.family}}" {{#if (eq this.family ../foundryConfig.theme.windowFont)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.ThemeColors"}}</label>
+                        <div class="yf-color-grid">
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.FontColor"}}</span><input type="color" name="foundry.theme.fontColor" class="yf-color-swatch" value="{{foundryConfig.theme.fontColor}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.SecondaryTextColor"}}</span><input type="color" name="foundry.theme.secondaryFontColor" class="yf-color-swatch" value="{{foundryConfig.theme.secondaryFontColor}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.SurfaceColor"}}</span><input type="color" name="foundry.theme.surfaceBackground" class="yf-color-swatch" value="{{foundryConfig.theme.surfaceBackground}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.WindowColor"}}</span><input type="color" name="foundry.theme.windowBackground" class="yf-color-swatch" value="{{foundryConfig.theme.windowBackground}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.HeaderColor"}}</span><input type="color" name="foundry.theme.windowHeaderBackground" class="yf-color-swatch" value="{{foundryConfig.theme.windowHeaderBackground}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.AccentColor"}}</span><input type="color" name="foundry.theme.accentColor" class="yf-color-swatch" value="{{foundryConfig.theme.accentColor}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.ChatTint"}}</span><input type="color" name="foundry.theme.chatTint" class="yf-color-swatch" value="{{foundryConfig.theme.chatTint}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.IconColor"}}</span><input type="color" name="foundry.theme.iconColor" class="yf-color-swatch" value="{{foundryConfig.theme.iconColor}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.IconHoverColor"}}</span><input type="color" name="foundry.theme.iconHoverColor" class="yf-color-swatch" value="{{foundryConfig.theme.iconHoverColor}}"></label>
+                            <label class="yf-color-chip"><span>{{localize "YOUR_FLAVOR.Config.Foundry.ScrollbarColor"}}</span><input type="color" name="foundry.theme.scrollbarColor" class="yf-color-swatch" value="{{foundryConfig.theme.scrollbarColor}}"></label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-eye"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.VisibilitySection"}}</h3>
+                </div>
+                <div class="yf-foundry-visibility-grid">
+                    {{#each foundryComponents}}
+                    <div class="yf-foundry-toggle-card">
+                        <span>{{this.label}}</span>
+                        <label class="yf-toggle-switch yf-toggle-mini">
+                            <input type="checkbox" name="foundry.visibility.{{this.id}}" {{#if this.visible}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+                    {{/each}}
+                    <div class="yf-foundry-toggle-card">
+                        <span>{{localize "YOUR_FLAVOR.Foundry.Components.pause"}}</span>
+                        <label class="yf-toggle-switch yf-toggle-mini">
+                            <input type="checkbox" name="foundry.visibility.pause" {{#if foundryConfig.visibility.pause}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-up-down-left-right"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.LayoutSection"}}</h3>
+                </div>
+                <div class="yf-notice yf-notice-info">
+                    <i class="fas fa-hand-pointer"></i>
+                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.ArrangeHelp"}}</span>
+                </div>
+                <div class="yf-foundry-layout-actions">
+                    <button type="button" class="yf-btn {{#if arrangeModeActive}}yf-btn-secondary{{else}}yf-btn-primary{{/if}}" data-action="toggleArrangeMode">
+                        <i class="fas {{#if arrangeModeActive}}fa-lock-open{{else}}fa-arrows-up-down-left-right{{/if}}"></i>
+                        {{#if arrangeModeActive}}{{localize "YOUR_FLAVOR.Config.Foundry.StopArrange"}}{{else}}{{localize "YOUR_FLAVOR.Config.Foundry.StartArrange"}}{{/if}}
+                    </button>
+                </div>
+                <div class="yf-foundry-layout-grid">
+                    {{#each foundryComponents}}
+                    <article class="yf-foundry-layout-card">
+                        <div class="yf-foundry-layout-card-header">
+                            <h4>{{this.label}}</h4>
+                            <div class="yf-foundry-layout-card-actions">
+                                <span>{{localize "YOUR_FLAVOR.Config.Foundry.LiveComponent"}}</span>
+                                <button type="button" class="yf-btn-ghost yf-foundry-layout-reset" data-action="resetFoundryComponent" data-component="{{this.id}}" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ResetComponent'}}">
+                                    <i class="fas fa-rotate-left"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="yf-foundry-layout-controls">
+                            {{#if this.hasWidthControl}}
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.Width"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.layout.{{this.id}}.width" class="yf-range" min="{{this.widthMin}}" max="{{this.widthMax}}" value="{{this.width}}">
+                                    <span class="yf-range-value">{{this.width}}px</span>
+                                </div>
+                            </div>
+                            {{/if}}
+                            {{#if this.hasHeightControl}}
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.Height"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.layout.{{this.id}}.height" class="yf-range" min="{{this.heightMin}}" max="{{this.heightMax}}" value="{{this.height}}">
+                                    <span class="yf-range-value">{{this.height}}px</span>
+                                </div>
+                            </div>
+                            {{/if}}
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.Scale"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.layout.{{this.id}}.scale" class="yf-range" min="60" max="160" step="5" value="{{this.scale}}">
+                                    <span class="yf-range-value">{{this.scale}}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    {{/each}}
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-circle-pause"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PauseSection"}}</h3>
+                </div>
+                <div class="yf-customize-grid">
+                    <div class="yf-enable-row yf-enable-row-inline">
+                        <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.Foundry.EnablePauseOverride"}}</span>
+                        <label class="yf-toggle-switch">
+                            <input type="checkbox" name="foundry.pause.enabled" {{#if foundryConfig.pause.enabled}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="yf-warning-box">
+                        <i class="fas fa-circle-info"></i>
+                        <span>{{localize "YOUR_FLAVOR.Config.Foundry.PauseSpecs"}}</span>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseAsset"}}</label>
+                        <div class="yf-input-with-buttons">
+                            <input type="text" name="foundry.pause.assetPath" class="yf-input yf-live-input" value="{{foundryConfig.pause.assetPath}}" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.PausePlaceholder'}}">
+                            <button type="button" class="yf-btn yf-btn-ghost" data-action="browsePauseAsset" title="{{localize 'YOUR_FLAVOR.Config.Foundry.BrowsePauseAsset'}}"><i class="fas fa-folder-open"></i></button>
+                            <button type="button" class="yf-btn yf-btn-ghost" data-action="clearPauseAsset" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearPauseAsset'}}"><i class="fas fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseOpacity"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.opacity" class="yf-range" min="10" max="100" step="5" value="{{foundryConfig.pause.opacity}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.opacity}}%</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseScale"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.scale" class="yf-range" min="40" max="180" step="5" value="{{foundryConfig.pause.scale}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.scale}}%</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseEffect"}}</label>
+                        <select name="foundry.pause.effect" class="yf-select">
+                            {{#each pauseEffects}}
+                            <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.effect)}}selected{{/if}}>{{this.label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelText"}}</label>
+                        <input type="text" name="foundry.pause.labelText" class="yf-input yf-live-input" value="{{foundryConfig.pause.labelText}}" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.PauseLabelPlaceholder'}}">
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelFont"}}</label>
+                        <select name="foundry.pause.labelFont" class="yf-select">
+                            {{#each foundryFonts}}
+                            <option value="{{this.family}}" {{#if (eq this.family ../foundryConfig.pause.labelFont)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelColor"}}</label>
+                        <div class="yf-color-row">
+                            <input type="color" name="foundry.pause.labelColor" class="yf-color-swatch" value="{{foundryConfig.pause.labelColor}}">
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelSize"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.labelSize" class="yf-range" min="12" max="60" step="1" value="{{foundryConfig.pause.labelSize}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.labelSize}}px</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelSpacing"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.labelLetterSpacing" class="yf-range" min="0" max="24" step="1" value="{{foundryConfig.pause.labelLetterSpacing}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.labelLetterSpacing}}px</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelOffset"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.labelOffsetY" class="yf-range" min="-120" max="120" step="2" value="{{foundryConfig.pause.labelOffsetY}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.labelOffsetY}}px</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarColor"}}</label>
+                        <div class="yf-color-row">
+                            <input type="color" name="foundry.pause.barColor" class="yf-color-swatch" value="{{foundryConfig.pause.barColor}}">
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarOpacity"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.barOpacity" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.barOpacity}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.barOpacity}}%</span>
+                        </div>
+                    </div>
+                    <div class="yf-control-row">
+                        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarHeight"}}</label>
+                        <div class="yf-range-wrapper">
+                            <input type="range" name="foundry.pause.barHeight" class="yf-range" min="80" max="360" step="5" value="{{foundryConfig.pause.barHeight}}">
+                            <span class="yf-range-value">{{foundryConfig.pause.barHeight}}px</span>
+                        </div>
+                    </div>
+                    <div class="yf-foundry-toggle-card">
+                        <span>{{localize "YOUR_FLAVOR.Config.Foundry.HidePauseLabel"}}</span>
+                        <label class="yf-toggle-switch yf-toggle-mini">
+                            <input type="checkbox" name="foundry.pause.hideLabel" {{#if foundryConfig.pause.hideLabel}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+            {{else}}
             {{#unless canCustomize}}
             <div class="yf-notice yf-notice-warning">
                 <i class="fas fa-lock"></i>
@@ -45,7 +345,6 @@
                 {{/if}}
             {{/unless}}
 
-            {{!-- Actor Selector --}}
             {{#if canCustomize}}
             {{#unless hasForcedLayout}}
             {{#if hasActors}}
@@ -62,7 +361,6 @@
             {{/unless}}
             {{/if}}
 
-            {{!-- Enable Toggle --}}
             {{#if canCustomize}}
             {{#unless hasForcedLayout}}
             <div class="yf-enable-row">
@@ -75,7 +373,6 @@
             {{/unless}}
             {{/if}}
 
-            {{!-- Layout Selection with Tabs --}}
             {{#if canCustomize}}
             {{#unless hasForcedLayout}}
             <section class="yf-section">
@@ -83,8 +380,6 @@
                     <i class="fas fa-th-large"></i>
                     <h3>{{localize "YOUR_FLAVOR.Config.LayoutSection"}}</h3>
                 </div>
-
-                {{!-- Category Tags --}}
                 <div class="yf-category-tags">
                     {{#if hasFavorites}}<span class="yf-tag yf-tag-fav" data-category="favorites"><i class="fas fa-star"></i> {{localize "YOUR_FLAVOR.Categories.Favorites"}}</span>{{/if}}
                     <span class="yf-tag" data-category="basic">{{localize "YOUR_FLAVOR.Categories.Basic"}}</span>
@@ -94,14 +389,9 @@
                     <span class="yf-tag" data-category="modern">{{localize "YOUR_FLAVOR.Categories.Modern"}}</span>
                     <span class="yf-tag" data-category="misc">{{localize "YOUR_FLAVOR.Categories.Misc"}}</span>
                 </div>
-
-                {{!-- Layout Grid --}}
                 <div class="yf-layout-grid">
                     {{#each layouts}}
-                    <div class="yf-layout-option {{#if (eq this.id ../config.layout)}}selected{{/if}}"
-                         data-layout="{{this.id}}"
-                         data-category="{{this.category}}"
-                         title="{{this.name}} — {{this.description}}">
+                    <div class="yf-layout-option {{#if (eq this.id ../config.layout)}}selected{{/if}}" data-layout="{{this.id}}" data-category="{{this.category}}" title="{{this.name}} - {{this.description}}">
                         <div class="yf-layout-icon"><i class="{{this.icon}}"></i></div>
                         <div class="yf-layout-name">{{this.name}}</div>
                         {{#unless (eq this.id "none")}}
@@ -116,7 +406,6 @@
             {{/unless}}
             {{/if}}
 
-            {{!-- Customization Options --}}
             {{#if canCustomize}}
             {{#unless hasForcedLayout}}
             {{#if showCustomization}}
@@ -125,21 +414,15 @@
                     <i class="fas fa-sliders-h"></i>
                     <h3>{{localize "YOUR_FLAVOR.Config.CustomizeSection"}}</h3>
                 </div>
-
                 <div class="yf-customize-grid">
-                    {{!-- Font Family --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.FontFamily"}}</label>
                         <select name="customizations.fontFamily" class="yf-select">
                             {{#each fonts}}
-                            <option value="{{this.family}}" {{#if (eq this.family ../config.customizations.fontFamily)}}selected{{/if}}>
-                                {{this.name}}
-                            </option>
+                            <option value="{{this.family}}" {{#if (eq this.family ../config.customizations.fontFamily)}}selected{{/if}}>{{this.name}}</option>
                             {{/each}}
                         </select>
                     </div>
-
-                    {{!-- Font Size --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.FontSize"}}</label>
                         <div class="yf-range-wrapper">
@@ -147,8 +430,6 @@
                             <span class="yf-range-value">{{config.customizations.fontSize}}px</span>
                         </div>
                     </div>
-
-                    {{!-- Colors Row --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.Colors"}}</label>
                         <div class="yf-color-row">
@@ -157,8 +438,6 @@
                             <input type="color" name="customizations.borderColor" class="yf-color-swatch" value="{{config.customizations.borderColor}}" title="{{localize 'YOUR_FLAVOR.Config.BorderColor'}}">
                         </div>
                     </div>
-
-                    {{!-- Background Opacity --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.Opacity"}}</label>
                         <div class="yf-range-wrapper">
@@ -166,8 +445,6 @@
                             <span class="yf-range-value">{{config.customizations.backgroundOpacity}}%</span>
                         </div>
                     </div>
-
-                    {{!-- Name/Timestamp Colors Row --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.NameTimestampColors"}}</label>
                         <div class="yf-color-row">
@@ -175,8 +452,6 @@
                             <input type="color" name="customizations.timestampColor" class="yf-color-swatch" value="{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.TimestampColor'}}">
                         </div>
                     </div>
-
-                    {{!-- Border Style --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.BorderStyle"}}</label>
                         <select name="customizations.borderStyle" class="yf-select">
@@ -188,8 +463,6 @@
                             <option value="ridge" {{#if (eq config.customizations.borderStyle "ridge")}}selected{{/if}}>Ridge</option>
                         </select>
                     </div>
-
-                    {{!-- Border Width --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.BorderWidth"}}</label>
                         <div class="yf-range-wrapper">
@@ -197,8 +470,6 @@
                             <span class="yf-range-value">{{config.customizations.borderWidth}}px</span>
                         </div>
                     </div>
-
-                    {{!-- Border Radius --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.BorderRadius"}}</label>
                         <div class="yf-range-wrapper">
@@ -206,33 +477,20 @@
                             <span class="yf-range-value">{{config.customizations.borderRadius}}px</span>
                         </div>
                     </div>
-
-                    {{!-- Effects Toggles --}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.Effects"}}</label>
                         <div class="yf-effects-row">
-                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.GlowEnabled'}}">
-                                <input type="checkbox" name="customizations.glowEnabled" {{#if config.customizations.glowEnabled}}checked{{/if}}>
-                                <span class="yf-toggle-slider"></span>
-                            </label>
+                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.GlowEnabled'}}"><input type="checkbox" name="customizations.glowEnabled" {{#if config.customizations.glowEnabled}}checked{{/if}}><span class="yf-toggle-slider"></span></label>
                             <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Glow"}}</span>
-
-                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.ShadowEnabled'}}">
-                                <input type="checkbox" name="customizations.shadowEnabled" {{#if config.customizations.shadowEnabled}}checked{{/if}}>
-                                <span class="yf-toggle-slider"></span>
-                            </label>
+                            <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.ShadowEnabled'}}"><input type="checkbox" name="customizations.shadowEnabled" {{#if config.customizations.shadowEnabled}}checked{{/if}}><span class="yf-toggle-slider"></span></label>
                             <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Shadow"}}</span>
                         </div>
                     </div>
-
-                    {{!-- Glow Sub-options --}}
                     {{#if config.customizations.glowEnabled}}
                     <div class="yf-sub-options">
                         <div class="yf-control-row">
                             <label>{{localize "YOUR_FLAVOR.Config.GlowColor"}}</label>
-                            <div class="yf-color-row">
-                                <input type="color" name="customizations.glowColor" class="yf-color-swatch" value="{{config.customizations.glowColor}}">
-                            </div>
+                            <div class="yf-color-row"><input type="color" name="customizations.glowColor" class="yf-color-swatch" value="{{config.customizations.glowColor}}"></div>
                         </div>
                         <div class="yf-control-row">
                             <label>{{localize "YOUR_FLAVOR.Config.GlowIntensity"}}</label>
@@ -249,7 +507,6 @@
             {{/unless}}
             {{/if}}
 
-            {{!-- Advanced: Custom HTML --}}
             {{#if canCustomize}}
             {{#unless hasForcedLayout}}
             {{#if allowCustomHtml}}
@@ -269,40 +526,39 @@
             {{/if}}
             {{/unless}}
             {{/if}}
+            {{/if}}
         </div>
 
-        {{!-- Footer Actions --}}
         <footer class="yf-config-footer">
+            {{#if (eq activeTab "foundry")}}
+            <div class="yf-footer-left">
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ExportButton'}}"><i class="fas fa-file-export"></i></button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ImportButton'}}"><i class="fas fa-file-import"></i></button>
+            </div>
+            <div class="yf-footer-right">
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="reset"><i class="fas fa-rotate-left"></i> {{localize "YOUR_FLAVOR.Config.Foundry.ResetButton"}}</button>
+                <button type="button" class="yf-btn yf-btn-primary" data-action="save"><i class="fas fa-save"></i> {{localize "YOUR_FLAVOR.Config.SaveButton"}}</button>
+            </div>
+            {{else}}
             {{#if canCustomize}}
             <div class="yf-footer-left">
-                <button type="button" class="yf-btn yf-btn-ghost" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}">
-                    <i class="fas fa-comment-dots"></i>
-                </button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}"><i class="fas fa-comment-dots"></i></button>
                 {{#unless hasForcedLayout}}
-                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ExportButton'}}">
-                    <i class="fas fa-file-export"></i>
-                </button>
-                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}">
-                    <i class="fas fa-file-import"></i>
-                </button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ExportButton'}}"><i class="fas fa-file-export"></i></button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}"><i class="fas fa-file-import"></i></button>
                 {{/unless}}
             </div>
             <div class="yf-footer-right">
                 {{#unless hasForcedLayout}}
-                <button type="button" class="yf-btn yf-btn-secondary" data-action="reset">
-                    <i class="fas fa-undo"></i> {{localize "YOUR_FLAVOR.Config.ResetButton"}}
-                </button>
-                <button type="button" class="yf-btn yf-btn-primary" data-action="save">
-                    <i class="fas fa-save"></i> {{localize "YOUR_FLAVOR.Config.SaveButton"}}
-                </button>
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="reset"><i class="fas fa-undo"></i> {{localize "YOUR_FLAVOR.Config.ResetButton"}}</button>
+                <button type="button" class="yf-btn yf-btn-primary" data-action="save"><i class="fas fa-save"></i> {{localize "YOUR_FLAVOR.Config.SaveButton"}}</button>
                 {{/unless}}
             </div>
             {{else}}
             <div class="yf-footer-right">
-                <button type="button" class="yf-btn yf-btn-secondary" data-action="close">
-                    <i class="fas fa-times"></i> {{localize "YOUR_FLAVOR.Config.CloseButton"}}
-                </button>
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="close"><i class="fas fa-times"></i> {{localize "YOUR_FLAVOR.Config.CloseButton"}}</button>
             </div>
+            {{/if}}
             {{/if}}
         </footer>
     </main>

@@ -8,6 +8,7 @@ import { registerSettings } from './settings.js';
 import { FlavorManager } from './flavor-manager.js';
 import { LAYOUTS } from './layouts.js';
 import { FlavorConfigApp } from './ui/flavor-config-app.js';
+import { FoundryCustomizer } from './foundry-customizer.js';
 import { applyFlavorStyles } from './style-utils.js';
 
 /**
@@ -16,6 +17,7 @@ import { applyFlavorStyles } from './style-utils.js';
 class YourFlavor {
     constructor() {
         this.manager = null;
+        this.foundryCustomizer = null;
         this.layouts = LAYOUTS;
     }
 
@@ -25,14 +27,16 @@ class YourFlavor {
     async initialize() {
         this.manager = new FlavorManager();
         await this.manager.initialize();
+        this.foundryCustomizer = new FoundryCustomizer();
+        await this.foundryCustomizer.initialize();
         console.log(`${MODULE_NAME} | Ready`);
     }
 
     /**
      * Open the configuration UI
      */
-    openConfig() {
-        new FlavorConfigApp().render(true);
+    openConfig(options = {}) {
+        new FlavorConfigApp(options).render(true);
     }
 
     /**
@@ -47,27 +51,44 @@ class YourFlavor {
             return false;
         }
 
-        // SAFETY: Never style roll messages
+        // Guard: ensure we received a valid HTML element
+        if (!html?.querySelector) {
+            return false;
+        }
+
+        // Check whisper settings
+        if (message.whisper?.length > 0 && !game.settings.get(MODULE_ID, 'applyToWhispers')) {
+            return false;
+        }
+
+        // Some systems/messages may not have standard chat content container
+        const messageContent = html.querySelector('.message-content');
+        if (!messageContent) {
+            return false;
+        }
+
+        // Optional broad mode: style all chat message types (rolls, cards, complex content)
+        if (game.settings.get(MODULE_ID, 'applyToAllMessages')) {
+            return true;
+        }
+
+        // Default safe mode: avoid styling rolls/system cards/complex structures
         if (message.isRoll) {
             return false;
         }
 
-        // SAFETY: Never style messages with dice rolls
         if (html.querySelector('.dice-roll, .dice-result')) {
             return false;
         }
 
-        // SAFETY: Never style D&D 5e item cards or other system cards
         if (message.flags?.dnd5e) {
             return false;
         }
 
-        // SAFETY: Never style item cards (generic check)
         if (html.querySelector('.item-card, .chat-card, .dnd5e')) {
             return false;
         }
 
-        // SAFETY: Check for common system-specific classes
         const systemClasses = [
             '.pf2e', '.swade', '.wfrp4e', '.coc7',
             '.ability-check', '.skill-check', '.saving-throw',
@@ -79,21 +100,6 @@ class YourFlavor {
             }
         }
 
-        // Check whisper settings
-        if (message.whisper?.length > 0) {
-            if (!game.settings.get(MODULE_ID, 'applyToWhispers')) {
-                return false;
-            }
-        }
-
-        // Get the message content element
-        const messageContent = html.querySelector('.message-content');
-        if (!messageContent) {
-            return false;
-        }
-
-        // Only style if it looks like a plain text message
-        // Check if content is mostly text (not complex HTML structures)
         const hasComplexContent = messageContent.querySelector(
             'table, form, button, input, select, .flexrow, .flexcol'
         );
@@ -253,9 +259,10 @@ Hooks.once('ready', async () => {
 
     // Expose API
     game.modules.get(MODULE_ID).api = {
-        openConfig: () => yourFlavor.openConfig(),
+        openConfig: (options) => yourFlavor.openConfig(options),
         getManager: () => yourFlavor.manager,
-        getLayouts: () => yourFlavor.layouts
+        getLayouts: () => yourFlavor.layouts,
+        getFoundryCustomizer: () => yourFlavor.foundryCustomizer
     };
 
     globalThis.YourFlavor = game.modules.get(MODULE_ID).api;

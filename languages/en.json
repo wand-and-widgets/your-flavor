@@ -24,6 +24,18 @@
                 "Name": "Apply to Whispers",
                 "Hint": "Apply flavor styling to whisper messages as well."
             },
+            "ApplyToAllMessages": {
+                "Name": "Apply to Rolls and Cards",
+                "Hint": "When enabled, Your Flavor also styles rolls, item/system cards, and complex chat messages. Disable if conflicts appear with other modules."
+            },
+            "EnableFoundryCustomization": {
+                "Name": "Customize Foundry",
+                "Hint": "Unlock the mad scientist lab for the Foundry UI. The GM can build a game-wide interface profile and decide whether that customization should also be pushed to players."
+            },
+            "ShareFoundryCustomization": {
+                "Name": "Send Customize Foundry to Players",
+                "Hint": "When enabled, the GM's Foundry customization becomes part of the game's interface and is also applied to players. When disabled, only the GM sees the customized UI."
+            },
             "UIScale": {
                 "Name": "Config Window Scale",
                 "Hint": "Scale the configuration window for better readability (80%-150%). Changes apply when opening the config window."
@@ -32,6 +44,11 @@
                 "Name": "Configure Your Flavor",
                 "Label": "Open Configuration",
                 "Hint": "Open the Your Flavor configuration panel to customize your chat style."
+            },
+            "ResetFoundryCustomization": {
+                "Name": "Reset Foundry Customization",
+                "Label": "Emergency Reset",
+                "Hint": "Restore the shared game Foundry customization back to stock if your UI experiment escaped the lab."
             }
         },
         "Controls": {
@@ -82,7 +99,76 @@
             "DefaultStyle": "Default Style",
             "TestMessage": "This is a test message from Your Flavor! Looking awesome!",
             "NoPermission": "The GM has disabled chat customization for players.",
-            "ForcedLayout": "The GM has set your layout to:"
+            "ForcedLayout": "The GM has set your layout to:",
+            "Tabs": {
+                "Chat": "Chat Flavor",
+                "Foundry": "Customize Foundry"
+            },
+            "Foundry": {
+                "Preview": "Live Tabletop",
+                "Warning": "Danger zone: you can absolutely make Foundry gorgeous here, and you can also accidentally turn the UI into modern art. If things get weird, hit reset or disable Customize Foundry.",
+                "Enable": "Enable Foundry customization for this game",
+                "ThemeSection": "Theme",
+                "InterfaceFont": "Interface Font",
+                "WindowFont": "Window Font",
+                "ThemeColors": "Theme Colors",
+                "FontColor": "Text",
+                "SecondaryTextColor": "Secondary Text",
+                "SurfaceColor": "UI Surface",
+                "WindowColor": "Window",
+                "HeaderColor": "Window Header",
+                "AccentColor": "Accent",
+                "ChatTint": "Chat Tint",
+                "IconColor": "Icons",
+                "IconHoverColor": "Icon Hover",
+                "ScrollbarColor": "Scrollbar",
+                "VisibilitySection": "Visibility",
+                "LayoutSection": "Layout Lab",
+                "ArrangeHelp": "Use Arrange Mode to drag supported UI pieces directly on the tabletop. Width and scale sliders stay live while you tweak.",
+                "StartArrange": "Start Arrange Mode",
+                "StopArrange": "Stop Arrange Mode",
+                "ArrangeResize": "Resize",
+                "Width": "Width",
+                "Height": "Height",
+                "Scale": "Scale",
+                "LiveComponent": "Live",
+                "ResetComponent": "Reset this panel",
+                "PauseSection": "Pause Override",
+                "EnablePauseOverride": "Replace the pause art",
+                "PauseSpecs": "Use a transparent PNG, WEBM, or MP4. Recommended max size: 900px wide and under 10MB for smooth loading.",
+                "PauseAsset": "Pause Asset",
+                "PausePlaceholder": "modules/your-flavor/assets/your-pause.webm",
+                "BrowsePauseAsset": "Browse asset",
+                "ClearPauseAsset": "Clear asset",
+                "PauseEffect": "Art Effect",
+                "PauseOpacity": "Opacity",
+                "PauseScale": "Scale",
+                "PauseLabelText": "Pause Text",
+                "PauseLabelPlaceholder": "Leave blank to use Foundry's default",
+                "PauseLabelFont": "Pause Font",
+                "PauseLabelColor": "Pause Text Color",
+                "PauseLabelSize": "Pause Text Size",
+                "PauseLabelSpacing": "Letter Spacing",
+                "PauseLabelOffset": "Text Offset",
+                "PauseBarColor": "Protection Bar Color",
+                "PauseBarOpacity": "Protection Bar Opacity",
+                "PauseBarHeight": "Protection Bar Height",
+                "HidePauseLabel": "Hide the PAUSED label",
+                "PauseEffects": {
+                    "None": "No effect",
+                    "SpinSlow": "Rotate slowly",
+                    "SpinFast": "Rotate quickly",
+                    "Pulse": "Pulse",
+                    "Float": "Float",
+                    "Sway": "Sway"
+                },
+                "ResetButton": "Reset Foundry",
+                "ExportButton": "Export Foundry config",
+                "ImportButton": "Import Foundry config",
+                "LivePreviewNote": "Changes apply to your Foundry UI immediately while this window is open.",
+                "LiveApplied": "Live on your tabletop",
+                "DisabledState": "Customize Foundry is currently off for this game"
+            }
         },
         "Categories": {
             "Favorites": "Favorites",
@@ -92,6 +178,16 @@
             "Themes": "Themes",
             "Modern": "Modern",
             "Misc": "Other"
+        },
+        "Foundry": {
+            "Components": {
+                "navigation": "Scene Navigation",
+                "controls": "Scene Controls",
+                "players": "Players List",
+                "hotbar": "Macro Bar",
+                "sidebar": "Sidebar",
+                "pause": "Pause Overlay"
+            }
         },
         "Layouts": {
             "None": {
@@ -425,7 +521,9 @@
         },
         "Dialog": {
             "ResetTitle": "Reset Configuration",
-            "ResetContent": "Are you sure you want to reset your flavor configuration to defaults? This cannot be undone."
+            "ResetContent": "Are you sure you want to reset your flavor configuration to defaults? This cannot be undone.",
+            "ResetFoundryTitle": "Reset Customize Foundry",
+            "ResetFoundryContent": "Restore this client back to stock Foundry? This will turn off the current Customize Foundry profile and remove this module's applied colors, layout, visibility, and pause media overrides."
         },
         "Notifications": {
             "Saved": "Configuration saved successfully!",
@@ -433,7 +531,15 @@
             "Reset": "Configuration reset.",
             "Exported": "Configuration exported!",
             "Imported": "Configuration imported! Click Save to apply.",
-            "ImportError": "Failed to import configuration. Invalid file."
+            "ImportError": "Failed to import configuration. Invalid file.",
+            "FoundryReset": "Foundry restored to stock on this client.",
+            "FoundryResetDraft": "Foundry draft reset. Save to keep it.",
+            "FoundryExported": "Foundry customization exported.",
+            "FoundryImported": "Foundry customization imported. Click Save to keep it.",
+            "FoundryImportError": "Failed to import Foundry customization. Invalid file.",
+            "ArrangeModeEnabled": "Arrange Mode enabled. Drag the highlighted UI pieces on the tabletop.",
+            "ArrangeModeDisabled": "Arrange Mode disabled.",
+            "ArrangeModeUnavailable": "Enable Customize Foundry first, then turn on Foundry customization to arrange the UI."
         }
     }
 }

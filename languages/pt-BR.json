@@ -24,6 +24,18 @@
                 "Name": "Aplicar em Sussurros",
                 "Hint": "Aplicar estilização também em mensagens sussurradas."
             },
+            "ApplyToAllMessages": {
+                "Name": "Aplicar em Rolagens e Cards",
+                "Hint": "Quando ativado, o Your Flavor tambem estiliza rolagens, cards de itens/sistema e mensagens complexas do chat. Desative se houver conflitos com outros modulos."
+            },
+            "EnableFoundryCustomization": {
+                "Name": "Customize Foundry",
+                "Hint": "Liga o laboratorio do cientista maluco para a UI do Foundry. O GM passa a montar uma versao visual do jogo e pode decidir se essa customizacao vai ou nao para os players."
+            },
+            "ShareFoundryCustomization": {
+                "Name": "Enviar Customize Foundry para Players",
+                "Hint": "Quando ativado, a customizacao do Foundry feita pelo GM vira a interface do jogo e e aplicada tambem aos players. Quando desativado, so o GM ve essa UI customizada."
+            },
             "UIScale": {
                 "Name": "Escala da Janela",
                 "Hint": "Ajusta a escala da janela de configuração para melhor legibilidade (80%-150%). Alterações aplicam ao abrir a janela."
@@ -32,6 +44,11 @@
                 "Name": "Configurar Your Flavor",
                 "Label": "Abrir Configuração",
                 "Hint": "Abre o painel de configuração do Your Flavor para personalizar seu estilo de chat."
+            },
+            "ResetFoundryCustomization": {
+                "Name": "Resetar Customize Foundry",
+                "Label": "Reset de Emergencia",
+                "Hint": "Restaura a customizacao compartilhada do Foundry para o original do jogo se seu experimento de UI escapar do laboratorio."
             }
         },
         "Controls": {
@@ -82,7 +99,76 @@
             "DefaultStyle": "Estilo Padrão",
             "TestMessage": "Esta é uma mensagem de teste do Your Flavor! Ficou incrível!",
             "NoPermission": "O GM desativou a personalização do chat para jogadores.",
-            "ForcedLayout": "O GM definiu seu layout para:"
+            "ForcedLayout": "O GM definiu seu layout para:",
+            "Tabs": {
+                "Chat": "Flavor do Chat",
+                "Foundry": "Customize Foundry"
+            },
+            "Foundry": {
+                "Preview": "Mesa ao Vivo",
+                "Warning": "Area de perigo: da para deixar o Foundry lindo aqui, e tambem da para transformar a UI em arte abstrata sem querer. Se der ruim, aperte reset ou desligue o Customize Foundry.",
+                "Enable": "Ativar customizacao do Foundry neste jogo",
+                "ThemeSection": "Tema",
+                "InterfaceFont": "Fonte da Interface",
+                "WindowFont": "Fonte das Janelas",
+                "ThemeColors": "Cores do Tema",
+                "FontColor": "Texto",
+                "SecondaryTextColor": "Texto Secundario",
+                "SurfaceColor": "Superficie da UI",
+                "WindowColor": "Janela",
+                "HeaderColor": "Cabecalho",
+                "AccentColor": "Destaque",
+                "ChatTint": "Tint do Chat",
+                "IconColor": "Icones",
+                "IconHoverColor": "Hover do Icone",
+                "ScrollbarColor": "Scrollbar",
+                "VisibilitySection": "Visibilidade",
+                "LayoutSection": "Laboratorio de Layout",
+                "ArrangeHelp": "Use o Modo de Arranjo para arrastar elementos suportados direto na mesa. Os sliders de largura e escala continuam aplicando ao vivo enquanto voce ajusta.",
+                "StartArrange": "Iniciar Modo de Arranjo",
+                "StopArrange": "Parar Modo de Arranjo",
+                "ArrangeResize": "Redimensionar",
+                "Width": "Largura",
+                "Height": "Altura",
+                "Scale": "Escala",
+                "LiveComponent": "Ao vivo",
+                "ResetComponent": "Resetar este painel",
+                "PauseSection": "Override de Pause",
+                "EnablePauseOverride": "Substituir a arte de pause",
+                "PauseSpecs": "Use PNG transparente, WEBM ou MP4. Recomendado: no maximo 900px de largura e menos de 10MB para carregar suave.",
+                "PauseAsset": "Asset de Pause",
+                "PausePlaceholder": "modules/your-flavor/assets/seu-pause.webm",
+                "BrowsePauseAsset": "Escolher asset",
+                "ClearPauseAsset": "Limpar asset",
+                "PauseEffect": "Efeito da Arte",
+                "PauseOpacity": "Opacidade",
+                "PauseScale": "Escala",
+                "PauseLabelText": "Texto do Pause",
+                "PauseLabelPlaceholder": "Deixe vazio para usar o padrao do Foundry",
+                "PauseLabelFont": "Fonte do Pause",
+                "PauseLabelColor": "Cor do Texto",
+                "PauseLabelSize": "Tamanho do Texto",
+                "PauseLabelSpacing": "Espacamento das Letras",
+                "PauseLabelOffset": "Offset do Texto",
+                "PauseBarColor": "Cor da Barra de Protecao",
+                "PauseBarOpacity": "Opacidade da Barra",
+                "PauseBarHeight": "Altura da Barra",
+                "HidePauseLabel": "Esconder o texto PAUSED",
+                "PauseEffects": {
+                    "None": "Sem efeito",
+                    "SpinSlow": "Girar devagar",
+                    "SpinFast": "Girar rapido",
+                    "Pulse": "Pulsar",
+                    "Float": "Flutuar",
+                    "Sway": "Oscilar"
+                },
+                "ResetButton": "Resetar Foundry",
+                "ExportButton": "Exportar config do Foundry",
+                "ImportButton": "Importar config do Foundry",
+                "LivePreviewNote": "As alteracoes aplicam na sua UI do Foundry imediatamente enquanto esta janela estiver aberta.",
+                "LiveApplied": "Ao vivo na sua mesa",
+                "DisabledState": "Customize Foundry esta desligado para este jogo"
+            }
         },
         "Categories": {
             "Favorites": "Favoritos",
@@ -92,6 +178,16 @@
             "Themes": "Temas",
             "Modern": "Moderno",
             "Misc": "Outros"
+        },
+        "Foundry": {
+            "Components": {
+                "navigation": "Navegacao de Cenas",
+                "controls": "Controles da Cena",
+                "players": "Lista de Jogadores",
+                "hotbar": "Barra de Macros",
+                "sidebar": "Sidebar",
+                "pause": "Overlay de Pause"
+            }
         },
         "Layouts": {
             "None": {
@@ -425,7 +521,9 @@
         },
         "Dialog": {
             "ResetTitle": "Resetar Configuração",
-            "ResetContent": "Tem certeza que deseja resetar sua configuração de flavor para os padrões? Esta ação não pode ser desfeita."
+            "ResetContent": "Tem certeza que deseja resetar sua configuração de flavor para os padrões? Esta ação não pode ser desfeita.",
+            "ResetFoundryTitle": "Resetar Customize Foundry",
+            "ResetFoundryContent": "Restaurar este cliente para o Foundry original de fabrica? Isso vai desligar o perfil atual do Customize Foundry e remover cores, layout, visibilidade e a midia de pause aplicados por este modulo."
         },
         "Notifications": {
             "Saved": "Configuração salva com sucesso!",
@@ -433,7 +531,15 @@
             "Reset": "Configuração resetada.",
             "Exported": "Configuração exportada!",
             "Imported": "Configuração importada! Clique Salvar para aplicar.",
-            "ImportError": "Falha ao importar configuração. Arquivo inválido."
+            "ImportError": "Falha ao importar configuração. Arquivo inválido.",
+            "FoundryReset": "Foundry restaurado para o original neste cliente.",
+            "FoundryResetDraft": "Rascunho do Foundry resetado. Salve para manter.",
+            "FoundryExported": "Customizacao do Foundry exportada.",
+            "FoundryImported": "Customizacao do Foundry importada. Clique Salvar para manter.",
+            "FoundryImportError": "Falha ao importar a customizacao do Foundry. Arquivo invalido.",
+            "ArrangeModeEnabled": "Modo de Arranjo ativado. Arraste os elementos destacados direto na mesa.",
+            "ArrangeModeDisabled": "Modo de Arranjo desativado.",
+            "ArrangeModeUnavailable": "Ative o Customize Foundry primeiro e depois ligue a customizacao do Foundry para arranjar a UI."
         }
     }
 }

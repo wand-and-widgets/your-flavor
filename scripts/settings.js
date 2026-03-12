@@ -3,7 +3,7 @@
  * @module your-flavor/settings
  */
 
-import { MODULE_ID } from './constants.js';
+import { DEFAULT_FOUNDRY_CUSTOMIZATION, MODULE_ID } from './constants.js';
 
 /**
  * Register all module settings
@@ -141,6 +141,45 @@ export function registerSettings() {
         requiresReload: false
     });
 
+    // GM Setting: Apply to all chat message types (rolls, cards, complex content)
+    game.settings.register(MODULE_ID, 'applyToAllMessages', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.ApplyToAllMessages.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.ApplyToAllMessages.Hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false,
+        requiresReload: false
+    });
+
+    // GM Setting: Unlock global Foundry shell customization
+    game.settings.register(MODULE_ID, 'enableFoundryCustomization', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.EnableFoundryCustomization.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.EnableFoundryCustomization.Hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false,
+        requiresReload: false,
+        onChange: value => {
+            globalThis.YourFlavor?.getFoundryCustomizer?.().handleFeatureToggle?.(value);
+        }
+    });
+
+    // GM Setting: Share the game-level Foundry customization with players
+    game.settings.register(MODULE_ID, 'shareFoundryCustomization', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.ShareFoundryCustomization.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.ShareFoundryCustomization.Hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: true,
+        requiresReload: false,
+        onChange: () => {
+            globalThis.YourFlavor?.getFoundryCustomizer?.().refreshFromSettings?.();
+        }
+    });
+
     // Client Setting: UI Scale for accessibility
     game.settings.register(MODULE_ID, 'uiScale', {
         name: game.i18n.localize('YOUR_FLAVOR.Settings.UIScale.Name'),
@@ -171,6 +210,27 @@ export function registerSettings() {
         default: null
     });
 
+    // Legacy client setting kept for migration from older versions.
+    game.settings.register(MODULE_ID, 'foundryCustomization', {
+        name: 'Legacy Foundry Customization',
+        scope: 'client',
+        config: false,
+        type: Object,
+        default: DEFAULT_FOUNDRY_CUSTOMIZATION
+    });
+
+    // World Setting: Shared Foundry UI customization authored by the GM
+    game.settings.register(MODULE_ID, 'sharedFoundryCustomization', {
+        name: 'Shared Foundry Customization',
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: DEFAULT_FOUNDRY_CUSTOMIZATION,
+        onChange: () => {
+            globalThis.YourFlavor?.getFoundryCustomizer?.().refreshFromSettings?.();
+        }
+    });
+
     // Register settings menu button
     game.settings.registerMenu(MODULE_ID, 'configureButton', {
         name: game.i18n.localize('YOUR_FLAVOR.Settings.Configure.Name'),
@@ -179,6 +239,16 @@ export function registerSettings() {
         icon: 'fas fa-palette',
         type: FlavorConfigMenuButton,
         restricted: false
+    });
+
+    // Emergency reset if someone takes customization a little too seriously
+    game.settings.registerMenu(MODULE_ID, 'resetFoundryCustomization', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.ResetFoundryCustomization.Name'),
+        label: game.i18n.localize('YOUR_FLAVOR.Settings.ResetFoundryCustomization.Label'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.ResetFoundryCustomization.Hint'),
+        icon: 'fas fa-life-ring',
+        type: FoundryCustomizationResetMenuButton,
+        restricted: true
     });
 }
 
@@ -197,6 +267,37 @@ class FlavorConfigMenuButton extends FormApplication {
 
     render() {
         // Don't render this form, just open the config app
+        return this;
+    }
+}
+
+class FoundryCustomizationResetMenuButton extends FormApplication {
+    constructor() {
+        super();
+        const title = game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryTitle');
+        const content = game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryContent');
+
+        Dialog.confirm({
+            title,
+            content,
+            yes: async () => {
+                const customizer = globalThis.YourFlavor?.getFoundryCustomizer?.();
+                if (customizer?.resetConfig) {
+                    await customizer.resetConfig();
+                } else {
+                    const defaults = foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+                    await game.settings.set(MODULE_ID, 'sharedFoundryCustomization', defaults);
+                    await game.settings.set(MODULE_ID, 'foundryCustomization', foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION));
+                    customizer?.applyConfig?.(defaults);
+                }
+                ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.FoundryReset'));
+            },
+            no: () => false,
+            defaultYes: false
+        });
+    }
+
+    render() {
         return this;
     }
 }
