@@ -167,7 +167,43 @@
                 "ImportButton": "Importar config do Foundry",
                 "LivePreviewNote": "As alteracoes aplicam na sua UI do Foundry imediatamente enquanto esta janela estiver aberta.",
                 "LiveApplied": "Ao vivo na sua mesa",
-                "DisabledState": "Customize Foundry esta desligado para este jogo"
+                "DisabledState": "Customize Foundry esta desligado para este jogo",
+                "CategoriesSection": "Modulos de Customizacao",
+                "CategoriesHint": "Escolha quais aspectos da UI do Foundry voce quer customizar. Modulos desligados nao aplicam nenhuma mudanca.",
+                "Categories": {
+                    "Theme": "Cores & Tema",
+                    "Fonts": "Fontes",
+                    "Visibility": "Visibilidade",
+                    "Layout": "Layout & Posicao",
+                    "Components": "Estilo por Componente",
+                    "Pause": "Tela de Pause",
+                    "CustomCSS": "CSS Personalizado"
+                },
+                "PresetsSection": "Presets de Tema",
+                "Presets": {
+                    "DarkFantasy": "Fantasia Sombria",
+                    "OceanDepths": "Profundezas do Oceano",
+                    "ForestRealm": "Reino da Floresta",
+                    "BloodShadow": "Sangue & Sombra",
+                    "ArcaneAcademy": "Academia Arcana",
+                    "FrostKingdom": "Reino do Gelo",
+                    "DesertSands": "Areias do Deserto",
+                    "SteampunkBrass": "Steampunk Latao",
+                    "MidnightCourt": "Corte da Meia-Noite",
+                    "EldritchHorror": "Horror Eldritch"
+                },
+                "ComponentsSection": "Estilo por Componente",
+                "ComponentsHint": "Customize a aparencia de cada painel individualmente — opacidade, fundos, bordas.",
+                "ComponentOpacity": "Opacidade",
+                "ComponentBgImage": "Imagem de Fundo",
+                "ComponentBgPlaceholder": "Caminho para arquivo de imagem...",
+                "ComponentBgHint": "PNG ou WEBP, 512×512 ou maior. Texturas seamless/repetíveis ficam melhores.",
+                "ComponentBgOpacity": "Opacidade da Imagem",
+                "ComponentBorder": "Borda",
+                "ComponentRadius": "Raio dos Cantos",
+                "CustomCSSSection": "CSS Personalizado",
+                "CustomCSSWarning": "CSS bruto injetado aqui aplica por cima de tudo. Use com cuidado — CSS errado pode quebrar a UI. Aperte Reset se der ruim.",
+                "CustomCSSPlaceholder": "/* Suas regras CSS personalizadas aqui */\n#sidebar { backdrop-filter: blur(12px); }"
             }
         },
         "Categories": {
@@ -539,7 +575,8 @@
             "FoundryImportError": "Falha ao importar a customizacao do Foundry. Arquivo invalido.",
             "ArrangeModeEnabled": "Modo de Arranjo ativado. Arraste os elementos destacados direto na mesa.",
             "ArrangeModeDisabled": "Modo de Arranjo desativado.",
-            "ArrangeModeUnavailable": "Ative o Customize Foundry primeiro e depois ligue a customizacao do Foundry para arranjar a UI."
+            "ArrangeModeUnavailable": "Ative o Customize Foundry primeiro e depois ligue a customizacao do Foundry para arranjar a UI.",
+            "PresetApplied": "Preset de tema aplicado! Clique Salvar para manter."
         }
     }
 }

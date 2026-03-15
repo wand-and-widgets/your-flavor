@@ -167,7 +167,43 @@
                 "ImportButton": "Import Foundry config",
                 "LivePreviewNote": "Changes apply to your Foundry UI immediately while this window is open.",
                 "LiveApplied": "Live on your tabletop",
-                "DisabledState": "Customize Foundry is currently off for this game"
+                "DisabledState": "Customize Foundry is currently off for this game",
+                "CategoriesSection": "Customization Modules",
+                "CategoriesHint": "Toggle which aspects of the Foundry UI you want to customize. Disabled modules won't apply any changes.",
+                "Categories": {
+                    "Theme": "Colors & Theme",
+                    "Fonts": "Fonts",
+                    "Visibility": "Visibility",
+                    "Layout": "Layout & Position",
+                    "Components": "Component Styling",
+                    "Pause": "Pause Screen",
+                    "CustomCSS": "Custom CSS"
+                },
+                "PresetsSection": "Theme Presets",
+                "Presets": {
+                    "DarkFantasy": "Dark Fantasy",
+                    "OceanDepths": "Ocean Depths",
+                    "ForestRealm": "Forest Realm",
+                    "BloodShadow": "Blood & Shadow",
+                    "ArcaneAcademy": "Arcane Academy",
+                    "FrostKingdom": "Frost Kingdom",
+                    "DesertSands": "Desert Sands",
+                    "SteampunkBrass": "Steampunk Brass",
+                    "MidnightCourt": "Midnight Court",
+                    "EldritchHorror": "Eldritch Horror"
+                },
+                "ComponentsSection": "Component Styling",
+                "ComponentsHint": "Customize the look of individual UI panels — opacity, backgrounds, borders.",
+                "ComponentOpacity": "Opacity",
+                "ComponentBgImage": "Background Image",
+                "ComponentBgPlaceholder": "Path to image file...",
+                "ComponentBgHint": "PNG or WEBP, 512×512 or larger. Seamless/tileable textures work best.",
+                "ComponentBgOpacity": "Image Opacity",
+                "ComponentBorder": "Border",
+                "ComponentRadius": "Corner Radius",
+                "CustomCSSSection": "Custom CSS",
+                "CustomCSSWarning": "Raw CSS injected here applies on top of everything else. Use with caution — bad CSS can break the UI. Hit Reset if things go wrong.",
+                "CustomCSSPlaceholder": "/* Your custom CSS rules here */\n#sidebar { backdrop-filter: blur(12px); }"
             }
         },
         "Categories": {
@@ -539,7 +575,8 @@
             "FoundryImportError": "Failed to import Foundry customization. Invalid file.",
             "ArrangeModeEnabled": "Arrange Mode enabled. Drag the highlighted UI pieces on the tabletop.",
             "ArrangeModeDisabled": "Arrange Mode disabled.",
-            "ArrangeModeUnavailable": "Enable Customize Foundry first, then turn on Foundry customization to arrange the UI."
+            "ArrangeModeUnavailable": "Enable Customize Foundry first, then turn on Foundry customization to arrange the UI.",
+            "PresetApplied": "Theme preset applied! Click Save to keep it."
         }
     }
 }

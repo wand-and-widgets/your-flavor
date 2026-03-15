@@ -1,6 +1,7 @@
 /**
  * Your Flavor - Configuration Application (Foundry VTT v13 ApplicationV2)
  * Premium Dark Theme with Horizontal Layout
+ * v4: Theme presets, category toggles, per-component styling, custom CSS
  * @module your-flavor/ui/flavor-config-app
  */
 
@@ -11,6 +12,8 @@ import {
     DEFAULT_CONFIG,
     DEFAULT_FOUNDRY_CUSTOMIZATION,
     FOUNDRY_UI_COMPONENTS,
+    FOUNDRY_CATEGORIES,
+    FOUNDRY_THEME_PRESETS,
     PAUSE_EFFECTS
 } from '../constants.js';
 import { LAYOUTS, getLayoutChoices } from '../layouts.js';
@@ -19,10 +22,6 @@ import { applyFlavorStyles } from '../style-utils.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-/**
- * Configuration application for Your Flavor module
- * Features: Horizontal layout, category tabs, premium UI components
- */
 export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static DEFAULT_OPTIONS = {
@@ -55,7 +54,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             browsePauseAsset: FlavorConfigApp.#onBrowsePauseAsset,
             clearPauseAsset: FlavorConfigApp.#onClearPauseAsset,
             toggleArrangeMode: FlavorConfigApp.#onToggleArrangeMode,
-            resetFoundryComponent: FlavorConfigApp.#onResetFoundryComponent
+            resetFoundryComponent: FlavorConfigApp.#onResetFoundryComponent,
+            applyThemePreset: FlavorConfigApp.#onApplyThemePreset,
+            browseComponentBg: FlavorConfigApp.#onBrowseComponentBg,
+            clearComponentBg: FlavorConfigApp.#onClearComponentBg
         }
     };
 
@@ -67,57 +69,14 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         }
     };
 
-    /**
-     * The flavor manager instance
-     * @type {FlavorManager}
-     */
     manager = null;
-
-    /**
-     * The Foundry shell customizer instance.
-     */
     foundryCustomizer = null;
-
-    /**
-     * Current working configuration
-     * @type {Object}
-     */
     _workingConfig = null;
-
-    /**
-     * Current active category tag (null = show all)
-     * @type {string|null}
-     */
     _activeCategory = null;
-
-    /**
-     * Currently editing actor ID (null = user default config)
-     * @type {string|null}
-     */
     _editingActorId = null;
-
-    /**
-     * Current working Foundry customization.
-     * @type {Object}
-     */
     _workingFoundryConfig = null;
-
-    /**
-     * Snapshot used to restore live Foundry changes when closing without saving.
-     * @type {Object}
-     */
     _savedFoundryConfigSnapshot = null;
-
-    /**
-     * Active top-level tab.
-     * @type {'chat'|'foundry'}
-     */
     _activeTab = 'chat';
-
-    /**
-     * Whether close should revert live Foundry changes.
-     * @type {boolean}
-     */
     _shouldRevertFoundryOnClose = true;
 
     constructor(options = {}) {
@@ -143,8 +102,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             : foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
         this._activeTab = options?.tab === 'foundry' ? 'foundry' : 'chat';
         this._shouldRevertFoundryOnClose = true;
-
-        // Start with all layouts visible (no category filter)
         this._activeCategory = null;
     }
 
@@ -161,15 +118,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const viewportWidth = globalThis.innerWidth || 1920;
         const viewportHeight = globalThis.innerHeight || 1080;
 
-        // Check GM permission settings for players
         const allowPlayerCustomization = game.settings.get(MODULE_ID, 'allowPlayerCustomization');
         const forcedLayout = game.settings.get(MODULE_ID, 'forcePlayerLayout');
-
-        // Determine if player can customize
         const canCustomize = isGM || allowPlayerCustomization;
         const hasForcedLayout = !isGM && forcedLayout && forcedLayout !== 'none';
 
-        // Convert background color to hex for color picker
         let backgroundColorHex = '#141210';
         if (config.customizations?.backgroundColor) {
             const bg = config.customizations.backgroundColor;
@@ -186,26 +139,22 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         }
 
-        // Get forced layout info if applicable
         let forcedLayoutName = '';
         if (hasForcedLayout) {
             const layoutInfo = LAYOUTS[forcedLayout];
             forcedLayoutName = layoutInfo?.name || forcedLayout;
         }
 
-        // Get layouts with category info and favorites
         const favorites = this.manager.getFavorites();
         const layouts = getLayoutChoices().map(l => ({
             ...l,
             isFavorite: favorites.includes(l.id)
         }));
 
-        // Get owned actors for per-actor config
         const ownedActors = game.actors
             .filter(a => a.isOwner && a.type === 'character')
             .map(a => ({ id: a.id, name: a.name, img: a.img }));
 
-        // Determine preview name/avatar based on editing context
         let previewName = game.user.name;
         let previewAvatar = game.user.avatar || 'icons/svg/mystery-man.svg';
         if (this._editingActorId) {
@@ -231,7 +180,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 width: foundryConfig.layout[component.id]?.width ?? component.minWidth ?? 120,
                 height: foundryConfig.layout[component.id]?.height
                     ?? Math.max(component.minHeight ?? 160, Math.round(viewportHeight - 160)),
-                scale: foundryConfig.layout[component.id]?.scale
+                scale: foundryConfig.layout[component.id]?.scale,
+                style: foundryConfig.componentStyles?.[component.id] || {},
+                borderStyleOptions: [
+                    { id: 'none', label: 'None' },
+                    { id: 'solid', label: 'Solid' },
+                    { id: 'dashed', label: 'Dashed' },
+                    { id: 'dotted', label: 'Dotted' },
+                    { id: 'double', label: 'Double' },
+                    { id: 'groove', label: 'Groove' },
+                    { id: 'ridge', label: 'Ridge' }
+                ].map(opt => ({
+                    ...opt,
+                    selected: opt.id === (foundryConfig.componentStyles?.[component.id]?.borderStyle || 'none')
+                }))
             }));
 
         const foundryPreviewStyle = [
@@ -254,6 +216,17 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             `--yf-foundry-preview-pause-scale:${foundryConfig.pause.scale / 100}`,
             `--yf-foundry-preview-pause-font:${this._pauseFontStack(foundryConfig.pause.labelFont)}`
         ].join(';');
+
+        const foundryCategories = FOUNDRY_CATEGORIES.map(cat => ({
+            ...cat,
+            label: game.i18n.localize(cat.labelKey),
+            enabled: foundryConfig.categories?.[cat.id] !== false
+        }));
+
+        const themePresets = FOUNDRY_THEME_PRESETS.map(preset => ({
+            ...preset,
+            label: game.i18n.localize(preset.labelKey)
+        }));
 
         return {
             config,
@@ -281,12 +254,15 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             arrangeModeActive: this.foundryCustomizer?.isArrangeModeActive?.() ?? false,
             foundryComponents,
             foundryPreviewStyle,
+            foundryCategories,
+            themePresets,
             pauseEffects: PAUSE_EFFECTS.map(effect => ({
                 ...effect,
                 label: game.i18n.localize(effect.labelKey)
             })),
             pausePreviewClass: this._getPausePreviewClass(foundryConfig.pause),
-            pausePreviewLabel: this._getPausePreviewLabel(foundryConfig.pause)
+            pausePreviewLabel: this._getPausePreviewLabel(foundryConfig.pause),
+            borderStyles: [] // Unused at top level, per-component options in foundryComponents
         };
     }
 
@@ -295,22 +271,16 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         const html = this.element;
 
-        // Apply UI scale setting
         const uiScale = game.settings.get(MODULE_ID, 'uiScale');
         this.element.style.setProperty('--yf-ui-scale', uiScale / 100);
 
-        // Register Handlebars helper for equality check
         this._registerLocalHelpers();
-
-        // Setup event listeners
         this._setupEventListeners(html);
 
-        // Apply initial category filter (null = show all)
         if (this._activeTab === 'chat' && this._activeCategory) {
             this._filterLayoutsByCategory(this._activeCategory);
         }
 
-        // Apply preview styles
         this._updatePreview();
     }
 
@@ -327,23 +297,19 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     /* -------------------------------------------- */
 
     _setupEventListeners(html) {
-        // Actor selector
         const actorSelect = html.querySelector('.yf-actor-select');
         if (actorSelect) {
             actorSelect.addEventListener('change', (e) => this._onActorChange(e));
         }
 
-        // Layout selection
         html.querySelectorAll('.yf-layout-option').forEach(el => {
             el.addEventListener('click', (e) => this._onLayoutClick(e));
         });
 
-        // Tag navigation
         html.querySelectorAll('.yf-tag').forEach(el => {
             el.addEventListener('click', (e) => this._onTagClick(e));
         });
 
-        // Form inputs
         html.querySelectorAll('input, select, textarea').forEach(el => {
             el.addEventListener('change', (e) => this._onInputChange(e));
             if (el.type === 'range') {
@@ -358,7 +324,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const actorId = event.currentTarget.value || null;
         this._editingActorId = actorId;
 
-        // Load the config for this actor (or user default)
         if (actorId) {
             const actorConfig = this.manager.getActorConfig(actorId);
             this._workingConfig = actorConfig
@@ -375,19 +340,16 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const tag = event.currentTarget;
         const category = tag.dataset.category;
 
-        // Toggle: clicking active tag deselects it (show all)
         if (this._activeCategory === category) {
             this._activeCategory = null;
         } else {
             this._activeCategory = category;
         }
 
-        // Update active tag UI
         this.element.querySelectorAll('.yf-tag').forEach(t => {
             t.classList.toggle('active', t.dataset.category === this._activeCategory);
         });
 
-        // Filter layouts
         this._filterLayoutsByCategory(this._activeCategory);
     }
 
@@ -414,12 +376,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const layoutId = event.currentTarget.dataset.layout;
         if (!layoutId) return;
 
-        // Update selection UI
         this.element.querySelectorAll('.yf-layout-option').forEach(el => {
             el.classList.toggle('selected', el.dataset.layout === layoutId);
         });
 
-        // Update working config with layout defaults
         this._workingConfig.layout = layoutId;
 
         if (layoutId !== 'none' && layoutId !== 'custom') {
@@ -432,7 +392,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         }
 
-        // Re-render to update customization section visibility
         this.render();
     }
 
@@ -443,7 +402,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         let value = input.type === 'checkbox' ? input.checked : input.value;
 
-        // Handle numeric values
         if (input.type === 'range' || input.type === 'number') {
             value = parseFloat(value);
         }
@@ -453,13 +411,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             this._setNestedProperty(this._workingFoundryConfig, foundryPath, value);
             this._applyWorkingFoundryConfig();
 
-            if (foundryPath === 'pause.enabled') {
+            if (foundryPath === 'pause.enabled' || foundryPath.startsWith('categories.')) {
                 this.render();
             }
             return;
         }
 
-        // Handle color picker for background (convert to rgba using current opacity)
         if (name === 'customizations.backgroundColor' && typeof value === 'string' && value.startsWith('#')) {
             const r = parseInt(value.slice(1, 3), 16);
             const g = parseInt(value.slice(3, 5), 16);
@@ -468,13 +425,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             value = `rgba(${r}, ${g}, ${b}, ${opacity})`;
         }
 
-        // Set nested property
         this._setNestedProperty(this._workingConfig, name, value);
-
-        // Update preview
         this._updatePreview();
 
-        // Re-render if glow toggle changed (to show/hide glow options)
         if (name === 'customizations.glowEnabled') {
             this.render();
         }
@@ -485,12 +438,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const valueDisplay = input.parentElement.querySelector('.yf-range-value');
         if (valueDisplay) {
             let suffix = 'px';
-            if (input.name.includes('Opacity') || input.name.includes('scale')) {
+            if (input.name.includes('Opacity') || input.name.includes('opacity') || input.name.includes('scale')) {
                 suffix = '%';
             }
             valueDisplay.textContent = `${input.value}${suffix}`;
         }
-        // Live update preview while dragging
         this._onInputChange(event);
     }
 
@@ -576,7 +528,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #onTest(event, target) {
         if (this._activeTab === 'foundry') return;
 
-        // Save config first so the test message uses the current settings
         try {
             await this.manager.saveConfig(this._workingConfig);
         } catch (error) {
@@ -717,6 +668,51 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (!defaults) return;
 
         this._workingFoundryConfig.layout[componentId] = foundry.utils.deepClone(defaults);
+        if (this._workingFoundryConfig.componentStyles?.[componentId]) {
+            this._workingFoundryConfig.componentStyles[componentId] = foundry.utils.deepClone(
+                DEFAULT_FOUNDRY_CUSTOMIZATION.componentStyles[componentId]
+            );
+        }
+        this._applyWorkingFoundryConfig();
+        this.render();
+    }
+
+    static async #onApplyThemePreset(event, target) {
+        const presetId = target.dataset.preset;
+        const preset = FOUNDRY_THEME_PRESETS.find(p => p.id === presetId);
+        if (!preset) return;
+
+        Object.assign(this._workingFoundryConfig.theme, foundry.utils.deepClone(preset.theme));
+        this._applyWorkingFoundryConfig();
+        this.render();
+        ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.PresetApplied'));
+    }
+
+    static async #onBrowseComponentBg(event, target) {
+        const componentId = target.dataset.component;
+        if (!componentId) return;
+
+        const picker = new FilePicker({
+            type: 'image',
+            callback: path => {
+                if (!this._workingFoundryConfig.componentStyles[componentId]) {
+                    this._workingFoundryConfig.componentStyles[componentId] = {};
+                }
+                this._workingFoundryConfig.componentStyles[componentId].backgroundImage = path;
+                this._applyWorkingFoundryConfig();
+                this.render();
+            }
+        });
+        picker.render(true);
+    }
+
+    static async #onClearComponentBg(event, target) {
+        const componentId = target.dataset.component;
+        if (!componentId) return;
+
+        if (this._workingFoundryConfig.componentStyles?.[componentId]) {
+            this._workingFoundryConfig.componentStyles[componentId].backgroundImage = '';
+        }
         this._applyWorkingFoundryConfig();
         this.render();
     }
@@ -825,15 +821,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const config = this._workingConfig;
         const layoutId = config.layout;
 
-        // Reset classes
         previewCard.className = `yf-preview-card yf-card yf-card-${layoutId}`;
 
-        // Apply custom styles as CSS variables
         if (layoutId !== 'none' && config.customizations) {
             applyFlavorStyles(previewCard, config.customizations);
         }
 
-        // Update status indicator
         const statusEl = this.element?.querySelector('.yf-preview-status');
         if (statusEl) {
             statusEl.className = `yf-preview-status ${config.enabled ? 'enabled' : 'disabled'}`;
@@ -844,8 +837,6 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     _registerLocalHelpers() {
-        // Foundry v13+ provides 'eq' helper natively
-        // Fallback registration only for edge cases
         if (typeof Handlebars !== 'undefined' && !Handlebars.helpers.eq) {
             Handlebars.registerHelper('eq', (a, b) => a === b);
         }

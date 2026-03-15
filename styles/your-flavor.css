@@ -2141,3 +2141,102 @@
     margin: 0 !important;
     padding: 0 !important;
 }
+
+/* ============================================= */
+/*  v4: Theme Presets Grid                       */
+/* ============================================= */
+
+.yf-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--yf-space-sm);
+}
+
+.yf-preset-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--yf-bg-elevated);
+    border: 1px solid var(--yf-border-subtle);
+    border-radius: var(--yf-radius-lg);
+    color: var(--yf-text-secondary);
+    font-family: var(--yf-font-body);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.yf-preset-chip:hover {
+    background: var(--yf-bg-hover);
+    border-color: var(--yf-accent-primary);
+    color: var(--yf-text-primary);
+    box-shadow: 0 0 8px var(--yf-accent-glow);
+}
+
+.yf-preset-chip i {
+    color: var(--yf-accent-primary);
+    font-size: 0.9rem;
+}
+
+/* ============================================= */
+/*  v4: Section Hint Text                        */
+/* ============================================= */
+
+.yf-section-hint {
+    color: var(--yf-text-muted);
+    font-size: 0.82rem;
+    font-family: var(--yf-font-body);
+    margin: -4px 0 8px 0;
+    line-height: 1.4;
+}
+
+/* ============================================= */
+/*  v4: Custom CSS Editor                        */
+/* ============================================= */
+
+.yf-css-editor {
+    min-height: 160px;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    tab-size: 2;
+    white-space: pre;
+    color: var(--yf-text-primary);
+    background: var(--yf-bg-deep);
+    border: 1px solid var(--yf-border-medium);
+    border-radius: var(--yf-radius-md);
+    padding: var(--yf-space-md);
+    resize: vertical;
+}
+
+.yf-css-editor:focus {
+    border-color: var(--yf-accent-primary);
+    box-shadow: 0 0 0 2px var(--yf-accent-glow);
+    outline: none;
+}
+
+/* ============================================= */
+/*  v4: Inline Controls Row                      */
+/* ============================================= */
+
+.yf-inline-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.yf-select-sm {
+    max-width: 120px;
+    padding: 3px 6px;
+    font-size: 0.82rem;
+}
+
+.yf-input-sm {
+    max-width: 60px;
+    padding: 3px 6px;
+    font-size: 0.82rem;
+    text-align: center;
+}

@@ -91,12 +91,53 @@
                 </label>
             </div>
 
+            {{! ── Category Toggles ── }}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.CategoriesSection"}}</h3>
+                </div>
+                <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.CategoriesHint"}}</p>
+                <div class="yf-foundry-visibility-grid">
+                    {{#each foundryCategories}}
+                    <div class="yf-foundry-toggle-card">
+                        <span><i class="{{this.icon}}"></i> {{this.label}}</span>
+                        <label class="yf-toggle-switch yf-toggle-mini">
+                            <input type="checkbox" name="foundry.categories.{{this.id}}" {{#if this.enabled}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+                    {{/each}}
+                </div>
+            </section>
+
+            {{! ── Theme Presets ── }}
+            {{#if foundryConfig.categories.theme}}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-swatchbook"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PresetsSection"}}</h3>
+                </div>
+                <div class="yf-preset-grid">
+                    {{#each themePresets}}
+                    <button type="button" class="yf-preset-chip" data-action="applyThemePreset" data-preset="{{this.id}}" title="{{this.label}}">
+                        <i class="{{this.icon}}"></i>
+                        <span>{{this.label}}</span>
+                    </button>
+                    {{/each}}
+                </div>
+            </section>
+            {{/if}}
+
+            {{! ── Theme Colors ── }}
+            {{#if foundryConfig.categories.theme}}
             <section class="yf-section">
                 <div class="yf-section-header">
                     <i class="fas fa-palette"></i>
                     <h3>{{localize "YOUR_FLAVOR.Config.Foundry.ThemeSection"}}</h3>
                 </div>
                 <div class="yf-customize-grid">
+                    {{#if foundryConfig.categories.fonts}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.Foundry.InterfaceFont"}}</label>
                         <select name="foundry.theme.interfaceFont" class="yf-select">
@@ -113,6 +154,7 @@
                             {{/each}}
                         </select>
                     </div>
+                    {{/if}}
                     <div class="yf-control-row">
                         <label>{{localize "YOUR_FLAVOR.Config.Foundry.ThemeColors"}}</label>
                         <div class="yf-color-grid">
@@ -130,7 +172,10 @@
                     </div>
                 </div>
             </section>
+            {{/if}}
 
+            {{! ── Visibility ── }}
+            {{#if foundryConfig.categories.visibility}}
             <section class="yf-section">
                 <div class="yf-section-header">
                     <i class="fas fa-eye"></i>
@@ -155,7 +200,10 @@
                     </div>
                 </div>
             </section>
+            {{/if}}
 
+            {{! ── Layout Lab ── }}
+            {{#if foundryConfig.categories.layout}}
             <section class="yf-section">
                 <div class="yf-section-header">
                     <i class="fas fa-up-down-left-right"></i>
@@ -214,7 +262,76 @@
                     {{/each}}
                 </div>
             </section>
+            {{/if}}
 
+            {{! ── Per-Component Styling ── }}
+            {{#if foundryConfig.categories.components}}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-cubes"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentsSection"}}</h3>
+                </div>
+                <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.ComponentsHint"}}</p>
+                <div class="yf-foundry-layout-grid">
+                    {{#each foundryComponents}}
+                    <article class="yf-foundry-layout-card">
+                        <div class="yf-foundry-layout-card-header">
+                            <h4>{{this.label}}</h4>
+                        </div>
+                        <div class="yf-foundry-layout-controls">
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentOpacity"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.componentStyles.{{this.id}}.opacity" class="yf-range" min="10" max="100" step="5" value="{{this.style.opacity}}">
+                                    <span class="yf-range-value">{{this.style.opacity}}%</span>
+                                </div>
+                            </div>
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentBgImage"}}</label>
+                                <div class="yf-input-with-buttons">
+                                    <input type="text" name="foundry.componentStyles.{{this.id}}.backgroundImage" class="yf-input yf-live-input" value="{{this.style.backgroundImage}}" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.ComponentBgPlaceholder'}}">
+                                    <button type="button" class="yf-btn yf-btn-ghost" data-action="browseComponentBg" data-component="{{this.id}}" title="{{localize 'YOUR_FLAVOR.Config.Foundry.BrowsePauseAsset'}}"><i class="fas fa-folder-open"></i></button>
+                                    <button type="button" class="yf-btn yf-btn-ghost" data-action="clearComponentBg" data-component="{{this.id}}" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearPauseAsset'}}"><i class="fas fa-xmark"></i></button>
+                                </div>
+                                <span class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.ComponentBgHint"}}</span>
+                            </div>
+                            {{#if this.style.backgroundImage}}
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentBgOpacity"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.componentStyles.{{this.id}}.backgroundOpacity" class="yf-range" min="10" max="100" step="5" value="{{this.style.backgroundOpacity}}">
+                                    <span class="yf-range-value">{{this.style.backgroundOpacity}}%</span>
+                                </div>
+                            </div>
+                            {{/if}}
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentBorder"}}</label>
+                                <div class="yf-inline-controls">
+                                    <select name="foundry.componentStyles.{{this.id}}.borderStyle" class="yf-select yf-select-sm">
+                                        {{#each this.borderStyleOptions}}
+                                        <option value="{{this.id}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+                                        {{/each}}
+                                    </select>
+                                    <input type="number" name="foundry.componentStyles.{{this.id}}.borderWidth" class="yf-input yf-input-sm" min="0" max="10" value="{{this.style.borderWidth}}" placeholder="0">
+                                    <input type="color" name="foundry.componentStyles.{{this.id}}.borderColor" class="yf-color-swatch" value="{{#if this.style.borderColor}}{{this.style.borderColor}}{{else}}#d4872c{{/if}}">
+                                </div>
+                            </div>
+                            <div class="yf-control-row">
+                                <label>{{localize "YOUR_FLAVOR.Config.Foundry.ComponentRadius"}}</label>
+                                <div class="yf-range-wrapper">
+                                    <input type="range" name="foundry.componentStyles.{{this.id}}.borderRadius" class="yf-range" min="0" max="50" value="{{this.style.borderRadius}}">
+                                    <span class="yf-range-value">{{this.style.borderRadius}}px</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    {{/each}}
+                </div>
+            </section>
+            {{/if}}
+
+            {{! ── Pause Override ── }}
+            {{#if foundryConfig.categories.pause}}
             <section class="yf-section">
                 <div class="yf-section-header">
                     <i class="fas fa-circle-pause"></i>
@@ -330,7 +447,25 @@
                     </div>
                 </div>
             </section>
+            {{/if}}
+
+            {{! ── Custom CSS ── }}
+            {{#if foundryConfig.categories.customCss}}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-code"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Foundry.CustomCSSSection"}}</h3>
+                </div>
+                <div class="yf-warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.CustomCSSWarning"}}</span>
+                </div>
+                <textarea name="foundry.customCss" class="yf-textarea yf-css-editor" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.CustomCSSPlaceholder'}}">{{foundryConfig.customCss}}</textarea>
+            </section>
+            {{/if}}
+
             {{else}}
+            {{! ══════════════ CHAT TAB ══════════════ }}
             {{#unless canCustomize}}
             <div class="yf-notice yf-notice-warning">
                 <i class="fas fa-lock"></i>

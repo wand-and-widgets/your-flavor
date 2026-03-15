@@ -1,6 +1,7 @@
 /**
  * Your Flavor - Foundry shell customizer
  * Applies client-side theme, visibility, layout, and pause overrides.
+ * v4: Transform-based positioning, granular categories, custom CSS, per-component styling.
  */
 
 import {
@@ -17,6 +18,7 @@ export class FoundryCustomizer {
         this._styleElement = null;
         this._lastAppliedConfig = foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
         this._refreshTimeout = null;
+        this._naturalRects = new Map();
         this._arrangeState = {
             active: false,
             config: null,
@@ -34,8 +36,19 @@ export class FoundryCustomizer {
 
         Hooks.on('pauseGame', () => this._scheduleRefresh());
         Hooks.on('renderApplicationV2', () => this._scheduleRefresh());
+        Hooks.on('collapseSidebar', (_sidebar, collapsed) => this._onSidebarCollapse(collapsed));
 
-        window.addEventListener('resize', this._boundRefresh);
+        window.addEventListener('resize', () => {
+            this._naturalRects.clear();
+            this._boundRefresh();
+        });
+        // Mark sidebar as expanded initially (Foundry starts expanded by default)
+        // The collapseSidebar hook will toggle this class as needed.
+        const sidebar = document.querySelector('#sidebar');
+        if (sidebar && !ui.sidebar?._collapsed) {
+            sidebar.classList.add('yf-sidebar-expanded');
+        }
+
         await this._migrateLegacyConfigIfNeeded();
         this.refreshFromSettings();
     }
@@ -117,6 +130,7 @@ export class FoundryCustomizer {
         this._ensureStyleElement();
         this._styleElement.textContent = this._buildCss(sanitized);
         document.body.classList.add('yf-foundry-customized');
+        this._applyComponentTransforms(sanitized);
         this._applyPauseCustomization(sanitized);
 
         if (this._arrangeState.active) {
@@ -128,6 +142,7 @@ export class FoundryCustomizer {
         this._ensureStyleElement();
         this._styleElement.textContent = '';
         document.body.classList.remove('yf-foundry-customized');
+        this._clearComponentTransforms();
         this._clearPauseCustomization();
 
         if (this._arrangeState.active) {
@@ -143,6 +158,161 @@ export class FoundryCustomizer {
 
         this.refreshFromSettings();
     }
+
+    /* -------------------------------------------- */
+    /*  Transform-based Positioning                  */
+    /* -------------------------------------------- */
+
+    _measureNaturalRect(component) {
+        const cached = this._naturalRects.get(component.id);
+        if (cached) return cached;
+
+        const target = document.querySelector(component.selector);
+        if (!target) return null;
+
+        const prevTransform = target.style.transform;
+        target.style.transform = 'none';
+        const rect = target.getBoundingClientRect();
+        target.style.transform = prevTransform;
+
+        const natural = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+        this._naturalRects.set(component.id, natural);
+        return natural;
+    }
+
+    _applyComponentTransforms(config) {
+        const categories = config.categories || {};
+        const layoutEnabled = categories.layout !== false;
+
+        for (const component of FOUNDRY_UI_COMPONENTS) {
+            if (component.id === 'pause') continue;
+            const target = document.querySelector(component.selector);
+            if (!target) continue;
+
+            const layout = config.layout[component.id];
+            const hasPosition = layoutEnabled && (Number.isFinite(layout?.x) || Number.isFinite(layout?.y));
+            const hasScale = layoutEnabled && Number.isFinite(layout?.scale) && layout.scale !== 100;
+
+            // Sidebar uses CSS custom properties instead of inline transform
+            // so that CSS .yf-sidebar-expanded guards can control it properly.
+            if (component.id === 'sidebar') {
+                this._applySidebarTransform(target, layout, hasPosition, hasScale);
+                continue;
+            }
+
+            if (!hasPosition && !hasScale) {
+                target.style.transform = '';
+                target.style.transformOrigin = '';
+                continue;
+            }
+
+            const parts = [];
+
+            if (hasPosition) {
+                const natural = this._measureNaturalRect(component);
+                if (natural) {
+                    const dx = (layout.x ?? natural.left) - natural.left;
+                    const dy = (layout.y ?? natural.top) - natural.top;
+                    if (dx !== 0 || dy !== 0) {
+                        parts.push(`translate(${Math.round(dx)}px, ${Math.round(dy)}px)`);
+                    }
+                }
+            }
+
+            if (hasScale) {
+                const scale = this._clamp(layout.scale, 60, 160) / 100;
+                parts.push(`scale(${scale})`);
+            }
+
+            target.style.transform = parts.length ? parts.join(' ') : '';
+            target.style.transformOrigin = parts.length ? 'top left' : '';
+        }
+    }
+
+    /**
+     * Sidebar gets CSS custom properties instead of inline transform.
+     * The actual transform is applied via a CSS rule with .yf-sidebar-expanded,
+     * so Foundry's native collapse animation keeps working.
+     */
+    _applySidebarTransform(target, layout, hasPosition, hasScale) {
+        if (!hasPosition && !hasScale) {
+            target.style.removeProperty('--yf-sidebar-tx');
+            target.style.removeProperty('--yf-sidebar-ty');
+            target.style.removeProperty('--yf-sidebar-scale');
+            return;
+        }
+
+        if (hasPosition) {
+            const sidebarComp = FOUNDRY_UI_COMPONENTS.find(c => c.id === 'sidebar');
+            const natural = this._measureNaturalRect(sidebarComp);
+            if (natural) {
+                const dx = (layout.x ?? natural.left) - natural.left;
+                const dy = (layout.y ?? natural.top) - natural.top;
+                target.style.setProperty('--yf-sidebar-tx', `${Math.round(dx)}px`);
+                target.style.setProperty('--yf-sidebar-ty', `${Math.round(dy)}px`);
+            }
+        } else {
+            target.style.removeProperty('--yf-sidebar-tx');
+            target.style.removeProperty('--yf-sidebar-ty');
+        }
+
+        if (hasScale) {
+            const scale = this._clamp(layout.scale, 60, 160) / 100;
+            target.style.setProperty('--yf-sidebar-scale', `${scale}`);
+        } else {
+            target.style.removeProperty('--yf-sidebar-scale');
+        }
+    }
+
+    _clearComponentTransforms() {
+        for (const component of FOUNDRY_UI_COMPONENTS) {
+            if (component.id === 'pause') continue;
+            const target = document.querySelector(component.selector);
+            if (!target) continue;
+
+            if (component.id === 'sidebar') {
+                target.style.removeProperty('--yf-sidebar-tx');
+                target.style.removeProperty('--yf-sidebar-ty');
+                target.style.removeProperty('--yf-sidebar-scale');
+            } else {
+                target.style.transform = '';
+                target.style.transformOrigin = '';
+            }
+        }
+        this._naturalRects.clear();
+    }
+
+    /**
+     * When the sidebar collapses/expands, toggle our own marker class
+     * and manage the CSS custom properties. We use our own class (.yf-sidebar-expanded)
+     * instead of relying on Foundry's internal classes which may vary by version.
+     */
+    _onSidebarCollapse(collapsed) {
+        const sidebar = document.querySelector('#sidebar');
+        if (!sidebar) return;
+
+        if (collapsed) {
+            sidebar.classList.remove('yf-sidebar-expanded');
+            // Clear custom properties so no transform lingers
+            sidebar.style.removeProperty('--yf-sidebar-tx');
+            sidebar.style.removeProperty('--yf-sidebar-ty');
+            sidebar.style.removeProperty('--yf-sidebar-scale');
+        } else {
+            sidebar.classList.add('yf-sidebar-expanded');
+            // Re-measure and reapply after expansion animation
+            this._naturalRects.delete('sidebar');
+            requestAnimationFrame(() => {
+                this._naturalRects.delete('sidebar');
+                if (this._lastAppliedConfig) {
+                    this._applyComponentTransforms(this._lastAppliedConfig);
+                }
+            });
+        }
+    }
+
+    /* -------------------------------------------- */
+    /*  Arrange Mode                                 */
+    /* -------------------------------------------- */
 
     enableArrangeMode(config, onChange) {
         if (!this.canEditConfig() || !this.isFeatureEnabled() || !config?.enabled) return false;
@@ -276,6 +446,7 @@ export class FoundryCustomizer {
         if (drag.mode === 'move') {
             layout.x = Math.round(drag.startRect.left + dx);
             layout.y = Math.round(drag.startRect.top + dy);
+            this._naturalRects.delete(componentId);
         } else {
             if (drag.component.resize === 'width' || drag.component.resize === 'both') {
                 const nextWidth = drag.startRect.width + dx;
@@ -304,6 +475,10 @@ export class FoundryCustomizer {
         this._arrangeState.drag = null;
     }
 
+    /* -------------------------------------------- */
+    /*  Internal Helpers                              */
+    /* -------------------------------------------- */
+
     _scheduleRefresh() {
         window.clearTimeout(this._refreshTimeout);
         this._refreshTimeout = window.setTimeout(() => {
@@ -328,40 +503,40 @@ export class FoundryCustomizer {
         document.head.appendChild(this._styleElement);
     }
 
+    /* -------------------------------------------- */
+    /*  CSS Generation                                */
+    /* -------------------------------------------- */
+
     _buildCss(config) {
-        const { theme, visibility, layout, pause } = config;
-        const surfaceBg = this._hexToRgba(theme.surfaceBackground, 0.74);
-        const surfaceBgStrong = this._hexToRgba(theme.surfaceBackground, 0.9);
-        const windowBg = this._hexToRgba(theme.windowBackground, 0.92);
-        const headerBg = this._hexToRgba(theme.windowHeaderBackground, 0.94);
-        const accentSoft = this._hexToRgba(theme.accentColor, 0.24);
-        const accentMedium = this._hexToRgba(theme.accentColor, 0.52);
-        const accentStrong = this._hexToRgba(theme.accentColor, 0.84);
-        const chatTint = this._hexToRgba(theme.chatTint, 0.6);
-        const fontSecondary = theme.secondaryFontColor;
-        const fontSubtle = this._hexToRgba(theme.secondaryFontColor, 0.78);
-        const dividerColor = this._hexToRgba(theme.secondaryFontColor, 0.28);
-        const scrollbarTrack = this._hexToRgba(theme.surfaceBackground, 0.24);
+        const { theme, visibility, layout, pause, categories, componentStyles, customCss } = config;
+        const cat = categories || {};
 
-        const componentCss = FOUNDRY_UI_COMPONENTS
-            .map(component => this._buildComponentCss(component, visibility[component.id], layout[component.id]))
-            .filter(Boolean)
-            .join('\n');
+        const themeEnabled = cat.theme !== false;
+        const fontsEnabled = cat.fonts !== false;
+        const visibilityEnabled = cat.visibility !== false;
+        const layoutEnabled = cat.layout !== false;
+        const componentsEnabled = cat.components !== false;
+        const pauseEnabled = cat.pause !== false;
+        const customCssEnabled = cat.customCss !== false;
 
-        const pauseScale = this._clamp(pause.scale, 40, 180) / 100;
-        const pauseOpacity = this._clamp(pause.opacity, 10, 100) / 100;
-        const pauseBarColor = this._hexToRgba(pause.barColor, this._clamp(pause.barOpacity, 0, 100) / 100);
-        const pauseBarHeight = this._clamp(pause.barHeight, 80, 360);
-        const pauseLabelSize = this._clamp(pause.labelSize, 12, 60);
-        const pauseLabelSpacing = this._clamp(pause.labelLetterSpacing, 0, 24);
-        const pauseLabelOffsetY = this._clamp(pause.labelOffsetY, -120, 120);
-        const pauseLabelFont = pause.labelFont && pause.labelFont !== 'inherit'
-            ? this._fontStack(pause.labelFont)
-            : 'var(--font-serif)';
-        const pauseEffect = this._normalizePauseEffect(pause.effect);
-        const pauseEffectAnimation = this._getPauseEffectAnimation(pauseEffect);
+        const sections = [];
 
-        return `
+        // ── Theme Colors ──
+        if (themeEnabled) {
+            const surfaceBg = this._hexToRgba(theme.surfaceBackground, 0.74);
+            const surfaceBgStrong = this._hexToRgba(theme.surfaceBackground, 0.9);
+            const windowBg = this._hexToRgba(theme.windowBackground, 0.92);
+            const headerBg = this._hexToRgba(theme.windowHeaderBackground, 0.94);
+            const accentSoft = this._hexToRgba(theme.accentColor, 0.24);
+            const accentMedium = this._hexToRgba(theme.accentColor, 0.52);
+            const accentStrong = this._hexToRgba(theme.accentColor, 0.84);
+            const chatTint = this._hexToRgba(theme.chatTint, 0.6);
+            const fontSecondary = theme.secondaryFontColor;
+            const fontSubtle = this._hexToRgba(theme.secondaryFontColor, 0.78);
+            const dividerColor = this._hexToRgba(theme.secondaryFontColor, 0.28);
+            const scrollbarTrack = this._hexToRgba(theme.surfaceBackground, 0.24);
+
+            sections.push(`
 body.yf-foundry-customized {
     --yf-foundry-font-color: ${theme.fontColor};
     --yf-foundry-font-secondary: ${fontSecondary};
@@ -381,8 +556,6 @@ body.yf-foundry-customized {
     --yf-foundry-icon-hover-color: ${theme.iconHoverColor};
     --yf-foundry-scrollbar-color: ${theme.scrollbarColor};
     --yf-foundry-scrollbar-track: ${scrollbarTrack};
-    --yf-foundry-interface-font: ${this._fontStack(theme.interfaceFont)};
-    --yf-foundry-window-font: ${this._fontStack(theme.windowFont)};
     --color-text-primary: var(--yf-foundry-font-color);
     --color-text-secondary: var(--yf-foundry-font-secondary);
     --color-text-subtle: var(--yf-foundry-font-subtle);
@@ -398,28 +571,10 @@ body.yf-foundry-customized * {
     scrollbar-color: var(--yf-foundry-scrollbar-color) var(--yf-foundry-scrollbar-track);
 }
 
-body.yf-foundry-customized *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-body.yf-foundry-customized *::-webkit-scrollbar-track {
-    background: var(--yf-foundry-scrollbar-track);
-    border-radius: 999px;
-}
-
-body.yf-foundry-customized *::-webkit-scrollbar-thumb {
-    background: var(--yf-foundry-scrollbar-color);
-    border: 2px solid transparent;
-    border-radius: 999px;
-    background-clip: padding-box;
-}
-
-body.yf-foundry-customized *::-webkit-scrollbar-thumb:hover {
-    background: var(--yf-foundry-icon-hover-color);
-    border: 2px solid transparent;
-    background-clip: padding-box;
-}
+body.yf-foundry-customized *::-webkit-scrollbar { width: 10px; height: 10px; }
+body.yf-foundry-customized *::-webkit-scrollbar-track { background: var(--yf-foundry-scrollbar-track); border-radius: 999px; }
+body.yf-foundry-customized *::-webkit-scrollbar-thumb { background: var(--yf-foundry-scrollbar-color); border: 2px solid transparent; border-radius: 999px; background-clip: padding-box; }
+body.yf-foundry-customized *::-webkit-scrollbar-thumb:hover { background: var(--yf-foundry-icon-hover-color); border: 2px solid transparent; background-clip: padding-box; }
 
 body.yf-foundry-customized :is(#navigation, #scene-navigation, #controls, #scene-controls, #players, #hotbar, #sidebar, #sidebar-tabs, .sidebar-tab, .sidebar-popout, #pause, .window-app, .application) {
     --color-text-primary: var(--yf-foundry-font-color) !important;
@@ -430,10 +585,6 @@ body.yf-foundry-customized :is(#navigation, #scene-navigation, #controls, #scene
     --placeholder-color: var(--yf-foundry-font-subtle) !important;
     --group-separator: var(--yf-foundry-divider-color) !important;
     color: var(--yf-foundry-font-color);
-}
-
-body.yf-foundry-customized :is(#navigation, #scene-navigation, #controls, #scene-controls, #players, #hotbar, #sidebar, #sidebar-tabs, .sidebar-tab, .sidebar-popout, #pause) {
-    font-family: var(--yf-foundry-interface-font) !important;
 }
 
 body.yf-foundry-customized :is(.window-app, .application) {
@@ -447,51 +598,6 @@ body.yf-foundry-customized :is(.window-app, .application) {
 body.yf-foundry-customized :is(.window-app, .application) .window-header {
     color: var(--yf-foundry-font-color) !important;
     border-bottom: 1px solid var(--yf-foundry-accent-medium) !important;
-    font-family: var(--yf-foundry-interface-font) !important;
-}
-
-body.yf-foundry-customized :is(.window-app, .application) .window-content {
-    font-family: var(--yf-foundry-window-font) !important;
-}
-
-body.yf-foundry-customized :is(
-    #scene-navigation,
-    #scene-controls,
-    #players,
-    #hotbar,
-    #sidebar,
-    .sidebar-popout,
-    .application .window-header
-) :is(i, .fa-solid, .fa-regular, .fa-duotone, .fa-light, .fa-thin) {
-    color: var(--yf-foundry-icon-color) !important;
-    --fa-primary-color: var(--yf-foundry-icon-color);
-    --fa-secondary-color: var(--yf-foundry-font-color);
-}
-
-body.yf-foundry-customized :is(
-    .ui-control:hover,
-    .placeable-hud:hover,
-    #measurement .waypoint-label:hover,
-    .application .window-header :is(button.header-control, a.header-control, .header-button):hover,
-    #hotbar button:hover,
-    #players button:hover,
-    .directory button:hover,
-    .directory .create-button:hover
-) :is(i, .fa-solid, .fa-regular, .fa-duotone, .fa-light, .fa-thin) {
-    color: var(--yf-foundry-icon-hover-color) !important;
-    --fa-primary-color: var(--yf-foundry-icon-hover-color);
-}
-
-body.yf-foundry-customized :is(
-    .application .window-header :is(button.header-control, a.header-control, .header-button),
-    #hotbar button,
-    #players button,
-    .directory button,
-    .directory .create-button
-) {
-    --button-text-color: var(--yf-foundry-icon-color) !important;
-    --button-hover-text-color: var(--yf-foundry-icon-hover-color) !important;
-    color: var(--yf-foundry-icon-color) !important;
 }
 
 body.yf-foundry-customized :is(#sidebar, .sidebar-popout) {
@@ -508,59 +614,41 @@ body.yf-foundry-customized :is(.sidebar-tab, .sidebar-popout) {
     -webkit-backdrop-filter: blur(6px);
 }
 
-body.yf-foundry-customized :is(
-    .hint,
-    .notes,
-    p.hint,
-    p.notes,
-    small.hint,
-    .form-footer,
-    .window-content .hint,
-    .window-content .notes,
-    .window-content .form-description,
-    .window-content .instructions
-) {
+body.yf-foundry-customized :is(.hint, .notes, p.hint, p.notes, small.hint, .form-footer, .window-content .hint, .window-content .notes, .window-content .form-description, .window-content .instructions) {
     color: var(--yf-foundry-font-secondary) !important;
 }
 
+body.yf-foundry-customized :is(.caption, .metadata, .subtitle, .document-id, .window-content .editor-note, .window-content .subheader) {
+    color: var(--yf-foundry-font-subtle) !important;
+}
+
+body.yf-foundry-customized :is(input, textarea)::placeholder { color: var(--yf-foundry-font-subtle) !important; }
+body.yf-foundry-customized :is(hr, .window-content hr) { border-color: var(--yf-foundry-divider-color) !important; }
+
 body.yf-foundry-customized :is(
-    .caption,
-    .metadata,
-    .subtitle,
-    .document-id,
-    .window-content .editor-note,
-    .window-content .subheader
+    #scene-navigation, #scene-controls, #players, #hotbar, #sidebar, .sidebar-popout, .application .window-header
+) :is(i, .fa-solid, .fa-regular, .fa-duotone, .fa-light, .fa-thin) {
+    color: var(--yf-foundry-icon-color) !important;
+    --fa-primary-color: var(--yf-foundry-icon-color);
+    --fa-secondary-color: var(--yf-foundry-font-color);
+}
+
+body.yf-foundry-customized :is(
+    .ui-control:hover, .placeable-hud:hover, #measurement .waypoint-label:hover,
+    .application .window-header :is(button.header-control, a.header-control, .header-button):hover,
+    #hotbar button:hover, #players button:hover, .directory button:hover, .directory .create-button:hover
+) :is(i, .fa-solid, .fa-regular, .fa-duotone, .fa-light, .fa-thin) {
+    color: var(--yf-foundry-icon-hover-color) !important;
+    --fa-primary-color: var(--yf-foundry-icon-hover-color);
+}
+
+body.yf-foundry-customized :is(
+    .application .window-header :is(button.header-control, a.header-control, .header-button),
+    #hotbar button, #players button, .directory button, .directory .create-button
 ) {
-    color: var(--yf-foundry-font-subtle) !important;
-}
-
-body.yf-foundry-customized :is(input, textarea)::placeholder {
-    color: var(--yf-foundry-font-subtle) !important;
-}
-
-body.yf-foundry-customized :is(hr, .window-content hr) {
-    border-color: var(--yf-foundry-divider-color) !important;
-}
-
-body.yf-foundry-customized :is(.directory .directory-header search input, .directory .directory-header .header-search input) {
-    background: var(--yf-foundry-surface-bg) !important;
-    border-color: var(--yf-foundry-accent-soft) !important;
-    color: var(--yf-foundry-font-color) !important;
-    font-family: var(--yf-foundry-window-font) !important;
-}
-
-body.yf-foundry-customized :is(.directory .directory-header .action-buttons button, .directory .directory-footer button) {
-    --button-background-color: var(--yf-foundry-surface-bg) !important;
-    --button-border-color: var(--yf-foundry-accent-soft) !important;
-}
-
-body.yf-foundry-customized .directory .directory-item.entry:hover {
-    background: var(--yf-foundry-accent-soft) !important;
-}
-
-body.yf-foundry-customized li.folder > .folder-header {
-    background: var(--yf-foundry-window-header-bg) !important;
-    color: var(--yf-foundry-font-color) !important;
+    --button-text-color: var(--yf-foundry-icon-color) !important;
+    --button-hover-text-color: var(--yf-foundry-icon-hover-color) !important;
+    color: var(--yf-foundry-icon-color) !important;
 }
 
 body.yf-foundry-customized :is(.ui-control, .placeable-hud, #measurement .waypoint-label) {
@@ -582,33 +670,13 @@ body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene {
     background: var(--yf-foundry-surface-bg) !important;
     border: 1px solid var(--yf-foundry-accent-soft) !important;
     color: var(--yf-foundry-font-color) !important;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
-
-body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene:is(.active, .view, .gm) {
-    box-shadow: inset 0 0 0 1px var(--yf-foundry-accent-medium) !important;
-}
-
-body.yf-foundry-customized #scene-navigation #scene-navigation-expand {
-    --button-text-color: var(--yf-foundry-icon-color) !important;
-    --button-hover-text-color: var(--yf-foundry-icon-hover-color) !important;
-    color: var(--yf-foundry-icon-color) !important;
-}
-
-body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene::after {
-    color: var(--yf-foundry-icon-color) !important;
-}
-
-body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene:hover::after {
-    color: var(--yf-foundry-icon-hover-color) !important;
-}
-
-body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene-players .scene-player {
-    background: var(--yf-foundry-surface-bg-strong) !important;
-    border-color: var(--yf-foundry-accent-soft) !important;
-    color: var(--yf-foundry-icon-color) !important;
-}
+body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene:is(.active, .view, .gm) { box-shadow: inset 0 0 0 1px var(--yf-foundry-accent-medium) !important; }
+body.yf-foundry-customized #scene-navigation #scene-navigation-expand { --button-text-color: var(--yf-foundry-icon-color) !important; --button-hover-text-color: var(--yf-foundry-icon-hover-color) !important; color: var(--yf-foundry-icon-color) !important; }
+body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene::after { color: var(--yf-foundry-icon-color) !important; }
+body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene:hover::after { color: var(--yf-foundry-icon-hover-color) !important; }
+body.yf-foundry-customized #scene-navigation .scene-navigation-menu .scene-players .scene-player { background: var(--yf-foundry-surface-bg-strong) !important; border-color: var(--yf-foundry-accent-soft) !important; color: var(--yf-foundry-icon-color) !important; }
 
 body.yf-foundry-customized #players {
     --background-color: var(--yf-foundry-surface-bg) !important;
@@ -618,11 +686,7 @@ body.yf-foundry-customized #players {
     --player-name-idle-color: var(--yf-foundry-font-subtle) !important;
     --player-name-self-color: var(--yf-foundry-accent) !important;
 }
-
-body.yf-foundry-customized :is(#players #players-active, #players #players-inactive) {
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-}
+body.yf-foundry-customized :is(#players #players-active, #players #players-inactive) { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 
 body.yf-foundry-customized #hotbar {
     --slot-color: var(--yf-foundry-surface-bg) !important;
@@ -631,10 +695,7 @@ body.yf-foundry-customized #hotbar {
     --key-text-color: var(--yf-foundry-font-color) !important;
     --page-control-color: var(--yf-foundry-icon-color) !important;
 }
-
-body.yf-foundry-customized #hotbar #action-bar .slot {
-    box-shadow: inset 0 0 0 1px var(--yf-foundry-accent-soft);
-}
+body.yf-foundry-customized #hotbar #action-bar .slot { box-shadow: inset 0 0 0 1px var(--yf-foundry-accent-soft); }
 
 body.yf-foundry-customized #chat-message {
     --text-color: var(--yf-foundry-font-color) !important;
@@ -642,7 +703,6 @@ body.yf-foundry-customized #chat-message {
     --background-color: var(--yf-foundry-surface-bg-strong) !important;
     --border-color: var(--yf-foundry-accent-soft) !important;
     color: var(--yf-foundry-font-color) !important;
-    font-family: var(--yf-foundry-window-font) !important;
 }
 
 body.yf-foundry-customized .chat-message {
@@ -652,22 +712,154 @@ body.yf-foundry-customized .chat-message {
     border-color: var(--yf-foundry-accent-soft) !important;
     color: var(--yf-foundry-font-color) !important;
 }
+body.yf-foundry-customized .chat-message :is(.message-metadata, .flavor-text, .whisper-to) { color: var(--yf-foundry-font-secondary) !important; }
+body.yf-foundry-customized .chat-message .message-sender { color: var(--yf-foundry-font-color) !important; }
+body.yf-foundry-customized .chat-message :is(.dice-formula, .dice-total, .table-draw .table-description, .table-draw ul.table-results li) { border-color: var(--yf-foundry-accent-soft) !important; }
 
-body.yf-foundry-customized .chat-message :is(.message-metadata, .flavor-text, .whisper-to) {
-    color: var(--yf-foundry-font-secondary) !important;
-}
+body.yf-foundry-customized :is(.directory .directory-header search input, .directory .directory-header .header-search input) { background: var(--yf-foundry-surface-bg) !important; border-color: var(--yf-foundry-accent-soft) !important; color: var(--yf-foundry-font-color) !important; }
+body.yf-foundry-customized :is(.directory .directory-header .action-buttons button, .directory .directory-footer button) { --button-background-color: var(--yf-foundry-surface-bg) !important; --button-border-color: var(--yf-foundry-accent-soft) !important; }
+body.yf-foundry-customized .directory .directory-item.entry:hover { background: var(--yf-foundry-accent-soft) !important; }
+body.yf-foundry-customized li.folder > .folder-header { background: var(--yf-foundry-window-header-bg) !important; color: var(--yf-foundry-font-color) !important; }
+`);
+        }
 
-body.yf-foundry-customized .chat-message .message-sender {
-    color: var(--yf-foundry-font-color) !important;
+        // ── Fonts ──
+        if (fontsEnabled) {
+            sections.push(`
+body.yf-foundry-customized :is(#navigation, #scene-navigation, #controls, #scene-controls, #players, #hotbar, #sidebar, #sidebar-tabs, .sidebar-tab, .sidebar-popout, #pause) {
+    font-family: ${this._fontStack(theme.interfaceFont)} !important;
 }
+body.yf-foundry-customized :is(.window-app, .application) .window-header {
+    font-family: ${this._fontStack(theme.interfaceFont)} !important;
+}
+body.yf-foundry-customized :is(.window-app, .application) .window-content {
+    font-family: ${this._fontStack(theme.windowFont)} !important;
+}
+body.yf-foundry-customized #chat-message {
+    font-family: ${this._fontStack(theme.windowFont)} !important;
+}
+body.yf-foundry-customized :is(.directory .directory-header search input, .directory .directory-header .header-search input) {
+    font-family: ${this._fontStack(theme.windowFont)} !important;
+}
+`);
+        }
 
-body.yf-foundry-customized .chat-message :is(.dice-formula, .dice-total, .table-draw .table-description, .table-draw ul.table-results li) {
-    border-color: var(--yf-foundry-accent-soft) !important;
-}
+        // ── Visibility ──
+        if (visibilityEnabled) {
+            const visibilityCss = FOUNDRY_UI_COMPONENTS
+                .filter(c => visibility[c.id] === false)
+                .map(c => `body.yf-foundry-customized ${c.selector} { display: none !important; }`)
+                .join('\n');
+            if (visibilityCss) sections.push(visibilityCss);
+        }
 
-body.yf-foundry-customized #pause.yf-pause-custom > img {
-    display: none !important;
-}
+        // ── Layout (width/height only, position handled via transform in JS) ──
+        if (layoutEnabled) {
+            const layoutCss = FOUNDRY_UI_COMPONENTS
+                .filter(c => c.id !== 'pause')
+                .map(c => this._buildComponentLayoutCss(c, layout[c.id]))
+                .filter(Boolean)
+                .join('\n');
+            if (layoutCss) sections.push(layoutCss);
+        }
+
+        // ── Per-Component Styling ──
+        if (componentsEnabled && componentStyles) {
+            const componentCss = FOUNDRY_UI_COMPONENTS
+                .filter(c => c.id !== 'pause')
+                .map(c => this._buildComponentStyleCss(c, componentStyles[c.id]))
+                .filter(Boolean)
+                .join('\n');
+            if (componentCss) sections.push(componentCss);
+        }
+
+        // ── Pause ──
+        if (pauseEnabled) {
+            sections.push(this._buildPauseCss(config));
+        }
+
+        // ── Custom CSS ──
+        if (customCssEnabled && typeof customCss === 'string' && customCss.trim()) {
+            sections.push(`/* ── User Custom CSS ── */\n${customCss}`);
+        }
+
+        return sections.join('\n').trim();
+    }
+
+    _buildComponentLayoutCss(component, layout = {}) {
+        const rules = [];
+
+        if (Number.isFinite(layout?.width) && component.resize) {
+            rules.push(`width: ${Math.round(layout.width)}px !important;`);
+            rules.push(`max-width: ${Math.round(layout.width)}px !important;`);
+        }
+
+        if (Number.isFinite(layout?.height) && component.resize === 'both') {
+            rules.push(`height: ${Math.round(layout.height)}px !important;`);
+            rules.push(`max-height: ${Math.round(layout.height)}px !important;`);
+        }
+
+        // Sidebar transform is driven by CSS custom properties (not inline styles)
+        // so the .yf-sidebar-expanded guard can disable it and preserve Foundry's collapse.
+        if (component.id === 'sidebar') {
+            rules.push('transform: translate(var(--yf-sidebar-tx, 0px), var(--yf-sidebar-ty, 0px)) scale(var(--yf-sidebar-scale, 1));');
+            rules.push('transform-origin: top left;');
+        }
+
+        if (!rules.length) return '';
+
+        // For the sidebar, only apply when expanded (our own class, version-agnostic).
+        const selector = component.id === 'sidebar'
+            ? `body.yf-foundry-customized ${component.selector}.yf-sidebar-expanded`
+            : `body.yf-foundry-customized ${component.selector}`;
+
+        return `${selector} { ${rules.join(' ')} }`;
+    }
+
+    _buildComponentStyleCss(component, style = {}) {
+        const rules = [];
+
+        if (Number.isFinite(style?.opacity) && style.opacity < 100) {
+            rules.push(`opacity: ${this._clamp(style.opacity, 10, 100) / 100} !important;`);
+        }
+
+        if (style?.backgroundImage) {
+            const bgOpacity = this._clamp(style.backgroundOpacity ?? 100, 10, 100) / 100;
+            rules.push(`background-image: linear-gradient(rgba(0,0,0,${1 - bgOpacity}), rgba(0,0,0,${1 - bgOpacity})), url("${style.backgroundImage}") !important;`);
+            rules.push('background-size: cover !important;');
+            rules.push('background-position: center !important;');
+        }
+
+        if (style?.borderStyle && style.borderStyle !== 'none' && style.borderWidth > 0) {
+            const borderColor = style.borderColor || 'var(--yf-foundry-accent-medium)';
+            rules.push(`border: ${style.borderWidth}px ${style.borderStyle} ${borderColor} !important;`);
+        }
+
+        if (Number.isFinite(style?.borderRadius) && style.borderRadius > 0) {
+            rules.push(`border-radius: ${style.borderRadius}px !important;`);
+        }
+
+        if (!rules.length) return '';
+        return `body.yf-foundry-customized ${component.selector} { ${rules.join(' ')} }`;
+    }
+
+    _buildPauseCss(config) {
+        const { pause } = config;
+        const pauseScale = this._clamp(pause.scale, 40, 180) / 100;
+        const pauseOpacity = this._clamp(pause.opacity, 10, 100) / 100;
+        const pauseBarColor = this._hexToRgba(pause.barColor, this._clamp(pause.barOpacity, 0, 100) / 100);
+        const pauseBarHeight = this._clamp(pause.barHeight, 80, 360);
+        const pauseLabelSize = this._clamp(pause.labelSize, 12, 60);
+        const pauseLabelSpacing = this._clamp(pause.labelLetterSpacing, 0, 24);
+        const pauseLabelOffsetY = this._clamp(pause.labelOffsetY, -120, 120);
+        const pauseLabelFont = pause.labelFont && pause.labelFont !== 'inherit'
+            ? this._fontStack(pause.labelFont)
+            : 'var(--font-serif)';
+        const pauseEffect = this._normalizePauseEffect(pause.effect);
+        const pauseEffectAnimation = this._getPauseEffectAnimation(pauseEffect);
+
+        return `
+body.yf-foundry-customized #pause.yf-pause-custom > img { display: none !important; }
 
 body.yf-foundry-customized #pause {
     height: ${pauseBarHeight}px !important;
@@ -714,70 +906,16 @@ body.yf-foundry-customized #pause .yf-pause-media video {
     max-height: 100%;
 }
 
-@keyframes yf-pause-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes yf-pause-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-}
-
-@keyframes yf-pause-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-18px); }
-}
-
-@keyframes yf-pause-sway {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-6deg); }
-    75% { transform: rotate(6deg); }
-}
-
-${componentCss}
-        `.trim();
+@keyframes yf-pause-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes yf-pause-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes yf-pause-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+@keyframes yf-pause-sway { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+`;
     }
 
-    _buildComponentCss(component, visible, layout = {}) {
-        const rules = [];
-        const selector = component.selector;
-
-        if (visible === false) {
-            rules.push(`display: none !important;`);
-        }
-
-        const hasPosition = Number.isFinite(layout?.x) || Number.isFinite(layout?.y);
-        if (hasPosition) {
-            const x = Number.isFinite(layout?.x) ? layout.x : 0;
-            const y = Number.isFinite(layout?.y) ? layout.y : 0;
-            rules.push('position: fixed !important;');
-            rules.push(`left: ${Math.round(x)}px !important;`);
-            rules.push(`top: ${Math.round(y)}px !important;`);
-            rules.push('right: auto !important;');
-            rules.push('bottom: auto !important;');
-            rules.push('margin: 0 !important;');
-        }
-
-        if (Number.isFinite(layout?.width) && component.resize) {
-            rules.push(`width: ${Math.round(layout.width)}px !important;`);
-            rules.push(`max-width: ${Math.round(layout.width)}px !important;`);
-        }
-
-        if (Number.isFinite(layout?.height) && component.resize === 'both') {
-            rules.push(`height: ${Math.round(layout.height)}px !important;`);
-            rules.push(`max-height: ${Math.round(layout.height)}px !important;`);
-        }
-
-        if (Number.isFinite(layout?.scale) && layout.scale !== 100) {
-            const scale = this._clamp(layout.scale, 60, 160) / 100;
-            rules.push(`transform: scale(${scale}) !important;`);
-            rules.push('transform-origin: top left !important;');
-        }
-
-        if (!rules.length) return '';
-        return `body.yf-foundry-customized ${selector} { ${rules.join(' ')} }`;
-    }
+    /* -------------------------------------------- */
+    /*  Pause Customization                          */
+    /* -------------------------------------------- */
 
     _applyPauseCustomization(config) {
         const pauseElement = document.querySelector('#pause');
@@ -836,6 +974,10 @@ ${componentCss}
         }
     }
 
+    /* -------------------------------------------- */
+    /*  Config Sanitization                          */
+    /* -------------------------------------------- */
+
     _sanitizeConfig(config) {
         const merged = foundry.utils.mergeObject(
             foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION),
@@ -844,6 +986,13 @@ ${componentCss}
 
         merged.enabled = Boolean(merged.enabled);
 
+        // Categories
+        const catDefaults = DEFAULT_FOUNDRY_CUSTOMIZATION.categories;
+        for (const key of Object.keys(catDefaults)) {
+            merged.categories[key] = merged.categories[key] !== false;
+        }
+
+        // Theme
         const theme = merged.theme;
         theme.fontColor = this._normalizeColor(theme.fontColor, DEFAULT_FOUNDRY_CUSTOMIZATION.theme.fontColor);
         theme.secondaryFontColor = this._normalizeColor(theme.secondaryFontColor, DEFAULT_FOUNDRY_CUSTOMIZATION.theme.secondaryFontColor);
@@ -858,10 +1007,12 @@ ${componentCss}
         theme.interfaceFont = this._normalizeFont(theme.interfaceFont, DEFAULT_FOUNDRY_CUSTOMIZATION.theme.interfaceFont);
         theme.windowFont = this._normalizeFont(theme.windowFont, DEFAULT_FOUNDRY_CUSTOMIZATION.theme.windowFont);
 
+        // Visibility
         for (const component of FOUNDRY_UI_COMPONENTS) {
             merged.visibility[component.id] = Boolean(merged.visibility[component.id]);
         }
 
+        // Layout
         for (const component of FOUNDRY_UI_COMPONENTS) {
             if (component.id === 'pause') continue;
 
@@ -879,6 +1030,21 @@ ${componentCss}
                 : DEFAULT_FOUNDRY_CUSTOMIZATION.layout[component.id].scale;
         }
 
+        // Component Styles
+        const defaultStyle = DEFAULT_FOUNDRY_CUSTOMIZATION.componentStyles;
+        for (const component of FOUNDRY_UI_COMPONENTS) {
+            if (component.id === 'pause') continue;
+            const style = merged.componentStyles[component.id] ||= {};
+            style.opacity = Number.isFinite(style.opacity) ? this._clamp(style.opacity, 10, 100) : 100;
+            style.backgroundImage = typeof style.backgroundImage === 'string' ? style.backgroundImage.trim() : '';
+            style.backgroundOpacity = Number.isFinite(style.backgroundOpacity) ? this._clamp(style.backgroundOpacity, 10, 100) : 100;
+            style.borderColor = this._normalizeColor(style.borderColor, '') || '';
+            style.borderWidth = Number.isFinite(style.borderWidth) ? this._clamp(style.borderWidth, 0, 10) : 0;
+            style.borderStyle = ['none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge'].includes(style.borderStyle) ? style.borderStyle : 'none';
+            style.borderRadius = Number.isFinite(style.borderRadius) ? this._clamp(style.borderRadius, 0, 50) : 0;
+        }
+
+        // Pause
         merged.pause.enabled = Boolean(merged.pause.enabled);
         merged.pause.assetPath = typeof merged.pause.assetPath === 'string' ? merged.pause.assetPath.trim() : '';
         merged.pause.effect = this._normalizePauseEffect(merged.pause.effect);
@@ -895,8 +1061,15 @@ ${componentCss}
         merged.pause.barOpacity = this._clamp(merged.pause.barOpacity, 0, 100);
         merged.pause.barHeight = this._clamp(merged.pause.barHeight, 80, 360);
 
+        // Custom CSS
+        merged.customCss = typeof merged.customCss === 'string' ? merged.customCss : '';
+
         return merged;
     }
+
+    /* -------------------------------------------- */
+    /*  Utility Methods                              */
+    /* -------------------------------------------- */
 
     _getLayoutMaxWidth(component) {
         const viewportWidth = globalThis.innerWidth || 1920;
@@ -915,23 +1088,18 @@ ${componentCss}
 
     _getPauseEffectAnimation(effect) {
         switch (effect) {
-            case 'spin-slow':
-                return 'yf-pause-spin 12s linear infinite';
-            case 'spin-fast':
-                return 'yf-pause-spin 4s linear infinite';
-            case 'pulse':
-                return 'yf-pause-pulse 2.2s ease-in-out infinite';
-            case 'float':
-                return 'yf-pause-float 3s ease-in-out infinite';
-            case 'sway':
-                return 'yf-pause-sway 3.2s ease-in-out infinite';
-            default:
-                return 'none';
+            case 'spin-slow': return 'yf-pause-spin 12s linear infinite';
+            case 'spin-fast': return 'yf-pause-spin 4s linear infinite';
+            case 'pulse': return 'yf-pause-pulse 2.2s ease-in-out infinite';
+            case 'float': return 'yf-pause-float 3s ease-in-out infinite';
+            case 'sway': return 'yf-pause-sway 3.2s ease-in-out infinite';
+            default: return 'none';
         }
     }
 
     _normalizeColor(value, fallback) {
-        return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value || '') ? value : fallback;
+        if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value || '')) return value;
+        return fallback;
     }
 
     _normalizeFont(value, fallback) {
