@@ -1,6 +1,3 @@
-# Claude Code workspace
-.claude/
-
 # Windows artifacts
 nul
 Thumbs.db
@@ -15,3 +12,8 @@ Desktop.ini
 
 # Node
 node_modules/
+
+# Release artifacts
+*.zip
+dist/
+build/

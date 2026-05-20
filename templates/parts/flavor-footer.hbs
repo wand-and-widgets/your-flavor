@@ -1,0 +1,36 @@
+        <footer class="yf-config-footer">
+            {{#if (eq activeConfigScope "foundry")}}
+            <div class="yf-footer-left">
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ExportButton'}}"><i class="fas fa-file-export"></i></button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ImportButton'}}"><i class="fas fa-file-import"></i></button>
+            </div>
+            <div class="yf-footer-right">
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}"><i class="fas fa-rotate-left"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span></button>
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span></button>
+            </div>
+            {{else}}
+            {{#if canCustomize}}
+            <div class="yf-footer-left">
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}"><i class="fas fa-comment-dots"></i></button>
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ExportButton'}}"><i class="fas fa-file-export"></i></button>
+                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}"><i class="fas fa-file-import"></i></button>
+                {{/unless}}
+            </div>
+            <div class="yf-footer-right">
+                {{#unless hasForcedLayout}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}"><i class="fas fa-rotate-left"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span></button>
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span></button>
+                {{/unless}}
+            </div>
+            {{else}}
+            <div class="yf-footer-right">
+                <button type="button" class="yf-btn yf-btn-secondary" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}"><i class="fas fa-times"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span></button>
+            </div>
+            {{/if}}
+            {{/if}}
+        </footer>

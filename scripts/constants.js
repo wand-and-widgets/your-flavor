@@ -5,6 +5,33 @@
 
 export const MODULE_ID = 'your-flavor';
 export const MODULE_NAME = 'Your Flavor';
+export const WORLD_PROFILE_V2_SETTING = 'worldProfileV2';
+
+export const MESSAGE_STYLING_POLICY_IDS = Object.freeze({
+    SIMPLE_ONLY: 'simple-only',
+    SIMPLE_ROLLS: 'simple-rolls',
+    SIMPLE_CARDS: 'simple-cards',
+    SUPPORTED_FIXTURES: 'supported-fixtures'
+});
+
+export const MESSAGE_STYLING_POLICIES = Object.freeze([
+    {
+        id: MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY,
+        labelKey: 'YOUR_FLAVOR.Settings.MessageStylingPolicy.Choices.SimpleOnly'
+    },
+    {
+        id: MESSAGE_STYLING_POLICY_IDS.SIMPLE_ROLLS,
+        labelKey: 'YOUR_FLAVOR.Settings.MessageStylingPolicy.Choices.SimpleRolls'
+    },
+    {
+        id: MESSAGE_STYLING_POLICY_IDS.SIMPLE_CARDS,
+        labelKey: 'YOUR_FLAVOR.Settings.MessageStylingPolicy.Choices.SimpleCards'
+    },
+    {
+        id: MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES,
+        labelKey: 'YOUR_FLAVOR.Settings.MessageStylingPolicy.Choices.SupportedFixtures'
+    }
+]);
 
 /**
  * Available Google Fonts for chat customization
@@ -53,12 +80,107 @@ export const PAUSE_EFFECTS = [
     { id: 'sway', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseEffects.Sway' }
 ];
 
+export const PAUSE_VISUAL_MODES = [
+    { id: 'cinematic', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.Cinematic' },
+    { id: 'arcane-seal', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.ArcaneSeal' },
+    { id: 'parchment-sigil', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.ParchmentSigil' },
+    { id: 'neon-breach', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.NeonBreach' },
+    { id: 'minimal-utility', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.MinimalUtility' },
+    { id: 'dark-ritual', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.DarkRitual' },
+    { id: 'divine-light', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.DivineLight' },
+    { id: 'blood-moon', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.BloodMoon' },
+    { id: 'frost-stasis', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.FrostStasis' },
+    { id: 'solar-anima', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseVisualModes.SolarAnima' }
+];
+
+export const PAUSE_MOTION_MODES = [
+    { id: 'full', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseMotionModes.Full' },
+    { id: 'gentle', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseMotionModes.Gentle' },
+    { id: 'off', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseMotionModes.Off' }
+];
+
+export const PAUSE_LABEL_PLACEMENTS = [
+    { id: 'below', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseLabelPlacements.Below' },
+    { id: 'above', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseLabelPlacements.Above' },
+    { id: 'overlay', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseLabelPlacements.Overlay' }
+];
+
+export const PAUSE_SYMBOL_FILTERS = [
+    { id: 'none', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.None' },
+    { id: 'radiant', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Radiant' },
+    { id: 'arcane', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Arcane' },
+    { id: 'ember', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Ember' },
+    { id: 'frost', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Frost' },
+    { id: 'shadow', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Shadow' },
+    { id: 'blood', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Blood' },
+    { id: 'neon', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseSymbolFilters.Neon' }
+];
+
+export const PAUSE_BLEND_MODES = [
+    { id: 'normal', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBlendModes.Normal' },
+    { id: 'screen', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBlendModes.Screen' },
+    { id: 'overlay', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBlendModes.Overlay' },
+    { id: 'plus-lighter', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBlendModes.PlusLighter' },
+    { id: 'luminosity', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBlendModes.Luminosity' }
+];
+
+export const PAUSE_BAR_SHAPES = [
+    { id: 'mode', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBarShapes.Mode' },
+    { id: 'square', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBarShapes.Square' },
+    { id: 'soft', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBarShapes.Soft' },
+    { id: 'rounded', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBarShapes.Rounded' },
+    { id: 'pill', labelKey: 'YOUR_FLAVOR.Config.Foundry.PauseBarShapes.Pill' }
+];
+
+export const PAUSE_LABEL_WEIGHTS = [
+    { id: 400, label: '400' },
+    { id: 500, label: '500' },
+    { id: 600, label: '600' },
+    { id: 700, label: '700' },
+    { id: 800, label: '800' },
+    { id: 900, label: '900' }
+];
+
 /**
  * Default configuration for new users
  */
+export const DEFAULT_ROLL_CONFIG = {
+    enabled: true,
+    surfaces: {
+        formula: { background: null, textColor: null, borderColor: null },
+        terms: { background: null, textColor: null },
+        tooltip: { background: null, textColor: null },
+        total: { background: null, textColor: null, borderColor: null },
+        critical: { textColor: null, accentColor: null },
+        failure: { textColor: null, accentColor: null }
+    },
+    systems: {
+        dnd5e: { enabled: true },
+        pf2e: { enabled: true },
+        generic: { enabled: true }
+    }
+};
+
+export const DEFAULT_CARD_CONFIG = {
+    enabled: true,
+    fallbackPolicy: 'safe-outer-only',
+    surfaces: {
+        itemTitle: { background: null, textColor: null, accentColor: null },
+        itemBody: { background: null, textColor: null },
+        buttons: { background: null, textColor: null, borderColor: null },
+        tables: { oddRow: null, evenRow: null, borderColor: null }
+    },
+    systems: {
+        dnd5e: { itemCards: true, abilityCards: true },
+        pf2e: { actionCards: true, spellCards: true },
+        generic: { enabled: true }
+    }
+};
+
 export const DEFAULT_CONFIG = {
     enabled: true,
     layout: 'none',
+    presetId: 'none',
     customizations: {
         fontFamily: 'inherit',
         fontSize: 14,
@@ -77,6 +199,8 @@ export const DEFAULT_CONFIG = {
         nameColor: null,      // Player name color (fallback: borderColor)
         timestampColor: null  // Timestamp color (fallback: textColor)
     },
+    rolls: DEFAULT_ROLL_CONFIG,
+    cards: DEFAULT_CARD_CONFIG,
     customHtml: null
 };
 
@@ -106,7 +230,7 @@ export const FOUNDRY_UI_COMPONENTS = [
     {
         id: 'hotbar',
         selector: '#hotbar',
-        resize: 'width',
+        resize: null,
         minWidth: 320,
         maxWidth: 960
     },
@@ -139,12 +263,465 @@ const DEFAULT_COMPONENT_STYLE = {
     borderRadius: 0
 };
 
+export const DEFAULT_SCENE_NAVIGATION_CUSTOMIZATION = {
+    fontFamily: 'inherit',
+    fontSize: 13,
+    fontWeight: 700,
+    uppercase: false,
+    letterSpacing: 0,
+    rowHeight: 34,
+    paddingX: 10,
+    paddingY: 0,
+    gap: 6,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    textColor: '',
+    borderColor: '',
+    normalBackgroundColor: '',
+    activeBackgroundColor: '',
+    viewedBackgroundColor: '',
+    hiddenBackgroundColor: '',
+    hiddenOpacity: 72,
+    hoverBackgroundColor: '',
+    layoutMode: 'vertical'
+};
+
+export const DEFAULT_TOKEN_CONTROLS_CUSTOMIZATION = {
+    buttonSize: 32,
+    iconSize: 16,
+    gap: 8,
+    columnGap: 8,
+    columnCount: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    shadowIntensity: 0,
+    disabledOpacity: 40,
+    normalBackgroundColor: '',
+    normalBorderColor: '',
+    hoverBackgroundColor: '',
+    hoverBorderColor: '',
+    activeBackgroundColor: '',
+    activeBorderColor: ''
+};
+
+export const DEFAULT_HOTBAR_CUSTOMIZATION = {
+    anchor: 'bottom-center',
+    offsetX: 0,
+    offsetY: 16,
+    slotSize: 60,
+    slotGap: 8,
+    slotsPerRow: 10,
+    controlSize: 24,
+    controlGap: 4,
+    controlRadius: 6,
+    slotOpacity: 100,
+    slotRadius: 10,
+    slotBorderWidth: 2,
+    slotBorderStyle: 'solid',
+    slotShadowIntensity: 0,
+    keyBadgeSize: 20,
+    keyFontSize: 12,
+    keyOpacity: 100,
+    emptyBackgroundColor: '',
+    emptyBorderColor: '',
+    fullBackgroundColor: '',
+    fullBorderColor: '',
+    hoverBackgroundColor: '',
+    hoverBorderColor: '',
+    dropTargetBackgroundColor: '',
+    dropTargetBorderColor: '',
+    keyTextColor: '',
+    keyEmptyBackgroundColor: '',
+    keyFullBackgroundColor: '',
+    controlBackgroundColor: '',
+    controlBorderColor: '',
+    controlHoverBackgroundColor: ''
+};
+
+export const DEFAULT_SIDEBAR_CUSTOMIZATION = {
+    railWidth: 54,
+    railPadding: 12,
+    tabSize: 36,
+    tabGap: 8,
+    tabOffsetX: 0,
+    tabOffsetY: 0,
+    panelPadding: 8,
+    panelGap: 8,
+    panelRadius: 6,
+    panelBorderWidth: 1,
+    panelShadowIntensity: 12,
+    searchHeight: 32,
+    actionHeight: 32,
+    rowHeight: 48,
+    folderHeight: 30,
+    folderIndent: 10,
+    fontSize: 13,
+    dividerStrength: 42,
+    hoverStrength: 24,
+    activeStrength: 70,
+    railBackgroundColor: '',
+    tabBackgroundColor: '',
+    tabHoverBackgroundColor: '',
+    tabActiveBackgroundColor: '',
+    panelBackgroundColor: '',
+    panelBorderColor: '',
+    dividerColor: '',
+    folderBackgroundColor: '',
+    inputBackgroundColor: '',
+    actionButtonBackgroundColor: '',
+    actionButtonHoverBackgroundColor: '',
+    rowHoverBackgroundColor: '',
+    activeColor: '',
+    textColor: '',
+    secondaryTextColor: ''
+};
+
+export const DEFAULT_CHAT_LOG_CUSTOMIZATION = {
+    logPadding: 8,
+    messageGap: 8,
+    contentMaxWidth: 520,
+    messagePadding: 10,
+    messageRadius: 7,
+    messageBorderWidth: 1,
+    messageShadowIntensity: 8,
+    headerGap: 6,
+    dividerStrength: 36,
+    hoverStrength: 18,
+    contextStrength: 70,
+    composerMinHeight: 46,
+    composerMaxHeight: 160,
+    composerPadding: 9,
+    composerRadius: 6,
+    composerBorderWidth: 1,
+    composerFocusStrength: 74,
+    composerBackgroundColor: '',
+    composerBorderColor: '',
+    composerFocusColor: '',
+    composerTextColor: '',
+    composerPlaceholderColor: ''
+};
+
+export const DEFAULT_PLAYERS_LIST_CUSTOMIZATION = {
+    visualMode: 'glass',
+    panelPadding: 8,
+    panelGap: 6,
+    panelRadius: 8,
+    panelBorderWidth: 1,
+    panelShadowIntensity: 10,
+    rowHeight: 24,
+    rowPaddingX: 6,
+    rowGap: 6,
+    rowRadius: 5,
+    statusSize: 12,
+    statusStyle: 'dot',
+    inactiveOpacity: 62,
+    hoverStrength: 26,
+    selfHighlight: 74,
+    gmHighlight: 58,
+    panelBackgroundColor: '',
+    panelBorderColor: '',
+    rowBackgroundColor: '',
+    rowBorderColor: '',
+    textColor: '',
+    inactiveTextColor: '',
+    hoverBackgroundColor: '',
+    hoverBorderColor: '',
+    selfBackgroundColor: '',
+    selfBorderColor: '',
+    gmBackgroundColor: '',
+    gmBorderColor: '',
+    controlTextColor: '',
+    controlHoverTextColor: '',
+    controlHoverBackgroundColor: ''
+};
+
+export const DEFAULT_WINDOWS_CUSTOMIZATION = {
+    visualMode: 'glass',
+    frameRadius: 8,
+    frameBorderWidth: 1,
+    frameShadowIntensity: 22,
+    frameOpacity: 96,
+    glassBlur: 6,
+    headerHeight: 32,
+    headerDividerStrength: 56,
+    headerGripStrength: 36,
+    contentPadding: 12,
+    contentContrast: 42,
+    inactiveOpacity: 86,
+    scrollbarStrength: 72,
+    frameBackgroundColor: '',
+    frameBorderColor: '',
+    headerBackgroundColor: '',
+    headerTextColor: '',
+    headerDividerColor: '',
+    headerGripColor: '',
+    contentBackgroundColor: '',
+    contentTextColor: '',
+    scrollbarThumbColor: '',
+    scrollbarTrackColor: '',
+    resizeHandleColor: ''
+};
+
+export const SIDEBAR_TRANSFORMER_PRESETS = [
+    {
+        id: 'compact',
+        icon: 'fas fa-compress',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Compact.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Compact.Description',
+        layout: { sidebar: { width: 300, height: null, scale: 100 } },
+        sidebar: {
+            railWidth: 42,
+            railPadding: 8,
+            tabSize: 30,
+            tabGap: 4,
+            tabOffsetX: 0,
+            tabOffsetY: 0,
+            panelPadding: 4,
+            panelGap: 4,
+            panelRadius: 4,
+            panelBorderWidth: 1,
+            panelShadowIntensity: 4,
+            searchHeight: 28,
+            actionHeight: 28,
+            rowHeight: 34,
+            folderHeight: 24,
+            folderIndent: 6,
+            fontSize: 12,
+            dividerStrength: 48,
+            hoverStrength: 20,
+            activeStrength: 62
+        }
+    },
+    {
+        id: 'library',
+        icon: 'fas fa-book-open',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Library.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Library.Description',
+        layout: { sidebar: { width: 420, height: null, scale: 100 } },
+        sidebar: {
+            railWidth: 56,
+            railPadding: 12,
+            tabSize: 36,
+            tabGap: 8,
+            tabOffsetX: 0,
+            tabOffsetY: 0,
+            panelPadding: 10,
+            panelGap: 10,
+            panelRadius: 7,
+            panelBorderWidth: 1,
+            panelShadowIntensity: 14,
+            searchHeight: 34,
+            actionHeight: 32,
+            rowHeight: 44,
+            folderHeight: 30,
+            folderIndent: 14,
+            fontSize: 13,
+            dividerStrength: 46,
+            hoverStrength: 24,
+            activeStrength: 72
+        }
+    },
+    {
+        id: 'cinematic',
+        icon: 'fas fa-film',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Cinematic.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.Cinematic.Description',
+        layout: { sidebar: { width: 360, height: null, scale: 100 } },
+        sidebar: {
+            railWidth: 62,
+            railPadding: 14,
+            tabSize: 40,
+            tabGap: 10,
+            tabOffsetX: 0,
+            tabOffsetY: 0,
+            panelPadding: 12,
+            panelGap: 10,
+            panelRadius: 10,
+            panelBorderWidth: 1,
+            panelShadowIntensity: 28,
+            searchHeight: 34,
+            actionHeight: 34,
+            rowHeight: 52,
+            folderHeight: 34,
+            folderIndent: 12,
+            fontSize: 13,
+            dividerStrength: 26,
+            hoverStrength: 18,
+            activeStrength: 64
+        }
+    },
+    {
+        id: 'high-contrast',
+        icon: 'fas fa-circle-half-stroke',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.HighContrast.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.HighContrast.Description',
+        layout: { sidebar: { width: 340, height: null, scale: 100 } },
+        sidebar: {
+            railWidth: 56,
+            railPadding: 12,
+            tabSize: 38,
+            tabGap: 8,
+            tabOffsetX: 0,
+            tabOffsetY: 0,
+            panelPadding: 8,
+            panelGap: 8,
+            panelRadius: 5,
+            panelBorderWidth: 2,
+            panelShadowIntensity: 12,
+            searchHeight: 34,
+            actionHeight: 32,
+            rowHeight: 44,
+            folderHeight: 30,
+            folderIndent: 10,
+            fontSize: 14,
+            dividerStrength: 78,
+            hoverStrength: 44,
+            activeStrength: 92
+        }
+    },
+    {
+        id: 'minimal-rail',
+        icon: 'fas fa-grip-lines-vertical',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.MinimalRail.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.SidebarTransformers.MinimalRail.Description',
+        layout: { sidebar: { width: 320, height: null, scale: 100 } },
+        sidebar: {
+            railWidth: 40,
+            railPadding: 8,
+            tabSize: 30,
+            tabGap: 5,
+            tabOffsetX: 0,
+            tabOffsetY: 0,
+            panelPadding: 6,
+            panelGap: 6,
+            panelRadius: 5,
+            panelBorderWidth: 1,
+            panelShadowIntensity: 8,
+            searchHeight: 30,
+            actionHeight: 30,
+            rowHeight: 40,
+            folderHeight: 26,
+            folderIndent: 8,
+            fontSize: 12,
+            dividerStrength: 38,
+            hoverStrength: 18,
+            activeStrength: 68
+        }
+    }
+];
+
+export const CHAT_LOG_TRANSFORMER_PRESETS = [
+    {
+        id: 'compact',
+        icon: 'fas fa-compress',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Compact.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Compact.Description',
+        chatLog: {
+            logPadding: 4,
+            messageGap: 4,
+            contentMaxWidth: 460,
+            messagePadding: 7,
+            messageRadius: 4,
+            messageBorderWidth: 1,
+            messageShadowIntensity: 2,
+            headerGap: 3,
+            dividerStrength: 46,
+            hoverStrength: 14,
+            contextStrength: 64,
+            composerMinHeight: 36,
+            composerMaxHeight: 96,
+            composerPadding: 6,
+            composerRadius: 4,
+            composerBorderWidth: 1,
+            composerFocusStrength: 68
+        }
+    },
+    {
+        id: 'readable',
+        icon: 'fas fa-book-open',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Readable.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Readable.Description',
+        chatLog: {
+            logPadding: 10,
+            messageGap: 10,
+            contentMaxWidth: 560,
+            messagePadding: 12,
+            messageRadius: 8,
+            messageBorderWidth: 1,
+            messageShadowIntensity: 8,
+            headerGap: 7,
+            dividerStrength: 38,
+            hoverStrength: 18,
+            contextStrength: 72,
+            composerMinHeight: 48,
+            composerMaxHeight: 168,
+            composerPadding: 10,
+            composerRadius: 7,
+            composerBorderWidth: 1,
+            composerFocusStrength: 74
+        }
+    },
+    {
+        id: 'dramatic',
+        icon: 'fas fa-masks-theater',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Dramatic.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.Dramatic.Description',
+        chatLog: {
+            logPadding: 12,
+            messageGap: 12,
+            contentMaxWidth: 620,
+            messagePadding: 14,
+            messageRadius: 12,
+            messageBorderWidth: 1,
+            messageShadowIntensity: 24,
+            headerGap: 8,
+            dividerStrength: 30,
+            hoverStrength: 22,
+            contextStrength: 78,
+            composerMinHeight: 54,
+            composerMaxHeight: 190,
+            composerPadding: 12,
+            composerRadius: 10,
+            composerBorderWidth: 1,
+            composerFocusStrength: 78
+        }
+    },
+    {
+        id: 'high-contrast',
+        icon: 'fas fa-circle-half-stroke',
+        labelKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.HighContrast.Label',
+        descriptionKey: 'YOUR_FLAVOR.Config.Foundry.ChatLogTransformers.HighContrast.Description',
+        chatLog: {
+            logPadding: 8,
+            messageGap: 9,
+            contentMaxWidth: 560,
+            messagePadding: 11,
+            messageRadius: 6,
+            messageBorderWidth: 2,
+            messageShadowIntensity: 10,
+            headerGap: 7,
+            dividerStrength: 82,
+            hoverStrength: 44,
+            contextStrength: 94,
+            composerMinHeight: 48,
+            composerMaxHeight: 160,
+            composerPadding: 10,
+            composerRadius: 6,
+            composerBorderWidth: 2,
+            composerFocusStrength: 96
+        }
+    }
+];
+
 /**
  * Customization categories that can be independently toggled
  */
 export const FOUNDRY_CATEGORIES = [
     { id: 'theme', icon: 'fas fa-palette', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Theme' },
     { id: 'fonts', icon: 'fas fa-font', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Fonts' },
+    { id: 'icons', icon: 'fas fa-icons', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Icons' },
     { id: 'visibility', icon: 'fas fa-eye', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Visibility' },
     { id: 'layout', icon: 'fas fa-up-down-left-right', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Layout' },
     { id: 'components', icon: 'fas fa-cubes', labelKey: 'YOUR_FLAVOR.Config.Foundry.Categories.Components' },
@@ -336,11 +913,22 @@ export const DEFAULT_FOUNDRY_CUSTOMIZATION = {
     categories: {
         theme: true,
         fonts: true,
+        icons: true,
         visibility: true,
         layout: true,
         components: true,
         pause: true,
         customCss: true
+    },
+    areaEnabled: {
+        navigation: true,
+        controls: true,
+        players: true,
+        hotbar: true,
+        sidebar: true,
+        chatLog: true,
+        windows: true,
+        pause: true
     },
     theme: {
         fontColor: '#f0e6d8',
@@ -408,22 +996,47 @@ export const DEFAULT_FOUNDRY_CUSTOMIZATION = {
         hotbar: { ...DEFAULT_COMPONENT_STYLE },
         sidebar: { ...DEFAULT_COMPONENT_STYLE }
     },
+    sceneNavigation: { ...DEFAULT_SCENE_NAVIGATION_CUSTOMIZATION },
+    tokenControls: { ...DEFAULT_TOKEN_CONTROLS_CUSTOMIZATION },
+    hotbar: { ...DEFAULT_HOTBAR_CUSTOMIZATION },
+    sidebar: { ...DEFAULT_SIDEBAR_CUSTOMIZATION },
+    chatLog: { ...DEFAULT_CHAT_LOG_CUSTOMIZATION },
+    playersList: { ...DEFAULT_PLAYERS_LIST_CUSTOMIZATION },
+    windows: { ...DEFAULT_WINDOWS_CUSTOMIZATION },
     pause: {
         enabled: false,
         assetPath: '',
+        visualMode: 'cinematic',
         effect: 'none',
+        motion: 'full',
+        animationStrength: 100,
         opacity: 85,
         scale: 100,
+        positionX: 50,
+        positionY: 50,
+        rotation: 0,
+        blendMode: 'normal',
+        symbolFilter: 'none',
+        glowStrength: 55,
+        shadowStrength: 45,
         hideLabel: false,
         labelText: '',
         labelFont: 'inherit',
         labelColor: '#ada7b8',
         labelSize: 24,
+        labelWeight: 700,
+        labelUppercase: true,
         labelLetterSpacing: 7,
         labelOffsetY: 0,
+        labelPlacement: 'below',
+        labelGlow: 45,
         barColor: '#16131d',
         barOpacity: 60,
-        barHeight: 180
+        barHeight: 180,
+        barWidth: 100,
+        barBlur: 2,
+        barShape: 'mode',
+        barBorderStrength: 0
     },
     customCss: ''
 };

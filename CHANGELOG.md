@@ -2,6 +2,15 @@
 
 All notable changes to the Your Flavor module will be documented in this file.
 
+## [4.0.0] - 2026-05-20
+
+### Added
+- Foundry VTT v13 and v14 shared compatibility target.
+- Expanded Your Flavor 4.0 customization studio with preview, Foundry shell styling, icon customization, safer roll/card handling, diagnostics, visual sharing, and factory reset support.
+
+### Changed
+- Updated manifest compatibility to `minimum: 13` and `verified: 14` without a hard `maximum` cap.
+
 ## [1.0.0] - 2024-12-03
 
 ### Added - Initial Release

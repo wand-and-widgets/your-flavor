@@ -1,0 +1,147 @@
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-stethoscope"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.Title"}}</h3>
+                </div>
+                <div class="yf-overview-grid">
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryVersion"}}</span>
+                        <strong>{{diagnostics.foundryVersion}}</strong>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.System"}}</span>
+                        <strong>{{diagnostics.systemTitle}}</strong>
+                        <span>{{diagnostics.systemId}}</span>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</span>
+                        <strong>{{diagnostics.totalWarningCount}}</strong>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryTab"}}</span>
+                        <strong>{{#if diagnostics.foundryTabAvailable}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}</strong>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorTargets"}}</span>
+                        <strong>{{diagnostics.selectorPresentAreas}}/{{diagnostics.selectorTotalAreas}}</strong>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.IconTargets"}}</span>
+                        <strong>{{diagnostics.iconDiscoveryPresentEntries}}/{{diagnostics.iconDiscoveryTotalEntries}}</strong>
+                        <span>{{diagnostics.iconDiscoveryTargetLabel}}</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-icons"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</h3>
+                </div>
+                {{#if diagnostics.iconDiscoveryAvailable}}
+                <div class="yf-diagnostics-list">
+                    {{#each diagnostics.iconDiscovery.rows}}
+                    <div class="yf-diagnostic-row yf-selector-health-row yf-icon-discovery-row is-{{this.status}}">
+                        <span>{{this.label}}</span>
+                        <strong>{{this.statusLabel}}</strong>
+                        <small>{{this.summaryLabel}}</small>
+                        <div class="yf-selector-chip-list">
+                            {{#each this.entries}}
+                            <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.selector}}">
+                                <span>{{this.label}}</span>
+                                <strong>{{this.countLabel}}</strong>
+                            </code>
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="yf-status-card yf-status-card-wide">
+                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</span>
+                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoIconDiscovery"}}</strong>
+                </div>
+                {{/if}}
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</h3>
+                </div>
+                {{#if diagnostics.selectorHealthAvailable}}
+                <div class="yf-diagnostics-list">
+                    {{#each diagnostics.selectorHealth.rows}}
+                    <div class="yf-diagnostic-row yf-selector-health-row is-{{this.status}}">
+                        <span>{{this.label}}</span>
+                        <strong>{{this.statusLabel}}</strong>
+                        <small>{{this.summaryLabel}}</small>
+                        <div class="yf-selector-chip-list">
+                            {{#each this.selectors}}
+                            <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.error}}">
+                                <span>{{this.selector}}</span>
+                                <strong>{{this.countLabel}}</strong>
+                            </code>
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="yf-status-card yf-status-card-wide">
+                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</span>
+                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSelectorHealth"}}</strong>
+                </div>
+                {{/if}}
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-shield-halved"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</h3>
+                </div>
+                {{#if diagnostics.safeFallbackCount}}
+                <div class="yf-diagnostics-list">
+                    {{#each diagnostics.safeFallbackMessages}}
+                    <div class="yf-diagnostic-row">
+                        <span>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackApplied"}}: {{this.fallbackLabel}}</span>
+                        <strong>{{this.systemLabel}}</strong>
+                        <small>{{this.reasonLabel}}</small>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="yf-status-card yf-status-card-wide">
+                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</span>
+                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSafeFallbacks"}}</strong>
+                </div>
+                {{/if}}
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastSection"}}</h3>
+                </div>
+                {{#if diagnostics.totalWarningCount}}
+                <div class="yf-diagnostics-list">
+                    {{#each diagnostics.chatWarnings}}
+                    <div class="yf-diagnostic-row">
+                        <span>{{this.label}}</span>
+                        <strong>{{this.ratioLabel}}</strong>
+                    </div>
+                    {{/each}}
+                    {{#each diagnostics.foundryWarnings}}
+                    <div class="yf-diagnostic-row">
+                        <span>{{this.label}}</span>
+                        <strong>{{this.ratioLabel}}</strong>
+                    </div>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="yf-status-card yf-status-card-wide">
+                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</span>
+                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoContrastWarnings"}}</strong>
+                </div>
+                {{/if}}
+            </section>

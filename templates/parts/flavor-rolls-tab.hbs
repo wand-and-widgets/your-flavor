@@ -1,0 +1,68 @@
+            {{#unless canCustomize}}
+            <div class="yf-notice yf-notice-warning">
+                <i class="fas fa-lock"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.NoPermission"}}</span>
+            </div>
+            {{else}}
+            {{#if hasForcedLayout}}
+            <div class="yf-notice yf-notice-info">
+                <i class="fas fa-info-circle"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.ForcedLayout"}} <strong>{{forcedLayoutName}}</strong></span>
+            </div>
+            {{else}}
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-dice-d20"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.RollTabs.Title"}}</h3>
+                </div>
+
+                <div class="yf-enable-row">
+                    <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.RollTabs.Enabled"}}</span>
+                    <label class="yf-toggle-switch" title="{{rollTabs.enabledTitle}}">
+                        <input type="checkbox" name="rolls.enabled" {{#if rollTabs.enabled}}checked{{/if}}>
+                        <span class="yf-toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="yf-roll-surface-grid">
+                    {{#each rollTabs.surfaces}}
+                    <article class="yf-roll-surface-card">
+                        <div class="yf-roll-surface-header">
+                            <i class="{{this.icon}}"></i>
+                            <span>{{this.label}}</span>
+                        </div>
+                        <div class="yf-roll-field-list">
+                            {{#each this.fields}}
+                            <div class="yf-roll-field yf-token-control yf-token-color-control {{this.statusClass}}">
+                                <span class="yf-roll-field-label">{{this.label}}</span>
+                                <input type="color" name="{{this.path}}" class="yf-color-swatch yf-live-input" value="{{this.value}}">
+                                <span class="yf-token-badge" title="{{this.statusTitle}}">{{this.statusLabel}}</span>
+                                <button type="button" class="yf-token-reset" data-action="resetRollToken" data-token="{{this.path}}" title="{{this.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </article>
+                    {{/each}}
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-vial-circle-check"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.RollTabs.Systems"}}</h3>
+                </div>
+                <div class="yf-readonly-grid yf-readonly-grid-sm">
+                    {{#each rollTabs.systems}}
+                    <article class="yf-readonly-card yf-roll-system-card">
+                        <span>{{this.label}}</span>
+                        <strong>{{#if this.enabled}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}</strong>
+                        <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.RollTabs.SystemEnabledTitle'}}">
+                            <input type="checkbox" name="rolls.systems.{{this.id}}.enabled" {{#if this.enabled}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </article>
+                    {{/each}}
+                </div>
+            </section>
+            {{/if}}
+            {{/unless}}

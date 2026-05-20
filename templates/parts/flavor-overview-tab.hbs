@@ -1,0 +1,101 @@
+            <section class="yf-section yf-overview-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-gauge-high"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Overview.Title"}}</h3>
+                </div>
+                <div class="yf-overview-grid">
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Overview.Profile"}}</span>
+                        <strong>{{overview.profileName}}</strong>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Overview.Chat"}}</span>
+                        <strong>{{overview.chatStatus}}</strong>
+                        <span>{{overview.chatLayout}}</span>
+                    </article>
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Overview.PreviewFixtures"}}</span>
+                        <strong>{{overview.previewFixtureCount}}</strong>
+                    </article>
+                    <article class="yf-status-card {{#if overview.hasDirtyAreas}}is-dirty{{/if}}">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Overview.UnsavedAreas"}}</span>
+                        <strong>{{overview.dirtyStatus}}</strong>
+                    </article>
+                    {{#if overview.showFoundryStatus}}
+                    <article class="yf-status-card">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Overview.Foundry"}}</span>
+                        <strong>{{overview.foundryStatus}}</strong>
+                    </article>
+                    {{/if}}
+                </div>
+            </section>
+
+            <section class="yf-section yf-visual-share-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-share-nodes"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.VisualShare.Title"}}</h3>
+                </div>
+                <div class="yf-visual-share-card">
+                    <div class="yf-visual-share-copy">
+                        <strong>{{localize "YOUR_FLAVOR.Config.VisualShare.Heading"}}</strong>
+                        <span>{{overview.visualShare.importHint}}</span>
+                    </div>
+                    <div class="yf-visual-share-actions">
+                        <button type="button" class="yf-btn yf-btn-primary" data-action="exportVisual" title='{{localize "YOUR_FLAVOR.Config.VisualShare.ExportTitle"}}' aria-label='{{localize "YOUR_FLAVOR.Config.VisualShare.ExportTitle"}}'>
+                            <i class="fas fa-file-export"></i>
+                            <span>{{localize "YOUR_FLAVOR.Config.VisualShare.ExportButton"}}</span>
+                        </button>
+                        <button type="button" class="yf-btn yf-btn-secondary" data-action="importVisual" title='{{localize "YOUR_FLAVOR.Config.VisualShare.ImportTitle"}}' aria-label='{{localize "YOUR_FLAVOR.Config.VisualShare.ImportTitle"}}' {{#unless overview.visualShare.canImport}}disabled{{/unless}}>
+                            <i class="fas fa-file-import"></i>
+                            <span>{{localize "YOUR_FLAVOR.Config.VisualShare.ImportButton"}}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="yf-visual-share-status">
+                    <span><i class="fas fa-box-archive"></i>{{overview.visualShare.foundryLabel}}</span>
+                    <span class="{{#if overview.visualShare.hasPending}}is-pending{{/if}}"><i class="fas fa-floppy-disk"></i>{{overview.visualShare.pendingLabel}}</span>
+                </div>
+            </section>
+
+            {{#if overview.canFactoryReset}}
+            <section class="yf-section yf-factory-reset-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Title"}}</h3>
+                </div>
+                <div class="yf-factory-reset-card">
+                    <div class="yf-factory-reset-copy">
+                        <strong>{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Heading"}}</strong>
+                        <span>{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Description"}}</span>
+                    </div>
+                    <button type="button" class="yf-btn yf-btn-danger" data-action="factoryReset" title='{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.ButtonTitle"}}' aria-label='{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.ButtonTitle"}}'>
+                        <i class="fas fa-rotate-left"></i>
+                        <span>{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Button"}}</span>
+                    </button>
+                </div>
+            </section>
+
+            {{/if}}
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-layer-group"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.Overview.Areas"}}</h3>
+                </div>
+                <div class="yf-area-grid">
+                    {{#each tabs}}
+                    <article class="yf-area-card {{#if this.isActive}}active{{/if}} {{#if this.isDirty}}is-dirty{{/if}}" data-tab="{{this.id}}">
+                        <button type="button" class="yf-area-card-main" data-action="switchTab" data-tab="{{this.id}}">
+                            <i class="{{this.icon}}"></i>
+                            <span class="yf-area-card-label">{{this.label}}</span>
+                            <span class="yf-area-dirty-badge" title="{{this.dirtyTitle}}" aria-label="{{this.dirtyTitle}}" {{#unless this.isDirty}}hidden{{/unless}}>{{this.dirtyLabel}}</span>
+                        </button>
+                        {{#if this.canReset}}
+                        <button type="button" class="yf-area-reset-btn" data-action="resetArea" data-area="{{this.resetArea}}" title="{{this.resetTitle}}" aria-label="{{this.resetTitle}}">
+                            <i class="fas fa-rotate-left"></i>
+                        </button>
+                        {{/if}}
+                    </article>
+                    {{/each}}
+                </div>
+            </section>

@@ -3,7 +3,16 @@
  * @module your-flavor/settings
  */
 
-import { DEFAULT_FOUNDRY_CUSTOMIZATION, MODULE_ID } from './constants.js';
+import {
+    DEFAULT_FOUNDRY_CUSTOMIZATION,
+    MESSAGE_STYLING_POLICIES,
+    MESSAGE_STYLING_POLICY_IDS,
+    MODULE_ID,
+    WORLD_PROFILE_V2_SETTING
+} from './constants.js';
+import { getChatPresetChoices } from './chat-presets.js';
+import { FlavorConfigApp } from './ui/flavor-config-app.js';
+import { ApplicationV2, confirmDialog } from './compatibility.js';
 
 /**
  * Register all module settings
@@ -39,81 +48,12 @@ export function registerSettings() {
         config: true,
         type: String,
         choices: {
-            'none': game.i18n.localize('YOUR_FLAVOR.Settings.ForcePlayerLayout.Choices.None'),
-            // Basic
-            'elegant': game.i18n.localize('YOUR_FLAVOR.Layouts.Elegant.Name'),
-            'parchment': game.i18n.localize('YOUR_FLAVOR.Layouts.Parchment.Name'),
-            'royal': game.i18n.localize('YOUR_FLAVOR.Layouts.Royal.Name'),
-            'shadow': game.i18n.localize('YOUR_FLAVOR.Layouts.Shadow.Name'),
-            // Classes
-            'warrior': game.i18n.localize('YOUR_FLAVOR.Layouts.Warrior.Name'),
-            'thief': game.i18n.localize('YOUR_FLAVOR.Layouts.Thief.Name'),
-            'bard': game.i18n.localize('YOUR_FLAVOR.Layouts.Bard.Name'),
-            'druid': game.i18n.localize('YOUR_FLAVOR.Layouts.Druid.Name'),
-            'barbarian': game.i18n.localize('YOUR_FLAVOR.Layouts.Barbarian.Name'),
-            'cleric': game.i18n.localize('YOUR_FLAVOR.Layouts.Cleric.Name'),
-            'paladin': game.i18n.localize('YOUR_FLAVOR.Layouts.Paladin.Name'),
-            'monk': game.i18n.localize('YOUR_FLAVOR.Layouts.Monk.Name'),
-            'sorcerer': game.i18n.localize('YOUR_FLAVOR.Layouts.Sorcerer.Name'),
-            'mage': game.i18n.localize('YOUR_FLAVOR.Layouts.Mage.Name'),
-            'ranger': game.i18n.localize('YOUR_FLAVOR.Layouts.Ranger.Name'),
-            'warlock': game.i18n.localize('YOUR_FLAVOR.Layouts.Warlock.Name'),
-            // Races
-            'elf': game.i18n.localize('YOUR_FLAVOR.Layouts.Elf.Name'),
-            'orc': game.i18n.localize('YOUR_FLAVOR.Layouts.Orc.Name'),
-            'dwarf': game.i18n.localize('YOUR_FLAVOR.Layouts.Dwarf.Name'),
-            'dragon': game.i18n.localize('YOUR_FLAVOR.Layouts.Dragon.Name'),
-            // Themes
-            'necromancer': game.i18n.localize('YOUR_FLAVOR.Layouts.Necromancer.Name'),
-            'vampire': game.i18n.localize('YOUR_FLAVOR.Layouts.Vampire.Name'),
-            'beholder': game.i18n.localize('YOUR_FLAVOR.Layouts.Beholder.Name'),
-            'zombie': game.i18n.localize('YOUR_FLAVOR.Layouts.Zombie.Name'),
-            'fire': game.i18n.localize('YOUR_FLAVOR.Layouts.Fire.Name'),
-            'cold': game.i18n.localize('YOUR_FLAVOR.Layouts.Cold.Name'),
-            'acid': game.i18n.localize('YOUR_FLAVOR.Layouts.Acid.Name'),
-            'desert': game.i18n.localize('YOUR_FLAVOR.Layouts.Desert.Name'),
-            'glacial': game.i18n.localize('YOUR_FLAVOR.Layouts.Glacial.Name'),
-            'evil': game.i18n.localize('YOUR_FLAVOR.Layouts.Evil.Name'),
-            'good': game.i18n.localize('YOUR_FLAVOR.Layouts.Good.Name'),
-            // Modern
-            'futuristic': game.i18n.localize('YOUR_FLAVOR.Layouts.Futuristic.Name'),
-            'cyberpunk': game.i18n.localize('YOUR_FLAVOR.Layouts.Cyberpunk.Name'),
-            'military': game.i18n.localize('YOUR_FLAVOR.Layouts.Military.Name'),
-            // Misc
-            'girly': game.i18n.localize('YOUR_FLAVOR.Layouts.Girly.Name'),
-            'rebel': game.i18n.localize('YOUR_FLAVOR.Layouts.Rebel.Name'),
-            'professor': game.i18n.localize('YOUR_FLAVOR.Layouts.Professor.Name'),
-            'punk': game.i18n.localize('YOUR_FLAVOR.Layouts.Punk.Name'),
-            'hiphop': game.i18n.localize('YOUR_FLAVOR.Layouts.HipHop.Name'),
-            'bland': game.i18n.localize('YOUR_FLAVOR.Layouts.Bland.Name'),
-            // New themes
-            'steampunk': game.i18n.localize('YOUR_FLAVOR.Layouts.Steampunk.Name'),
-            'eldritch': game.i18n.localize('YOUR_FLAVOR.Layouts.Eldritch.Name'),
-            'feywild': game.i18n.localize('YOUR_FLAVOR.Layouts.Feywild.Name'),
-            'celestial': game.i18n.localize('YOUR_FLAVOR.Layouts.Celestial.Name'),
-            'pirate': game.i18n.localize('YOUR_FLAVOR.Layouts.Pirate.Name'),
-            'noir': game.i18n.localize('YOUR_FLAVOR.Layouts.Noir.Name'),
-            'alchemist': game.i18n.localize('YOUR_FLAVOR.Layouts.Alchemist.Name'),
-            'infernal': game.i18n.localize('YOUR_FLAVOR.Layouts.Infernal.Name'),
-            'merchant': game.i18n.localize('YOUR_FLAVOR.Layouts.Merchant.Name'),
-            'tribal': game.i18n.localize('YOUR_FLAVOR.Layouts.Tribal.Name'),
-            // Exalted
-            'solar': game.i18n.localize('YOUR_FLAVOR.Layouts.Solar.Name'),
-            'lunar': game.i18n.localize('YOUR_FLAVOR.Layouts.Lunar.Name'),
-            'sidereal': game.i18n.localize('YOUR_FLAVOR.Layouts.Sidereal.Name'),
-            'dragonblooded': game.i18n.localize('YOUR_FLAVOR.Layouts.DragonBlooded.Name'),
-            // Wave 3
-            'sakura': game.i18n.localize('YOUR_FLAVOR.Layouts.Sakura.Name'),
-            'thunderstorm': game.i18n.localize('YOUR_FLAVOR.Layouts.Thunderstorm.Name'),
-            'bloodmoon': game.i18n.localize('YOUR_FLAVOR.Layouts.Bloodmoon.Name'),
-            'crystalline': game.i18n.localize('YOUR_FLAVOR.Layouts.Crystalline.Name'),
-            'sandstorm': game.i18n.localize('YOUR_FLAVOR.Layouts.Sandstorm.Name'),
-            'plague': game.i18n.localize('YOUR_FLAVOR.Layouts.Plague.Name'),
-            'runic': game.i18n.localize('YOUR_FLAVOR.Layouts.Runic.Name'),
-            'synthwave': game.i18n.localize('YOUR_FLAVOR.Layouts.Synthwave.Name'),
-            'tavern': game.i18n.localize('YOUR_FLAVOR.Layouts.Tavern.Name'),
-            'enchanted': game.i18n.localize('YOUR_FLAVOR.Layouts.Enchanted.Name'),
-            'witchcraft': game.i18n.localize('YOUR_FLAVOR.Layouts.Witchcraft.Name')
+            none: game.i18n.localize('YOUR_FLAVOR.Settings.ForcePlayerLayout.Choices.None'),
+            ...Object.fromEntries(
+                getChatPresetChoices()
+                    .filter(preset => preset.id !== 'none')
+                    .map(preset => [preset.id, preset.name])
+            )
         },
         default: 'none',
         requiresReload: false
@@ -141,15 +81,38 @@ export function registerSettings() {
         requiresReload: false
     });
 
-    // GM Setting: Apply to all chat message types (rolls, cards, complex content)
+    // GM Setting: explicit chat message styling policy
+    const messageStylingPolicyChoices = Object.fromEntries(
+        MESSAGE_STYLING_POLICIES.map(policy => [policy.id, game.i18n.localize(policy.labelKey)])
+    );
+    game.settings.register(MODULE_ID, 'messageStylingPolicy', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.MessageStylingPolicy.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.MessageStylingPolicy.Hint'),
+        scope: 'world',
+        config: true,
+        type: String,
+        choices: messageStylingPolicyChoices,
+        default: MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY,
+        requiresReload: false
+    });
+
+    // Legacy world setting kept hidden for one-time migration from older versions.
     game.settings.register(MODULE_ID, 'applyToAllMessages', {
         name: game.i18n.localize('YOUR_FLAVOR.Settings.ApplyToAllMessages.Name'),
         hint: game.i18n.localize('YOUR_FLAVOR.Settings.ApplyToAllMessages.Hint'),
         scope: 'world',
-        config: true,
+        config: false,
         type: Boolean,
         default: false,
         requiresReload: false
+    });
+
+    game.settings.register(MODULE_ID, 'messageStylingPolicyMigrated', {
+        name: 'Message Styling Policy Migrated',
+        scope: 'world',
+        config: false,
+        type: Boolean,
+        default: false
     });
 
     // GM Setting: Unlock global Foundry shell customization
@@ -162,7 +125,7 @@ export function registerSettings() {
         default: false,
         requiresReload: false,
         onChange: value => {
-            globalThis.YourFlavor?.getFoundryCustomizer?.().handleFeatureToggle?.(value);
+            void globalThis.YourFlavor?.getFoundryCustomizer?.().handleFeatureToggle?.(value);
         }
     });
 
@@ -176,7 +139,9 @@ export function registerSettings() {
         default: true,
         requiresReload: false,
         onChange: () => {
-            globalThis.YourFlavor?.getFoundryCustomizer?.().refreshFromSettings?.();
+            const customizer = globalThis.YourFlavor?.getFoundryCustomizer?.();
+            customizer?.refreshFromSettings?.();
+            void customizer?.syncWorldProfileV2?.();
         }
     });
 
@@ -231,13 +196,22 @@ export function registerSettings() {
         }
     });
 
+    // World Setting: v2 world profile mirror for migration. Legacy settings remain active for now.
+    game.settings.register(MODULE_ID, WORLD_PROFILE_V2_SETTING, {
+        name: 'World Profile v2',
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: null
+    });
+
     // Register settings menu button
     game.settings.registerMenu(MODULE_ID, 'configureButton', {
         name: game.i18n.localize('YOUR_FLAVOR.Settings.Configure.Name'),
         label: game.i18n.localize('YOUR_FLAVOR.Settings.Configure.Label'),
         hint: game.i18n.localize('YOUR_FLAVOR.Settings.Configure.Hint'),
         icon: 'fas fa-palette',
-        type: FlavorConfigMenuButton,
+        type: FlavorConfigApp,
         restricted: false
     });
 
@@ -252,32 +226,13 @@ export function registerSettings() {
     });
 }
 
-/**
- * Placeholder class for the settings menu button
- * Will be replaced with actual FlavorConfigApp import
- */
-class FlavorConfigMenuButton extends FormApplication {
-    constructor() {
-        super();
-        // Import and open the actual config app
-        import('./ui/flavor-config-app.js').then(module => {
-            new module.FlavorConfigApp().render(true);
-        });
-    }
-
-    render() {
-        // Don't render this form, just open the config app
-        return this;
-    }
-}
-
-class FoundryCustomizationResetMenuButton extends FormApplication {
+class FoundryCustomizationResetMenuButton extends ApplicationV2 {
     constructor() {
         super();
         const title = game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryTitle');
         const content = game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryContent');
 
-        Dialog.confirm({
+        confirmDialog({
             title,
             content,
             yes: async () => {
@@ -286,6 +241,8 @@ class FoundryCustomizationResetMenuButton extends FormApplication {
                     await customizer.resetConfig();
                 } else {
                     const defaults = foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION);
+                    defaults.enabled = false;
+                    defaults.fieldOverrides = {};
                     await game.settings.set(MODULE_ID, 'sharedFoundryCustomization', defaults);
                     await game.settings.set(MODULE_ID, 'foundryCustomization', foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION));
                     customizer?.applyConfig?.(defaults);
@@ -297,7 +254,7 @@ class FoundryCustomizationResetMenuButton extends FormApplication {
         });
     }
 
-    render() {
+    async render() {
         return this;
     }
 }

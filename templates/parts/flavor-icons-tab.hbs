@@ -1,0 +1,223 @@
+            <section class="yf-section yf-icons-workspace">
+                <div class="yf-section-header">
+                    <i class="fas fa-icons"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.IconTabs.Selection"}}</h3>
+                </div>
+
+                <div class="yf-icon-selection-panel {{#if icons.selectionActive}}is-active{{/if}}">
+                    <div class="yf-icon-selection-status">
+                        <span>{{localize "YOUR_FLAVOR.Config.IconTabs.SelectedIcon"}}</span>
+                        <strong>{{icons.selectedLabel}}</strong>
+                        {{#if icons.selectedEntry}}
+                        <small>{{icons.selectedEntry.id}} / {{icons.selectedEntry.groupLabel}}</small>
+                        {{else}}
+                        <small>{{icons.statusLabel}}</small>
+                        {{/if}}
+                    </div>
+                    <div class="yf-icon-selection-actions">
+                        <button type="button" class="yf-btn {{#if icons.selectionActive}}yf-btn-secondary{{else}}yf-btn-primary{{/if}}" data-action="toggleIconSelectionMode" aria-pressed="{{#if icons.selectionActive}}true{{else}}false{{/if}}" title="{{icons.selectionButtonTitle}}">
+                            <i class="fas fa-crosshairs"></i> <span class="yf-btn-label">{{icons.selectionButtonLabel}}</span>
+                        </button>
+                        <button type="button" class="yf-btn yf-btn-ghost" data-action="clearSelectedIcon" title="{{icons.clearSelectionLabel}}" {{#unless icons.selectedEntry}}disabled{{/unless}}>
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <nav class="yf-icon-area-picker" aria-label="{{localize 'YOUR_FLAVOR.Config.IconTabs.Areas'}}">
+                    {{#each icons.areas}}
+                    <button type="button" class="yf-icon-area-pill {{this.className}}" data-action="switchIconArea" data-area="{{this.id}}" aria-pressed="{{#if this.isActive}}true{{else}}false{{/if}}" title="{{this.targetLabel}}">
+                        <i class="{{this.icon}}"></i>
+                        <span>{{this.label}}</span>
+                        <small>{{this.summary}}</small>
+                    </button>
+                    {{/each}}
+                </nav>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>{{icons.activeArea.label}}</h3>
+                </div>
+
+                <div class="yf-icon-active-area-summary">
+                    <span>{{localize "YOUR_FLAVOR.Config.IconTabs.TargetsInArea"}}</span>
+                    <strong>{{icons.activeArea.summary}}</strong>
+                </div>
+
+                <div class="yf-icon-target-grid">
+                    {{#each icons.activeArea.targets}}
+                    <button type="button" class="yf-icon-target-card {{#if this.isSelected}}is-selected{{/if}} {{#if this.hasCustomOverride}}has-override{{/if}} {{#if this.isHidden}}is-hidden-override{{/if}}" data-action="selectIconPreview" data-icon-id="{{this.id}}" style="{{this.style}}" aria-pressed="{{#if this.isSelected}}true{{else}}false{{/if}}" title="{{this.title}}">
+                        <span class="yf-icon-target-sample" aria-hidden="true">
+                            <i class="{{this.iconClass}}" data-icon-preview-icon></i>
+                        </span>
+                        <span class="yf-icon-target-copy">
+                            <strong>{{this.label}}</strong>
+                            <small>{{this.groupLabel}} / <span data-icon-preview-source>{{this.sourceLabel}}</span> / {{this.statusLabel}}</small>
+                            {{#if this.isHidden}}
+                            <span class="yf-icon-hidden-badge"><i class="fas fa-eye-slash"></i>{{this.hiddenLabel}}</span>
+                            {{/if}}
+                        </span>
+                        <span class="yf-icon-preview-swatches" aria-hidden="true">
+                            {{#each this.states}}
+                            <span class="yf-icon-preview-swatch {{this.className}}" data-icon-preview-swatch="{{this.key}}" style="{{this.style}}" title="{{this.label}}: {{this.color}}"></span>
+                            {{/each}}
+                        </span>
+                    </button>
+                    {{/each}}
+                    {{#unless icons.activeArea.targets.length}}
+                    <div class="yf-status-card yf-status-card-wide">
+                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.IconTabs.TargetsInArea"}}</span>
+                        <strong>{{localize "YOUR_FLAVOR.Config.IconTabs.NoTargetsInArea"}}</strong>
+                    </div>
+                    {{/unless}}
+                </div>
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-sliders"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.IconTabs.Inspector"}}</h3>
+                </div>
+
+                {{#if icons.inspector}}
+                {{#with icons.inspector}}
+                <div class="yf-icon-inspector-card">
+                    <div class="yf-icon-inspector-meta">
+                        <div>
+                            <span>{{localize "YOUR_FLAVOR.Config.IconTabs.Group"}}</span>
+                            <strong>{{groupLabel}}</strong>
+                        </div>
+                        <div>
+                            <span>{{localize "YOUR_FLAVOR.Config.IconTabs.Area"}}</span>
+                            <strong>{{areaLabel}}</strong>
+                        </div>
+                    </div>
+
+                    <div class="yf-icon-inherit-row">
+                        <span>{{inheritLabel}}</span>
+                        <label class="yf-toggle-switch yf-toggle-mini" title="{{inheritLabel}}">
+                            <input type="checkbox" name="iconOverride.inheritGroup" {{#if inheritGroup}}checked{{/if}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="yf-icon-visibility-card {{#if hidden}}is-hidden{{/if}} {{#unless canHideIcon}}is-disabled{{/unless}}">
+                        <div class="yf-icon-visibility-copy">
+                            <span>{{visibilityLabel}}</span>
+                            <strong>{{visibilityStatusLabel}}</strong>
+                            <small>{{visibilityHint}}</small>
+                        </div>
+                        <label class="yf-toggle-switch" title="{{hideIconLabel}}">
+                            <input type="checkbox" name="{{hiddenName}}" {{#if hidden}}checked{{/if}} {{#unless canHideIcon}}disabled{{/unless}}>
+                            <span class="yf-toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="yf-icon-color-grid {{#if inheritGroup}}is-inherited{{/if}}">
+                        {{#each fields}}
+                        <label class="yf-color-chip yf-icon-color-control {{this.className}}">
+                            <span>{{this.label}}</span>
+                            <input type="color" name="{{this.name}}" class="yf-color-swatch" value="{{this.value}}" {{#if ../inheritGroup}}disabled{{/if}}>
+                            <small>{{this.sourceLabel}} / {{this.inheritedText}}</small>
+                        </label>
+                        {{/each}}
+                    </div>
+
+                    <div class="yf-icon-picker-control {{#unless canChangeIcon}}is-disabled{{/unless}}" data-icon-picker-control>
+                        <div class="yf-icon-picker-header">
+                            <span>{{iconPickerLabel}}</span>
+                            <small>{{iconClassHint}}</small>
+                        </div>
+
+                        {{#if canChangeIcon}}
+                        <div class="yf-icon-picker-toolbar">
+                            <label class="yf-icon-picker-search">
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                                <input type="search" class="yf-input" data-icon-picker-search aria-label="{{iconPickerSearchLabel}}" placeholder="{{iconPickerSearchPlaceholder}}">
+                            </label>
+                            <label class="yf-icon-picker-category">
+                                <span>{{iconPicker.categoryLabel}}</span>
+                                <select class="yf-select" data-icon-picker-category aria-label="{{iconPicker.categoryLabel}}">
+                                    {{#each iconPicker.categories}}
+                                    <option value="{{this.id}}" {{#if this.isActive}}selected{{/if}}>{{this.label}} ({{this.count}})</option>
+                                    {{/each}}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="yf-icon-picker-summary">
+                            <small data-icon-picker-result-count>{{iconPicker.resultCountLabel}}</small>
+                        </div>
+
+                        <div class="yf-icon-picker-grid">
+                            {{#each iconPicker.choices}}
+                            <button type="button" class="yf-icon-picker-choice {{#if this.isSelected}}is-selected{{/if}}" data-action="chooseIconClass" data-icon-class="{{this.className}}" data-icon-picker-choice data-icon-search="{{this.searchText}}" data-icon-category="{{this.category}}" data-icon-recommended="{{#if this.recommended}}true{{else}}false{{/if}}" aria-pressed="{{#if this.isSelected}}true{{else}}false{{/if}}" title="{{this.label}} / {{this.className}}" {{#unless this.isVisible}}hidden{{/unless}}>
+                                <i class="{{this.className}}" aria-hidden="true"></i>
+                                <span>{{this.label}}</span>
+                            </button>
+                            {{/each}}
+                            <div class="yf-icon-picker-empty" data-icon-picker-empty {{#if iconPicker.choices.length}}hidden{{/if}}>
+                                {{iconPicker.noResultsLabel}}
+                            </div>
+                        </div>
+
+                        <details class="yf-icon-class-advanced">
+                            <summary>{{iconClassAdvancedLabel}}</summary>
+                            <label class="yf-icon-class-control">
+                                <span>{{iconClassLabel}}</span>
+                                <input type="text" name="{{iconClassName}}" class="yf-input yf-live-input" value="{{iconClassValue}}" placeholder="{{iconClassPlaceholder}}">
+                            </label>
+                        </details>
+                        {{else}}
+                        <label class="yf-icon-class-control is-disabled">
+                            <span>{{iconClassLabel}}</span>
+                            <input type="text" name="{{iconClassName}}" class="yf-input yf-live-input" value="{{iconClassValue}}" placeholder="{{iconClassPlaceholder}}" disabled>
+                        </label>
+                        {{/if}}
+                    </div>
+
+                    <div class="yf-icon-inspector-actions">
+                        <button type="button" class="yf-btn yf-btn-ghost" data-action="resetSelectedIconOverride" title="{{resetTitle}}" {{#unless hasOverride}}disabled{{/unless}}>
+                            <i class="fas fa-rotate-left"></i> <span class="yf-btn-label">{{resetLabel}}</span>
+                        </button>
+                    </div>
+                </div>
+                {{/with}}
+                {{else}}
+                <div class="yf-status-card yf-status-card-wide">
+                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.IconTabs.SelectedIcon"}}</span>
+                    <strong>{{icons.noInspectorLabel}}</strong>
+                </div>
+                {{/if}}
+            </section>
+
+            <section class="yf-section">
+                <div class="yf-section-header">
+                    <i class="fas fa-palette"></i>
+                    <h3>{{localize "YOUR_FLAVOR.Config.IconTabs.AreaGroups"}}</h3>
+                </div>
+                <div class="yf-icon-group-grid">
+                    {{#each icons.groups}}
+                    <article class="yf-icon-group-card">
+                        <header class="yf-icon-group-header">
+                            <div>
+                                <span>{{this.label}}</span>
+                                <strong>{{this.summaryLabel}}</strong>
+                                <small>{{this.previewSummary}}</small>
+                            </div>
+                        </header>
+                        <div class="yf-icon-group-fields">
+                            {{#each this.fields}}
+                            <label class="yf-color-chip yf-icon-group-control {{this.className}} {{#if this.nullable}}yf-nullable-color-chip{{/if}} {{#if this.isStock}}is-stock{{/if}}">
+                                <span>{{this.label}}</span>
+                                <input type="color" name="{{this.name}}" class="yf-color-swatch {{#if this.nullable}}yf-nullable-color{{/if}} {{#if this.isStock}}is-stock{{/if}}" value="{{this.value}}" {{#if this.nullable}}data-nullable-color="true" data-stock="{{#if this.isStock}}true{{else}}false{{/if}}" data-stock-label="{{this.stockLabel}}" data-clear-title="{{this.clearTitle}}"{{/if}}>
+                                {{#if this.isStock}}<small>{{this.stockLabel}}</small>{{/if}}
+                            </label>
+                            {{/each}}
+                        </div>
+                    </article>
+                    {{/each}}
+                </div>
+            </section>

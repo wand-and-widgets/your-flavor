@@ -1,6 +1,6 @@
 # Your Flavor
 
-A chat message customization module for Foundry VTT v13. Allow players to personalize their chat messages with beautiful layouts and styles without affecting system rolls or item cards.
+A chat message customization module for Foundry VTT v13 and v14. Allow players to personalize their chat messages with beautiful layouts and styles without affecting system rolls or item cards.
 
 ## Features
 
@@ -80,7 +80,7 @@ api.getManager();
 
 ## Compatibility
 
-- **Foundry VTT**: v13+
+- **Foundry VTT**: v13 and v14
 - **Systems**: System-agnostic (works with any system)
 - Automatically detects and skips:
   - Dice rolls
