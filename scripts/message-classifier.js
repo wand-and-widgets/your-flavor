@@ -33,7 +33,7 @@ const ROLL_SELECTORS = [
     '.damage-roll'
 ];
 
-const FIRST_CLASS_CARD_SYSTEM_IDS = new Set(['dnd5e', 'pf2e', 'generic']);
+const FIRST_CLASS_CARD_SYSTEM_IDS = new Set(['dnd5e', 'pf2e', 'shadowdark', 'generic']);
 
 const ITEM_CARD_SELECTORS = [
     '.item-card',
@@ -325,7 +325,7 @@ function hasSystemCardFlags(flags = {}) {
 }
 
 function detectSystemId(message, html) {
-    const flagIds = ['dnd5e', 'pf2e', 'swade', 'wfrp4e', 'coc7'];
+    const flagIds = ['dnd5e', 'pf2e', 'shadowdark', 'swade', 'wfrp4e', 'coc7'];
     const flags = message?.flags || {};
     for (const id of flagIds) {
         if (flags[id]) return id;

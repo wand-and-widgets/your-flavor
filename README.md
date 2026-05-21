@@ -1,13 +1,17 @@
 # Your Flavor
 
-A chat message customization module for Foundry VTT v13 and v14. Allow players to personalize their chat messages with beautiful layouts and styles without affecting system rolls or item cards.
+A visual customization studio for Foundry VTT v13 and v14. Style chat messages, rolls, item and system cards, the Foundry shell, interface icons, and shared table visuals with live previews and GM controls.
 
 ## Features
 
 - **40+ Layout Presets** - Choose from elegant, parchment, royal, class-themed (mage, warrior, bard), race-themed (elf, dwarf, orc), and more
 - **Full Customization** - Customize fonts, colors, borders, glows, shadows, and more
 - **Google Fonts** - Beautiful fantasy fonts like Cinzel, Tangerine, Pirata One
-- **Smart Detection** - Automatically skips system rolls, item cards, and complex messages
+- **Roll and Card Styling** - Theme dice rolls, item cards, supported system cards, and safe generic card fallbacks
+- **Foundry Shell Styling** - Customize core interface surfaces, controls, sidebar, hotbar, scene navigation, player list, pause indicator, and more
+- **Icon Customization** - Recolor, replace, hide, and tune Foundry interface icons
+- **Visual Sharing** - Export and import themed visual profiles for chat, rolls, cards, Foundry shell, icons, and presets
+- **Diagnostics and Reset Tools** - Check selector health, inspect safe fallbacks, and restore stock visuals without disabling the module
 - **GM Controls** - Force layouts for players or allow free customization
 - **Multi-language** - English and Portuguese (Brazil) support
 - **Per-User Settings** - Each player can have their own style
@@ -61,6 +65,7 @@ Create your own unique style with full control over every option
 - **Force Player Layout** - Make all players use a specific layout
 - **Allow Player Customization** - Toggle whether players can customize their own style
 - **Apply to Whispers** - Choose if styling applies to whispered messages
+- **Message Styling Policy** - Choose whether Your Flavor styles simple chat only, rolls, cards, or supported roll/card fixtures
 
 ## API
 
@@ -82,11 +87,13 @@ api.getManager();
 
 - **Foundry VTT**: v13 and v14
 - **Systems**: System-agnostic (works with any system)
-- Automatically detects and skips:
+- Safely detects:
+  - Simple chat messages
   - Dice rolls
-  - D&D 5e item cards
-  - PF2e, SWADE, WFRP4e, CoC7 system messages
-  - Complex HTML content
+  - D&D5e item and ability cards
+  - PF2e action and spell cards
+  - Generic system cards with safe outer-only fallbacks
+  - Complex HTML that should remain untouched
 
 ## Support
 

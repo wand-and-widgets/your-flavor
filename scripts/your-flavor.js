@@ -101,6 +101,7 @@ class YourFlavor {
         const allowedPolicies = new Set(Object.values(MESSAGE_STYLING_POLICY_IDS));
         const policy = game.settings.get(MODULE_ID, 'messageStylingPolicy');
         const migrationDone = game.settings.get(MODULE_ID, 'messageStylingPolicyMigrated');
+        const v401MigrationDone = game.settings.get(MODULE_ID, 'messageStylingPolicyV401Migrated');
         if (
             !migrationDone
             && policy === MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY
@@ -108,11 +109,12 @@ class YourFlavor {
         ) {
             return MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
         }
+        if (!v401MigrationDone && policy === MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY) {
+            return MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
+        }
         if (allowedPolicies.has(policy)) return policy;
 
-        return game.settings.get(MODULE_ID, 'applyToAllMessages')
-            ? MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES
-            : MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY;
+        return MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
     }
 
     /**
@@ -564,12 +566,10 @@ class YourFlavor {
     }
 
     _canStyleRollSurfaces(config, classification) {
-        if (!classification?.isRoll) return true;
-
         const rolls = config?.rolls;
         if (rolls?.enabled === false) return false;
 
-        const systemId = classification.systemId === 'dnd5e' || classification.systemId === 'pf2e'
+        const systemId = classification?.systemId === 'dnd5e' || classification?.systemId === 'pf2e'
             ? classification.systemId
             : 'generic';
         return rolls?.systems?.[systemId]?.enabled !== false;

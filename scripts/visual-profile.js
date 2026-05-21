@@ -388,7 +388,7 @@ function normalizeVisualSettingValue(key, value) {
         case 'messageStylingPolicy':
             return MESSAGE_STYLING_POLICY_VALUES.has(value)
                 ? value
-                : MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY;
+                : MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
         default:
             return undefined;
     }

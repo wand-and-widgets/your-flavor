@@ -866,9 +866,7 @@ export function normalizePolicy(settings = {}) {
         messageStylingPolicy: enumValue(
             source.messageStylingPolicy,
             MESSAGE_STYLING_POLICY_VALUES,
-            toBoolean(source.applyToAllMessages, false)
-                ? MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES
-                : MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY
+            MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES
         ),
         forcedChatProfileId: source.forcedChatProfileId ?? (legacyForcedLayout ? `preset:${legacyForcedLayout}` : null)
     };

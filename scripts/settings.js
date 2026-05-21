@@ -92,7 +92,7 @@ export function registerSettings() {
         config: true,
         type: String,
         choices: messageStylingPolicyChoices,
-        default: MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY,
+        default: MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES,
         requiresReload: false
     });
 
@@ -109,6 +109,14 @@ export function registerSettings() {
 
     game.settings.register(MODULE_ID, 'messageStylingPolicyMigrated', {
         name: 'Message Styling Policy Migrated',
+        scope: 'world',
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
+    game.settings.register(MODULE_ID, 'messageStylingPolicyV401Migrated', {
+        name: 'Message Styling Policy v4.0.1 Migrated',
         scope: 'world',
         config: false,
         type: Boolean,

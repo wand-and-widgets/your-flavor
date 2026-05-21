@@ -1,8 +1,8 @@
 {
   "id": "your-flavor",
   "title": "Your Flavor",
-  "description": "Customize your chat messages with beautiful layouts and styles. Each player can personalize how their messages appear in the chat without affecting system rolls or item cards. Features include multiple layout presets, custom fonts from Google Fonts, color customization, glows and shadows, and GM controls for player styling.",
-  "version": "4.0.0",
+  "description": "A full visual customization studio for Foundry VTT. Theme chat messages, rolls, item and system cards, the Foundry shell, interface icons, and shared table visuals with presets, live preview, safe roll/card handling, visual sharing, diagnostics, and GM controls.",
+  "version": "4.0.1",
   "compatibility": {
     "minimum": "13",
     "verified": "14"

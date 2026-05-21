@@ -38,6 +38,7 @@ export class FlavorManager {
      */
     async initialize() {
         await this._migrateMessageStylingPolicySetting();
+        await this._migrateMessageStylingPolicyDefaultForV401();
         await this._migrateCurrentUserFlagsToV2();
     }
 
@@ -495,6 +496,27 @@ export class FlavorManager {
     }
 
     /**
+     * Your Flavor 4.0 briefly shipped with the conservative legacy policy as
+     * the default, which blocked the new Rolls and Cards tabs from applying.
+     * @private
+     */
+    async _migrateMessageStylingPolicyDefaultForV401() {
+        if (!game.user?.isGM) return;
+        if (game.settings.get(MODULE_ID, 'messageStylingPolicyV401Migrated')) return;
+
+        const currentPolicy = game.settings.get(MODULE_ID, 'messageStylingPolicy');
+        if (currentPolicy === MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY) {
+            await game.settings.set(
+                MODULE_ID,
+                'messageStylingPolicy',
+                MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES
+            );
+        }
+
+        await game.settings.set(MODULE_ID, 'messageStylingPolicyV401Migrated', true);
+    }
+
+    /**
      * Save a v2 profile mirror for the current user's legacy chat config.
      * @param {Object} config
      * @param {Object} options
@@ -626,11 +648,15 @@ export class FlavorManager {
     _getEffectiveMessageStylingPolicySetting() {
         const policy = game.settings.get(MODULE_ID, 'messageStylingPolicy');
         const migrationDone = game.settings.get(MODULE_ID, 'messageStylingPolicyMigrated');
+        const v401MigrationDone = game.settings.get(MODULE_ID, 'messageStylingPolicyV401Migrated');
         if (
             !migrationDone
             && policy === MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY
             && game.settings.get(MODULE_ID, 'applyToAllMessages')
         ) {
+            return MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
+        }
+        if (!v401MigrationDone && policy === MESSAGE_STYLING_POLICY_IDS.SIMPLE_ONLY) {
             return MESSAGE_STYLING_POLICY_IDS.SUPPORTED_FIXTURES;
         }
         return policy;

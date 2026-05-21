@@ -2684,11 +2684,10 @@ export class FlavorPreviewController {
     }
 
     canStyleRollSurfaces(config, classification) {
-        if (!classification?.isRoll) return true;
         const rolls = config?.rolls;
         if (rolls?.enabled === false) return false;
 
-        const systemId = classification.systemId === 'dnd5e' || classification.systemId === 'pf2e'
+        const systemId = classification?.systemId === 'dnd5e' || classification?.systemId === 'pf2e'
             ? classification.systemId
             : 'generic';
         return rolls?.systems?.[systemId]?.enabled !== false;

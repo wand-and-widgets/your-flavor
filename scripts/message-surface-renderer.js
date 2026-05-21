@@ -104,7 +104,7 @@ export function renderMessageSurfaces(root, classification = {}, options = {}) {
 
     clearMessageSurfaces(root);
 
-    if (options.rolls !== false && isRollClassification(classification)) {
+    if (options.rolls !== false && (isRollClassification(classification) || hasRollSurfaceCandidates(root))) {
         result.rollSurfaces = renderSurfaceGroup(root, 'roll', ROLL_SURFACES);
     }
 
@@ -143,6 +143,10 @@ function renderSurfaceGroup(root, role, surfaceMap) {
         }
     }
     return marked;
+}
+
+function hasRollSurfaceCandidates(root) {
+    return Object.values(ROLL_SURFACES).some(selectors => queryAll(root, selectors).size > 0);
 }
 
 function markSurface(element, role, surface) {

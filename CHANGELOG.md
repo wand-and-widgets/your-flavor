@@ -2,6 +2,13 @@
 
 All notable changes to the Your Flavor module will be documented in this file.
 
+## [4.0.1] - 2026-05-20
+
+### Fixed
+- Rolls and card messages now use the 4.0 roll/card styling surfaces by default instead of being blocked by the legacy simple-chat-only policy.
+- Existing 4.0.0 worlds with the accidental simple-chat-only default are migrated once to the supported roll/card policy.
+- Shadowdark cards are treated as supported generic cards, and roll surfaces inside supported cards can now receive the configured roll styling.
+
 ## [4.0.0] - 2026-05-20
 
 ### Added
