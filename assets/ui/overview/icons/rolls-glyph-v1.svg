@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- d20 seen face-on. The silhouette of an icosahedron in that view is a
+       regular hexagon (pointy-top), not a pentagon, and the visible facets all
+       meet at one central triangle. The previous glyph drew a pentagon crossed
+       by edges belonging to no consistent projection, which is what made the
+       interior read as crooked lines rather than as a die. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6dc87"/>
+      <stop offset=".52" stop-color="#bd8830"/>
+      <stop offset="1" stop-color="#6b4613"/>
+    </linearGradient>
+  </defs>
+  <!-- Hexagon, circumradius 28 about (32,32): height 2R = 56, width R*sqrt(3) = 48.5. -->
+  <path d="M32 4 56.2 18v28L32 60 7.8 46V18Z"
+        fill="#2a190d" stroke="url(#g)" stroke-width="2.7" stroke-linejoin="round"/>
+  <!-- Central face: equilateral, side 28, height 24. -->
+  <path d="M32 17 46 41H18Z"
+        fill="none" stroke="#dcb95c" stroke-width="1.7" stroke-linejoin="round" opacity=".92"/>
+  <!-- The three edges running from that face to alternating hexagon vertices.
+       Only three of the nine are drawn: at 40px the full projection turns to mush. -->
+  <path d="M32 17V4M18 41 7.8 46M46 41 56.2 46"
+        fill="none" stroke="#dcb95c" stroke-width="1.35" stroke-linecap="round" opacity=".72"/>
+  <!-- Sits on the central face's centroid (y=33), nudged down by the cap height
+       so it reads as centred rather than as floating above the base edge. -->
+  <text x="32" y="37.5" fill="#f6dc94" font-family="Georgia,serif" font-size="14.5" font-weight="700" text-anchor="middle">20</text>
+</svg>

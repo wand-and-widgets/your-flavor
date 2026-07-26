@@ -1,0 +1,99 @@
+<aside class="yf-preview-panel yf-foundry-sidebar-preview">
+    <header class="yf-foundry-sidebar-preview-header">
+        <span class="yf-foundry-sidebar-preview-medallion" aria-hidden="true">
+            <i class="fas fa-table-columns"></i>
+        </span>
+        <span class="yf-foundry-sidebar-preview-copy">
+            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.SidebarPreviewTitle"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewDraftHint"}}</small>
+        </span>
+        <span class="yf-foundry-sidebar-preview-hint">
+            {{localize "YOUR_FLAVOR.Config.Foundry.SidebarPreviewHint"}}
+        </span>
+    </header>
+
+    <div class="yf-preview-container yf-foundry-preview-container">
+        <div class="yf-foundry-area-focus">
+            <div class="yf-foundry-area-pane is-draft">
+                <div class="{{foundryAreaPreviewAfter.className}}" data-preview-state="after" data-preview-area="sidebar" style="{{foundryAreaPreviewAfter.style}}">
+                    <div class="yf-foundry-area-real-snapshot" data-foundry-real-snapshot aria-hidden="true"></div>
+                    <div class="yf-foundry-area-fixture yf-area-fixture-sidebar" data-foundry-preview-component="sidebar">
+                        <nav class="yf-sidebar-preview-tabs" aria-hidden="true">
+                            <span class="yf-sidebar-preview-tab"><i class="fas fa-comments"></i></span>
+                            <span class="yf-sidebar-preview-tab is-active"><i class="fas fa-user"></i><span class="yf-sidebar-preview-pip"></span></span>
+                            <span class="yf-sidebar-preview-tab"><i class="fas fa-suitcase"></i></span>
+                            <span class="yf-sidebar-preview-tab"><i class="fas fa-map"></i></span>
+                            <span class="yf-sidebar-preview-tab"><i class="fas fa-book-open"></i></span>
+                            <span class="yf-sidebar-preview-tab"><i class="fas fa-music"></i></span>
+                            <span class="yf-sidebar-preview-tab is-collapse"><i class="fas fa-caret-right"></i></span>
+                        </nav>
+                        <section class="yf-sidebar-preview-panel">
+                            <header class="yf-sidebar-preview-header">
+                                <div class="yf-sidebar-preview-actions">
+                                    <span><i class="fas fa-plus"></i></span>
+                                    <span><i class="fas fa-folder-plus"></i></span>
+                                </div>
+                                <div class="yf-sidebar-preview-search">
+                                    <i class="fas fa-search"></i>
+                                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarSearch"}}</span>
+                                    <i class="fas fa-sort-alpha-down"></i>
+                                </div>
+                            </header>
+                            <div class="yf-sidebar-preview-list">
+                                <div class="yf-sidebar-preview-folder is-open">
+                                    <div class="yf-sidebar-preview-folder-header">
+                                        <i class="fas fa-folder-open"></i>
+                                        <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarFolderParty"}}</strong>
+                                        <span>3</span>
+                                    </div>
+                                    <div class="yf-sidebar-preview-subdirectory">
+                                        <div class="yf-sidebar-preview-entry is-active">
+                                            <span class="yf-sidebar-preview-thumb"></span>
+                                            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorOne"}}</strong>
+                                            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorType"}}</small>
+                                        </div>
+                                        <div class="yf-sidebar-preview-entry is-hover">
+                                            <span class="yf-sidebar-preview-thumb"></span>
+                                            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorTwo"}}</strong>
+                                            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorType"}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="yf-sidebar-preview-folder">
+                                    <div class="yf-sidebar-preview-folder-header">
+                                        <i class="fas fa-folder"></i>
+                                        <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarFolderNPCs"}}</strong>
+                                        <span>8</span>
+                                    </div>
+                                </div>
+                                <div class="yf-sidebar-preview-entry">
+                                    <span class="yf-sidebar-preview-thumb"></span>
+                                    <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorThree"}}</strong>
+                                    <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorType"}}</small>
+                                </div>
+                                <div class="yf-sidebar-preview-entry is-muted">
+                                    <span class="yf-sidebar-preview-thumb"></span>
+                                    <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorFour"}}</strong>
+                                    <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewSidebarActorType"}}</small>
+                                </div>
+                                <div class="yf-sidebar-preview-scrollbar"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="yf-preview-note">
+        <i class="fas fa-bolt"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+    </div>
+    <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+        {{#if foundryConfig.enabled}}
+            <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+        {{else}}
+            <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+        {{/if}}
+    </div>
+</aside>

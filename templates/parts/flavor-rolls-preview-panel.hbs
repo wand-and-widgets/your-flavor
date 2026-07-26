@@ -1,0 +1,52 @@
+<aside class="yf-preview-panel yf-rolls-preview" aria-label="{{localize 'YOUR_FLAVOR.Config.RollsDesign.LivePreview'}}">
+    <div class="yf-rolls-panel-heading">
+        <h2>{{localize "YOUR_FLAVOR.Config.RollsDesign.LivePreview"}}</h2>
+    </div>
+
+    <div class="yf-roll-preview-modes" role="tablist" aria-label="{{localize 'YOUR_FLAVOR.Config.RollsDesign.PreviewStates'}}">
+        {{#each rollTabs.preview}}
+        <button type="button"
+                class="yf-roll-preview-mode is-{{this.id}} {{#if this.isActive}}is-active{{/if}}"
+                data-action="switchRollPreviewState"
+                data-roll-preview="{{this.id}}"
+                role="tab"
+                aria-selected="{{#if this.isActive}}true{{else}}false{{/if}}"
+                tabindex="{{#if this.isActive}}0{{else}}-1{{/if}}">
+            {{this.label}}
+        </button>
+        {{/each}}
+    </div>
+
+    {{#if previewCompare}}
+    <section class="yf-roll-proof-state is-draft">
+        <span class="yf-roll-proof-label">{{previewCompare.afterLabel}}</span>
+        <article class="yf-preview-card yf-preview-compare-card yf-roll-preview-card yf-card yf-card-{{previewCompare.afterLayout}} {{previewCompare.fixture.messageClassString}}"
+                 data-preview-slot="comparison"
+                 data-preview-state="after"
+                 data-preview-fixture="{{previewCompare.fixture.id}}"
+                 data-preview-roll-outcome="{{rollTabs.activePreviewState}}"
+                 data-fixture-classes="yf-roll-preview-card {{previewCompare.fixture.messageClassString}}">
+            <div class="yf-preview-header">
+                <img src="{{previewCompare.fixture.speaker.avatar}}" alt="{{previewCompare.fixture.speaker.name}}" class="yf-preview-avatar">
+                <div class="yf-preview-header-text">
+                    <span class="yf-preview-name">{{previewCompare.fixture.speaker.name}}</span>
+                    <span class="yf-preview-time">{{previewCompare.fixture.timestamp}}</span>
+                </div>
+            </div>
+            <div class="yf-preview-content">{{{previewCompare.fixture.html}}}</div>
+        </article>
+    </section>
+    {{/if}}
+
+    <div class="yf-preview-status {{#if rollTabs.enabled}}enabled{{else}}disabled{{/if}}" role="status">
+        {{#if rollTabs.enabled}}
+        <span class="yf-roll-status-dot" aria-hidden="true"></span>
+        {{localize "YOUR_FLAVOR.Config.RollsDesign.LiveActive"}}
+        {{else}}
+        <span class="yf-roll-status-dot" aria-hidden="true"></span>
+        {{localize "YOUR_FLAVOR.Config.RollsDesign.LiveInactive"}}
+        {{/if}}
+    </div>
+
+    <div class="yf-contrast-diagnostics is-empty" data-contrast-diagnostics role="region"></div>
+</aside>

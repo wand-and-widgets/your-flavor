@@ -5,6 +5,7 @@
  */
 
 export const ICON_REGISTRY_VERSION = 1;
+export const ICON_GLYPH_FALLBACK_CLASS = 'fas fa-icons';
 
 export const ICON_STATE_IDS = Object.freeze({
     DEFAULT: 'default',
@@ -777,19 +778,41 @@ export function getIconRegistryEntries({ area = null, group = null, localize = n
         .filter(entry => includeLegacy || !entry.legacy)
         .filter(entry => !area || entry.area === area)
         .filter(entry => !group || entry.defaultGroup === group)
-        .map(entry => withLabel({
+        .map(entry => withIconGlyphPresentation(withLabel({
             ...entry,
             states: entry.states.map(state => withLabel(state, localize))
-        }, localize));
+        }, localize)));
 }
 
 export function getIconRegistryEntry(iconId, { localize = null } = {}) {
     const entry = ICON_REGISTRY_BY_ID[iconId] || null;
     if (!entry) return null;
-    return withLabel({
+    return withIconGlyphPresentation(withLabel({
         ...entry,
         states: entry.states.map(state => withLabel(state, localize))
-    }, localize);
+    }, localize));
+}
+
+/**
+ * Resolve the decorative glyph shown for an icon-registry entry.
+ *
+ * The registry's actual iconClass is authoritative. The generic Icons glyph is
+ * reserved for entries that genuinely have no usable mapping.
+ */
+export function resolveIconGlyphPresentation(entry = {}, {
+    fallbackIconClass = ICON_GLYPH_FALLBACK_CLASS
+} = {}) {
+    const mappedIconClass = normalizeIconClassList(entry?.iconClass).join(' ');
+    const normalizedFallback = normalizeIconClassList(fallbackIconClass).join(' ')
+        || ICON_GLYPH_FALLBACK_CLASS;
+    const hasResolvedGlyph = Boolean(mappedIconClass)
+        && mappedIconClass !== ICON_GLYPH_FALLBACK_CLASS;
+
+    return {
+        displayIconClass: hasResolvedGlyph ? mappedIconClass : normalizedFallback,
+        hasResolvedGlyph,
+        usesFallbackGlyph: !hasResolvedGlyph
+    };
 }
 
 export function getIconOverrideRegistryEntry(iconId, override = {}, { localize = null } = {}) {
@@ -963,6 +986,13 @@ function iconEntry({
         legacy,
         states: stateVariants
     });
+}
+
+function withIconGlyphPresentation(entry) {
+    return {
+        ...entry,
+        ...resolveIconGlyphPresentation(entry)
+    };
 }
 
 function inspectIconEntry(entry, root, localize) {

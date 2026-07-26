@@ -11,10 +11,11 @@ import {
     MODULE_NAME,
     GOOGLE_FONTS,
     DEFAULT_CARD_CONFIG,
+    DEFAULT_CONFIG,
     DEFAULT_FOUNDRY_CUSTOMIZATION,
     DEFAULT_ROLL_CONFIG,
     FOUNDRY_CATEGORIES,
-    FOUNDRY_THEME_PRESETS,
+    MESSAGE_STYLING_POLICIES,
     PAUSE_BAR_SHAPES,
     PAUSE_BLEND_MODES,
     PAUSE_EFFECTS,
@@ -31,6 +32,12 @@ import {
     getChatPreset,
     getChatPresetChoices
 } from '../chat-presets.js';
+import {
+    applyFoundryThemeCompanion,
+    foundryThemeMatchesCompanion,
+    getFoundryThemeCompanionPreset,
+    getFoundryThemeCompanionPresets
+} from '../foundry-theme-companions.js';
 import {
     applyVisualProfileToDraft,
     buildVisualProfileExport,
@@ -75,15 +82,96 @@ import {
     preloadHandlebarsTemplates
 } from '../compatibility.js';
 import { FlavorConfigStore } from './config-store.js';
+import { attachControlSearch } from './control-search.js';
 import { FlavorChatTabController } from './chat-tab-controller.js';
 import { FlavorFoundryTabController } from './foundry-tab-controller.js';
+import {
+    buildIconSavedDraftComparison,
+    buildIconSelectionIdentity,
+    canHideIconEntry,
+    getEffectiveIconClass,
+    iconOverrideHasCustomization
+} from './icons-tab-model.js';
 import { FlavorPreviewController } from './preview-controller.js';
+import { attachFontPreviewChoosers } from './scene-navigation-font-chooser.js';
+import {
+    FlavorRollsTabController,
+    ROLL_PREVIEW_STATE_IDS
+} from './rolls-tab-controller.js';
 
-const CONFIG_APP_DEFAULT_POSITION = Object.freeze({ width: 1240, height: 740 });
-const CONFIG_APP_MIN_POSITION = Object.freeze({ width: 680, height: 520 });
-const CONFIG_APP_SCENE_NAVIGATION_POSITION = Object.freeze({ width: 760, height: 620 });
+/* The single frame every tab is designed, measured and verified against. Nothing
+ * in the app may ask for a different size: one canonical layout is the whole
+ * point, so that what the author approves is what every table sees. Screens that
+ * cannot hold it receive this same layout scaled down as one piece.
+ *
+ * The per-area constants below are spelled out rather than aliased because each
+ * one is pinned by its own verify-*.mjs contract, and those contracts are what
+ * stop an area from quietly drifting to a size nobody designed. The equality
+ * between them is itself asserted (see verify-overview-contract), so the
+ * duplication cannot rot into disagreement. */
+const CONFIG_APP_CANONICAL_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_DEFAULT_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_OVERVIEW_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_CHAT_ROLLS_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_SCENE_NAVIGATION_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_TOKEN_CONTROLS_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_MACRO_BAR_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_SIDEBAR_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_CHAT_LOG_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_PLAYER_LIST_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_WINDOWS_POSITION = Object.freeze({ width: 1512, height: 1040 });
+const CONFIG_APP_PAUSE_POSITION = Object.freeze({ width: 1512, height: 1040 });
+// The frame never shrinks below the canonical layout; small screens scale it.
+const CONFIG_APP_MIN_POSITION = Object.freeze({ width: 1512, height: 1040 });
+// Every tab is a fixed workspace now, so the set covers all of them.
+const CONFIG_APP_FIXED_TABS = new Set(['overview', 'chat', 'rolls', 'cards', 'foundry', 'icons', 'changes', 'diagnostics']);
+const CONFIGURATION_WORLD_SETTING_KEYS = new Set([
+    'moduleEnabled',
+    'allowPlayerCustomization',
+    'forcePlayerLayout',
+    'allowCustomHtml',
+    'applyToWhispers',
+    'messageStylingPolicy',
+    'enableFoundryCustomization',
+    'shareFoundryCustomization'
+]);
+const FOUNDRY_THEME_CAROUSEL_PAGE_SIZE = 10;
+// Fallback for when the grid has not resolved yet: two rows of five, minus the
+// pinned cards. The live value comes from _getChatPresetPageSize(), which reads
+// the real column count so narrower windows still get exactly two rows.
+const CHAT_PRESET_CAROUSEL_PAGE_SIZE = 8;
+// 'none' and 'custom' are never filtered and never paged, so they always occupy
+// two cells of the first page.
+const CHAT_PRESET_PINNED_COUNT = 2;
 const CONFIG_APP_VIEWPORT_MARGIN = 32;
 const CHAT_PREVIEW_WIDTH = Object.freeze({ fallback: 320, min: 280, max: 420 });
+const CARD_PREVIEW_FIXTURE_IDS = new Set([
+    'item-card-dnd5e',
+    'action-card-pf2e',
+    'system-card-generic'
+]);
+const ROLL_PREVIEW_FIXTURE_BY_STATE = Object.freeze({
+    basic: 'roll-basic',
+    breakdown: 'roll-tooltip',
+    critical: 'roll-tooltip',
+    failure: 'roll-tooltip'
+});
+const CHAT_FIXTURE_ICON_ASSETS = Object.freeze({
+    'chat-simple': `modules/${MODULE_ID}/assets/ui/overview/icons/chat-glyph-v1.svg`,
+    'chat-whisper': `modules/${MODULE_ID}/assets/ui/chat-basics/icons/fixture-whisper-glyph-v1.svg`,
+    'roll-basic': `modules/${MODULE_ID}/assets/ui/overview/icons/rolls-glyph-v1.svg`,
+    'roll-tooltip': `modules/${MODULE_ID}/assets/ui/chat-basics/icons/fixture-tooltip-glyph-v1.svg`,
+    'item-card-dnd5e': `modules/${MODULE_ID}/assets/ui/chat-basics/icons/fixture-item-glyph-v1.svg`,
+    'action-card-pf2e': `modules/${MODULE_ID}/assets/ui/chat-basics/icons/fixture-action-glyph-v1.svg`,
+    'system-card-generic': `modules/${MODULE_ID}/assets/ui/chat-basics/icons/fixture-system-glyph-v1.svg`
+});
+const CHAT_FIXTURE_ICON_CLASSES = Object.freeze({
+    'roll-basic': 'fas fa-dice-d20',
+    'roll-tooltip': 'fas fa-magnifying-glass-chart',
+    'item-card-dnd5e': 'fas fa-scroll',
+    'action-card-pf2e': 'fas fa-bolt',
+    'system-card-generic': 'fas fa-table-list'
+});
 const FOUNDRY_DATA_SOURCE = 'data';
 const PAUSE_UPLOAD_FALLBACK_DIRECTORY = 'your-flavor/pause';
 const PAUSE_UPLOAD_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,video/webm,video/mp4,video/ogg';
@@ -138,7 +226,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             title: 'YOUR_FLAVOR.Config.Title',
             icon: 'fas fa-palette',
             minimizable: true,
-            resizable: true
+            // The window is a fixed frame: every tab is designed and verified against one
+            // size, so resizing could only produce layouts nobody checked.
+            resizable: false
         },
         position: {
             width: CONFIG_APP_DEFAULT_POSITION.width,
@@ -149,11 +239,14 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             save: FlavorConfigApp.#onSave,
             reset: FlavorConfigApp.#onReset,
             factoryReset: FlavorConfigApp.#onFactoryReset,
+            disableChatStyling: FlavorConfigApp.#onDisableChatStyling,
+            emergencyResetFoundry: FlavorConfigApp.#onEmergencyResetFoundry,
             resetArea: FlavorConfigApp.#onResetArea,
             resetFoundryStock: FlavorConfigApp.#onResetFoundryStock,
             test: FlavorConfigApp.#onTest,
             close: FlavorConfigApp.#onClose,
-            toggleAdvanced: FlavorConfigApp.#onToggleAdvanced,
+            openCustomHtmlEditor: FlavorConfigApp.#onOpenCustomHtmlEditor,
+            closeCustomHtmlEditor: FlavorConfigApp.#onCloseCustomHtmlEditor,
             exportVisual: FlavorConfigApp.#onExportVisual,
             importVisual: FlavorConfigApp.#onImportVisual,
             exportConfig: FlavorConfigApp.#onExport,
@@ -163,6 +256,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             toggleFavorite: FlavorConfigApp.#onToggleFavorite,
             resetChatToken: FlavorConfigApp.#onResetChatToken,
             resetRollToken: FlavorConfigApp.#onResetRollToken,
+            switchRollPreviewState: FlavorConfigApp.#onSwitchRollPreviewState,
             resetCardToken: FlavorConfigApp.#onResetCardToken,
             randomizeChat: FlavorConfigApp.#onRandomizeChat,
             switchPreviewFixture: FlavorConfigApp.#onSwitchPreviewFixture,
@@ -175,6 +269,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             toggleArrangeMode: FlavorConfigApp.#onToggleArrangeMode,
             resetFoundryComponent: FlavorConfigApp.#onResetFoundryComponent,
             applyThemePreset: FlavorConfigApp.#onApplyThemePreset,
+            previousChatPresetPage: FlavorConfigApp.#onPreviousChatPresetPage,
+            nextChatPresetPage: FlavorConfigApp.#onNextChatPresetPage,
+            selectChatPresetPage: FlavorConfigApp.#onSelectChatPresetPage,
+            previousFoundryThemePage: FlavorConfigApp.#onPreviousFoundryThemePage,
+            nextFoundryThemePage: FlavorConfigApp.#onNextFoundryThemePage,
+            selectFoundryThemePage: FlavorConfigApp.#onSelectFoundryThemePage,
             applySidebarTransformer: FlavorConfigApp.#onApplySidebarTransformer,
             applyChatLogTransformer: FlavorConfigApp.#onApplyChatLogTransformer,
             browseComponentBg: FlavorConfigApp.#onBrowseComponentBg,
@@ -198,8 +298,21 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static TEMPLATE_PARTIALS = [
         `modules/${MODULE_ID}/templates/parts/flavor-preview-panel.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-chat-preview-panel.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-chat-context.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-rolls-preview-panel.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-rolls-context.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-cards-preview-panel.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-cards-context.hbs`,
         `modules/${MODULE_ID}/templates/parts/flavor-overview-tab.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-changes-tab.hbs`,
         `modules/${MODULE_ID}/templates/parts/flavor-foundry-tab.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-sidebar-preview.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-chat-log-preview.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-player-list-preview.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-windows-preview.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-pause-preview.hbs`,
+        `modules/${MODULE_ID}/templates/parts/flavor-foundry-pause-controls.hbs`,
         `modules/${MODULE_ID}/templates/parts/flavor-chat-tab.hbs`,
         `modules/${MODULE_ID}/templates/parts/flavor-rolls-tab.hbs`,
         `modules/${MODULE_ID}/templates/parts/flavor-cards-tab.hbs`,
@@ -208,14 +321,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         `modules/${MODULE_ID}/templates/parts/flavor-footer.hbs`
     ];
 
+    /* `group` only drives the visual rhythm of the tab bar: tabs are rendered
+     * with breathing space wherever the group changes, so eight tabs read as
+     * four small families instead of one long row. It changes no routing, no
+     * permission and no order - purely how crowded the bar feels on first
+     * contact. `scope` remains the permission/reset concept and is unrelated. */
     static TAB_DEFINITIONS = [
-        { id: 'overview', icon: 'fas fa-gauge-high', labelKey: 'YOUR_FLAVOR.Config.Tabs.Overview', scope: 'chat', preview: 'chat' },
-        { id: 'chat', icon: 'fas fa-comment-dots', labelKey: 'YOUR_FLAVOR.Config.Tabs.ChatBasic', scope: 'chat', preview: 'chat', resetArea: 'chat' },
-        { id: 'rolls', icon: 'fas fa-dice-d20', labelKey: 'YOUR_FLAVOR.Config.Tabs.Rolls', scope: 'chat', preview: 'chat', resetArea: 'rolls' },
-        { id: 'cards', icon: 'fas fa-scroll', labelKey: 'YOUR_FLAVOR.Config.Tabs.Cards', scope: 'chat', preview: 'chat', resetArea: 'cards' },
-        { id: 'foundry', icon: 'fas fa-wand-magic-sparkles', labelKey: 'YOUR_FLAVOR.Config.Tabs.FoundryShell', scope: 'foundry', preview: 'foundry', gmOnly: true, requiresFoundry: true, resetArea: 'foundry' },
-        { id: 'icons', icon: 'fas fa-icons', labelKey: 'YOUR_FLAVOR.Config.Tabs.Icons', scope: 'foundry', preview: 'foundry', gmOnly: true, requiresFoundry: true, resetArea: 'icons' },
-        { id: 'diagnostics', icon: 'fas fa-stethoscope', labelKey: 'YOUR_FLAVOR.Config.Tabs.Diagnostics', scope: 'chat', preview: 'chat', gmOnly: true }
+        { id: 'overview', icon: 'fas fa-gauge-high', labelKey: 'YOUR_FLAVOR.Config.Tabs.Overview', scope: 'chat', preview: 'chat', group: 'home' },
+        { id: 'chat', icon: 'fas fa-comment-dots', labelKey: 'YOUR_FLAVOR.Config.Tabs.ChatBasic', scope: 'chat', preview: 'chat', resetArea: 'chat', group: 'content' },
+        { id: 'rolls', icon: 'fas fa-dice-d20', labelKey: 'YOUR_FLAVOR.Config.Tabs.Rolls', scope: 'chat', preview: 'chat', resetArea: 'rolls', group: 'content' },
+        { id: 'cards', icon: 'fas fa-scroll', labelKey: 'YOUR_FLAVOR.Config.Tabs.Cards', scope: 'chat', preview: 'chat', resetArea: 'cards', group: 'content' },
+        { id: 'foundry', icon: 'fas fa-wand-magic-sparkles', labelKey: 'YOUR_FLAVOR.Config.Tabs.FoundryShell', scope: 'foundry', preview: 'foundry', gmOnly: true, requiresFoundry: true, resetArea: 'foundry', group: 'interface' },
+        { id: 'icons', icon: 'fas fa-user', labelKey: 'YOUR_FLAVOR.Config.Tabs.Icons', scope: 'foundry', preview: 'foundry', gmOnly: true, requiresFoundry: true, resetArea: 'icons', group: 'interface' },
+        { id: 'changes', icon: 'fas fa-sliders', iconAssetId: 'configuration', labelKey: 'YOUR_FLAVOR.Config.Tabs.Changes', scope: 'configuration', preview: 'chat', group: 'system' },
+        { id: 'diagnostics', icon: 'fas fa-stethoscope', labelKey: 'YOUR_FLAVOR.Config.Tabs.Diagnostics', scope: 'diagnostics', preview: 'none', group: 'system', gmOnly: true }
     ];
 
     manager = null;
@@ -223,20 +342,30 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     configStore = null;
     chatTab = null;
     foundryTab = null;
+    rollsTab = null;
     previewController = null;
     _activeCategory = null;
     _activeTab = 'overview';
     _activePreviewFixtureId = null;
+    _activeRollPreviewState = 'breakdown';
     _activeFoundryPreviewArea = 'navigation';
     _activeFoundrySection = 'overview';
+    _foundryThemeCarouselPage = 0;
     _activeIconArea = 'navigation';
     _activeIconPickerCategory = 'recommended';
+    _foundryPreviewFrame = null;
+    _foundryPreviewPending = false;
+    _foundryPreviewCost = 0;
+    _foundryPreviewEndedAt = 0;
     _shouldRevertFoundryOnClose = true;
     _shouldRevertChatPreviewOnClose = true;
     _iconSelectionActive = false;
     _dynamicIconEntries = null;
     _fontAwesomeIconAvailability = null;
     _randomizerConstraints = null;
+    _chatPresetCarouselPage = 0;
+    _chatEditorMode = 'flavor';
+    _pendingChatEditorFocus = null;
     _pendingVisualSettings = null;
     _pendingVisualPresets = null;
     _colorPalettePopover = null;
@@ -244,6 +373,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _activeColorPaletteTrigger = null;
     _boundColorPalettePointerDown = null;
     _boundColorPaletteKeydown = null;
+    _fontPreviewChoosers = [];
 
     constructor(options = {}) {
         super(FlavorConfigApp._withReadableInitialPosition(options));
@@ -260,50 +390,54 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this.foundryTab = new FlavorFoundryTabController({
             localize: key => game.i18n.localize(key)
         });
+        this.rollsTab = new FlavorRollsTabController({
+            localize: key => game.i18n.localize(key),
+            tokenStatusLabel: source => this.chatTab.tokenStatusLabel(source),
+            tokenStatusTitle: source => this.chatTab.tokenStatusTitle(source),
+            colorInputFromCss: (value, fallback) => this._colorInputFromCss(value, fallback)
+        });
         this.previewController = new FlavorPreviewController({ app: this });
         this._dynamicIconEntries = new Map();
         this._boundColorPalettePointerDown = event => this._onColorPalettePointerDown(event);
         this._boundColorPaletteKeydown = event => this._onColorPaletteKeydown(event);
     }
 
+    /**
+     * One canonical frame for every tab.
+     *
+     * The window was never resizable, but it still changed size on its own: the
+     * default was 1240x740, Overview asked for 1440x900 and the rest for
+     * 1512x1040, so simply moving between tabs made the frame jump and reflow
+     * into a layout nobody had designed. On top of that the old readable-position
+     * pass shrank the frame to fit small screens, down to 680x520, producing
+     * intermediate widths that no tab was ever verified at.
+     *
+     * Every tab is now laid out at exactly CONFIG_APP_CANONICAL_POSITION.
+     * Screens too small to hold it get the same layout scaled down as one piece
+     * (see _applyCanonicalFrameScale), never a different one - so what the author
+     * approves is what every member of the table sees.
+     */
     static _withReadableInitialPosition(options = {}) {
-        const position = options.position ?? {};
-        const readablePosition = FlavorConfigApp._getReadablePosition(position);
         return {
             ...options,
             position: {
-                ...position,
-                ...readablePosition
+                ...(options.position ?? {}),
+                ...CONFIG_APP_CANONICAL_POSITION
             }
         };
     }
 
-    static _getReadablePosition(position = {}, minimumPosition = CONFIG_APP_MIN_POSITION) {
-        const viewportWidth = Number(globalThis.innerWidth) || CONFIG_APP_DEFAULT_POSITION.width;
-        const viewportHeight = Number(globalThis.innerHeight) || CONFIG_APP_DEFAULT_POSITION.height;
-        const availableWidth = Math.max(280, viewportWidth - CONFIG_APP_VIEWPORT_MARGIN);
-        const availableHeight = Math.max(320, viewportHeight - CONFIG_APP_VIEWPORT_MARGIN);
-        const minimum = {
-            ...CONFIG_APP_MIN_POSITION,
-            ...(minimumPosition || {})
-        };
-        const minWidth = Math.min(minimum.width, availableWidth);
-        const minHeight = Math.min(minimum.height, availableHeight);
-
-        return {
-            width: FlavorConfigApp._clampDimension(
-                position.width,
-                CONFIG_APP_DEFAULT_POSITION.width,
-                minWidth,
-                availableWidth
-            ),
-            height: FlavorConfigApp._clampDimension(
-                position.height,
-                CONFIG_APP_DEFAULT_POSITION.height,
-                minHeight,
-                availableHeight
-            )
-        };
+    /**
+     * Always the canonical frame.
+     *
+     * This used to fit the window to the viewport, which is precisely the
+     * behaviour that produced layouts nobody designed: a 1300px-wide screen got
+     * a 1268px-wide app, a width no tab was ever verified at. The frame is now
+     * constant and _applyCanonicalFrameScale() handles screens too small to hold
+     * it, by scaling the whole layout rather than reflowing it.
+     */
+    static _getReadablePosition() {
+        return { ...CONFIG_APP_CANONICAL_POSITION };
     }
 
     static _clampDimension(value, fallback, min, max) {
@@ -365,8 +499,10 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             this._activeTab = this._getDefaultTabId();
         }
         this._activePreviewFixtureId = null;
+        this._activeRollPreviewState = 'breakdown';
         this._activeFoundryPreviewArea = 'navigation';
         this._activeFoundrySection = 'overview';
+        this._foundryThemeCarouselPage = 0;
         this._activeIconArea = 'navigation';
         this._activeIconPickerCategory = 'recommended';
         this._shouldRevertFoundryOnClose = true;
@@ -376,6 +512,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this._fontAwesomeIconAvailability = new Map();
         this._activeCategory = null;
         this._randomizerConstraints = normalizeChatRandomizerConstraints();
+        this._chatEditorMode = 'flavor';
+        this._pendingChatEditorFocus = null;
         this._pendingVisualSettings = null;
         this._pendingVisualPresets = null;
     }
@@ -387,7 +525,17 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const pendingVisualPresetCount = this._getPendingVisualPresetCount();
         const showFoundryTab = this._canShowFoundryTabs({ isGM });
         const dirtyAreas = this.configStore.getDirtyAreas();
-        if (pendingVisualSettingCount > 0 || pendingVisualPresetCount > 0) dirtyAreas.overview = true;
+        const hasPendingVisualDraft = pendingVisualSettingCount > 0 || pendingVisualPresetCount > 0;
+        const hasWorkingDraft = Boolean(
+            dirtyAreas.chat
+            || dirtyAreas.rolls
+            || dirtyAreas.cards
+            || dirtyAreas.foundry
+            || dirtyAreas.icons
+            || hasPendingVisualDraft
+        );
+        if (hasPendingVisualDraft) dirtyAreas.overview = true;
+        dirtyAreas.changes = hasWorkingDraft;
         let tabs = this._buildAvailableTabs({ isGM, showFoundryTab, dirtyAreas });
         if (!tabs.some(tab => tab.id === this._activeTab)) {
             this._activeTab = tabs[0]?.id || 'overview';
@@ -416,6 +564,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const forcedLayout = game.settings.get(MODULE_ID, 'forcePlayerLayout');
         const canCustomize = isGM || allowPlayerCustomization;
         const hasForcedLayout = !isGM && forcedLayout && forcedLayout !== 'none';
+        const allowCustomHtml = Boolean(isGM || game.settings.get(MODULE_ID, 'allowCustomHtml'));
+        const canUseCustomHtml = Boolean(canCustomize && !hasForcedLayout && allowCustomHtml);
+        if (!canUseCustomHtml && this._chatEditorMode === 'customHtml') {
+            this._chatEditorMode = 'flavor';
+        }
 
         const backgroundColorHex = this.chatTab.toBackgroundColorInput(config);
 
@@ -430,6 +583,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const favorites = this.manager.getFavorites();
         const layouts = getChatPresetChoices({ favorites }).map(preset => ({
             ...preset,
+            sample: FlavorConfigApp.#buildPresetSample(preset),
             isEdited: preset.id === config.layout && this.chatTab.isPresetEdited(config, preset.id),
             editedTitle: game.i18n.localize('YOUR_FLAVOR.Config.Presets.EditedTitle')
         }));
@@ -454,6 +608,13 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             localize: key => game.i18n.localize(key)
         };
         const rawPreviewFixtures = createPreviewFixtures(previewFixtureContext);
+        if (this._activeTab === 'cards' && !CARD_PREVIEW_FIXTURE_IDS.has(this._activePreviewFixtureId)) {
+            this._activePreviewFixtureId = 'item-card-dnd5e';
+        }
+        if (this._activeTab === 'rolls') {
+            this._activePreviewFixtureId = ROLL_PREVIEW_FIXTURE_BY_STATE[this._activeRollPreviewState]
+                ?? ROLL_PREVIEW_FIXTURE_BY_STATE.breakdown;
+        }
         let previewFixture = rawPreviewFixtures.find(fixture => fixture.id === this._activePreviewFixtureId)
             ?? getDefaultPreviewFixture(previewFixtureContext);
         if (!previewFixture && rawPreviewFixtures.length > 0) {
@@ -463,6 +624,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const previewFixtureGroupLabels = this._getPreviewFixtureGroupLabels();
         const previewFixtures = rawPreviewFixtures.map(fixture => ({
             ...fixture,
+            iconAsset: CHAT_FIXTURE_ICON_ASSETS[fixture.id] ?? CHAT_FIXTURE_ICON_ASSETS['chat-simple'],
+            chatIconClass: CHAT_FIXTURE_ICON_CLASSES[fixture.id] ?? null,
             groupLabel: previewFixtureGroupLabels[fixture.group] ?? fixture.group,
             isActive: fixture.id === this._activePreviewFixtureId,
             messageClassString: fixture.messageClasses.join(' ')
@@ -470,6 +633,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (previewFixture) {
             previewFixture = {
                 ...previewFixture,
+                iconAsset: CHAT_FIXTURE_ICON_ASSETS[previewFixture.id] ?? CHAT_FIXTURE_ICON_ASSETS['chat-simple'],
                 groupLabel: previewFixtureGroupLabels[previewFixture.group] ?? previewFixture.group,
                 isActive: true,
                 messageClassString: previewFixture.messageClasses.join(' ')
@@ -486,8 +650,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 fixture: previewFixture
             }
             : null;
-        const rollTabs = this._buildRollTabsContext(config);
-        const cardTabs = this._buildCardTabsContext(config);
+        const rollTabs = this.rollsTab.build(config, {
+            savedConfig,
+            activePreviewState: this._activeRollPreviewState,
+            currentSystemId: game.system?.id || 'generic',
+            profileName: previewName,
+            layoutLabel: this._getChatPresetLabel(config.layout),
+            isDirty: Boolean(dirtyAreas.rolls)
+        });
+        const cardTabs = this._buildCardTabsContext(config, {
+            profileName: previewName,
+            layoutLabel: this._getChatPresetLabel(config.layout),
+            isDirty: Boolean(dirtyAreas.cards),
+            currentSystemId: game.system?.id || 'generic'
+        });
 
         const foundryComponents = this.foundryTab.buildComponents(foundryConfig, {
             width: viewportWidth,
@@ -545,10 +721,42 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         );
         const foundryActiveAreaPage = foundryAreaPages.find(page => page.isActive) ?? null;
 
-        const themePresets = FOUNDRY_THEME_PRESETS.map(preset => ({
+        const allThemePresets = getFoundryThemeCompanionPresets();
+        const foundryThemePageCount = Math.max(
+            1,
+            Math.ceil(allThemePresets.length / FOUNDRY_THEME_CAROUSEL_PAGE_SIZE)
+        );
+        this._foundryThemeCarouselPage = Math.max(
+            0,
+            Math.min(this._foundryThemeCarouselPage, foundryThemePageCount - 1)
+        );
+        const foundryThemePageStart = this._foundryThemeCarouselPage * FOUNDRY_THEME_CAROUSEL_PAGE_SIZE;
+        const themePresets = allThemePresets
+            .slice(foundryThemePageStart, foundryThemePageStart + FOUNDRY_THEME_CAROUSEL_PAGE_SIZE)
+            .map(preset => ({
             ...preset,
-            label: game.i18n.localize(preset.labelKey)
-        }));
+                label: game.i18n.localize(preset.labelKey),
+                description: game.i18n.localize(preset.descriptionKey),
+                isSelected: foundryThemeMatchesCompanion(foundryConfig.theme, preset.theme)
+            }));
+        const foundryThemeCarousel = {
+            total: allThemePresets.length,
+            first: foundryThemePageStart + 1,
+            last: Math.min(
+                foundryThemePageStart + FOUNDRY_THEME_CAROUSEL_PAGE_SIZE,
+                allThemePresets.length
+            ),
+            page: this._foundryThemeCarouselPage,
+            pageNumber: this._foundryThemeCarouselPage + 1,
+            pageCount: foundryThemePageCount,
+            canGoPrevious: this._foundryThemeCarouselPage > 0,
+            canGoNext: this._foundryThemeCarouselPage < foundryThemePageCount - 1,
+            pages: Array.from({ length: foundryThemePageCount }, (_, index) => ({
+                index,
+                pageNumber: index + 1,
+                isActive: index === this._foundryThemeCarouselPage
+            }))
+        };
 
         return {
             config,
@@ -565,7 +773,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             rollTabs,
             cardTabs,
             showCustomization: config.layout !== 'none',
-            allowCustomHtml: game.user.isGM || game.settings.get(MODULE_ID, 'allowCustomHtml'),
+            allowCustomHtml,
+            isCustomHtmlMode: canUseCustomHtml && this._chatEditorMode === 'customHtml',
             backgroundColorHex,
             isGM,
             canCustomize,
@@ -588,6 +797,16 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             activeAreaReset,
             activeAreaCanReset: Boolean(activeAreaReset),
             showFoundryTab,
+            changes: this._buildChangesContext({
+                config,
+                foundryConfig,
+                isGM,
+                showFoundryTab,
+                layouts,
+                dirtyAreas,
+                hasForcedLayout,
+                canCustomize
+            }),
             overview: this._buildOverviewContext({
                 config,
                 foundryConfig,
@@ -620,7 +839,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             foundryAreaPages,
             foundryActiveAreaPage,
             activeFoundrySection: this._activeFoundrySection,
+            isFoundryGlobal: this._activeFoundrySection === 'global',
             themePresets,
+            foundryThemeCarousel,
             pauseEffects: PAUSE_EFFECTS.map(effect => ({
                 ...effect,
                 label: game.i18n.localize(effect.labelKey)
@@ -659,6 +880,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _onRender(context, options) {
         super._onRender(context, options);
 
+        this._fontPreviewChoosers.forEach(chooser => chooser.destroy());
+        this._fontPreviewChoosers = [];
         const html = this.element;
 
         const uiScale = game.settings.get(MODULE_ID, 'uiScale');
@@ -668,8 +891,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this._ensureReadableWindowSize();
         this._registerLocalHelpers();
         this._setupEventListeners(html);
+        this._fontPreviewChoosers = attachFontPreviewChoosers(html);
+        attachControlSearch(this, html);
+        this._focusPendingChatEditorTarget();
 
-        if (this._activeTab === 'chat' && this._activeCategory) {
+        // Always run on the chat tab now: it also lays out the preset carousel page.
+        if (this._activeTab === 'chat') {
             this._filterLayoutsByCategory(this._activeCategory);
         }
 
@@ -678,34 +905,221 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this._syncIconSelectionMode();
     }
 
+    /**
+     * ApplicationV2 clamps a window to the viewport, so asking for 1512x1040 on
+     * a 1366x768 screen quietly produced a 1366x768 app - a reflowed layout,
+     * which is exactly what the canonical frame exists to prevent. Measured
+     * live: 1920x1080 yielded 1512x1002, 1536x864 yielded 1512x786.
+     *
+     * The box is therefore re-asserted in the element's own style after Foundry
+     * has had its say, and the scale pass runs afterwards so the frame is always
+     * measured at its true size before being fitted to the screen.
+     */
+    setPosition(position = {}) {
+        const applied = super.setPosition({
+            ...position,
+            width: CONFIG_APP_CANONICAL_POSITION.width,
+            height: CONFIG_APP_CANONICAL_POSITION.height
+        });
+
+        const element = this.element;
+        if (element) {
+            element.style.width = `${CONFIG_APP_CANONICAL_POSITION.width}px`;
+            element.style.height = `${CONFIG_APP_CANONICAL_POSITION.height}px`;
+            element.style.maxWidth = 'none';
+            element.style.maxHeight = 'none';
+        }
+        this._applyCanonicalFrameScale();
+        return applied;
+    }
+
     _ensureReadableWindowSize() {
         if (typeof this.setPosition !== 'function') return;
 
         const currentPosition = {
             width: this.position?.width ?? this.element?.offsetWidth,
-            height: this.position?.height ?? this.element?.offsetHeight
+            height: this.position?.height ?? this.element?.offsetHeight,
+            left: this.position?.left,
+            top: this.position?.top
         };
-        const readablePosition = FlavorConfigApp._getReadablePosition(
-            currentPosition,
-            this._getMinimumPositionForCurrentView()
-        );
+        /* The per-workspace size probes are gone: every tab is a fixed workspace
+         * at the same frame, so the class is unconditional. The stylesheets key
+         * a lot of layout off it, which is why the name stays. */
+        this.element?.classList.add('yf-fixed-chat-rolls-size');
+
+        /* Every workspace resolves to the one canonical frame now, so there is a
+         * single branch: keep the frame at that size, centred on wherever it
+         * already was, and let the scale pass handle screens too small for it. */
+        const target = this._getFixedWorkspacePosition(currentPosition, CONFIG_APP_CANONICAL_POSITION);
         const currentWidth = Math.round(Number(currentPosition.width) || 0);
         const currentHeight = Math.round(Number(currentPosition.height) || 0);
-        const nextPosition = {};
+        if (Math.abs(currentWidth - target.width) > 1 || Math.abs(currentHeight - target.height) > 1) {
+            this.setPosition(target);
+        }
+        this._applyCanonicalFrameScale();
+    }
 
-        if (currentWidth < readablePosition.width) nextPosition.width = readablePosition.width;
-        if (currentHeight < readablePosition.height) nextPosition.height = readablePosition.height;
-        if (!Object.keys(nextPosition).length) {
+    /**
+     * Fit the canonical frame onto smaller screens by scaling it, not reflowing.
+     *
+     * 1512x1040 does not fit a 1366x768 laptop, and plenty of tables run on
+     * those. The old answer was to shrink the window, which produced widths no
+     * tab was designed at - the very thing this frame exists to prevent. Scaling
+     * the whole element keeps every proportion, every alignment and every line
+     * break identical to what was approved; it is simply smaller. Screens with
+     * room get no transform at all, so the common case pays nothing.
+     */
+    _applyCanonicalFrameScale() {
+        const element = this.element;
+        if (!element) return;
+
+        /* Someone resizing the Foundry window (or rotating a tablet) has to get
+         * a new scale, otherwise the frame keeps a factor computed for a
+         * viewport that no longer exists. Registered once and torn down on
+         * close. */
+        if (!this._boundCanonicalFrameResize) {
+            this._boundCanonicalFrameResize = () => this._applyCanonicalFrameScale();
+            globalThis.addEventListener('resize', this._boundCanonicalFrameResize);
+        }
+
+        const viewportWidth = Number(globalThis.innerWidth) || CONFIG_APP_CANONICAL_POSITION.width;
+        const viewportHeight = Number(globalThis.innerHeight) || CONFIG_APP_CANONICAL_POSITION.height;
+        const scale = Math.min(
+            1,
+            (viewportWidth - CONFIG_APP_VIEWPORT_MARGIN) / CONFIG_APP_CANONICAL_POSITION.width,
+            (viewportHeight - CONFIG_APP_VIEWPORT_MARGIN) / CONFIG_APP_CANONICAL_POSITION.height
+        );
+
+        if (!Number.isFinite(scale) || scale >= 0.999) {
+            element.style.transform = '';
+            element.style.transformOrigin = '';
+            element.classList.remove('yf-canonical-scaled');
+            this._canonicalFrameScale = 1;
             return;
         }
 
-        this.setPosition(nextPosition);
+        element.style.transformOrigin = 'top left';
+        element.style.transform = `scale(${scale})`;
+        element.classList.add('yf-canonical-scaled');
+        this._canonicalFrameScale = scale;
+
+        /* Written straight to style rather than through setPosition(): the
+         * frame still measures 1512x1040 to the layout engine, so Foundry's own
+         * centring would place it using the unscaled size and push most of the
+         * window off-screen. */
+        const scaledWidth = CONFIG_APP_CANONICAL_POSITION.width * scale;
+        const scaledHeight = CONFIG_APP_CANONICAL_POSITION.height * scale;
+        element.style.left = `${Math.max(0, Math.round((viewportWidth - scaledWidth) / 2))}px`;
+        element.style.top = `${Math.max(0, Math.round((viewportHeight - scaledHeight) / 2))}px`;
+    }
+
+    _getFixedWorkspacePosition(currentPosition = {}, targetPosition = CONFIG_APP_CHAT_ROLLS_POSITION) {
+        const target = {
+            width: targetPosition.width,
+            height: targetPosition.height
+        };
+        const currentWidth = Number(currentPosition.width);
+        const currentHeight = Number(currentPosition.height);
+        const currentLeft = Number(currentPosition.left);
+        const currentTop = Number(currentPosition.top);
+
+        if (Number.isFinite(currentLeft) && Number.isFinite(currentWidth)) {
+            target.left = Math.round(currentLeft + ((currentWidth - target.width) / 2));
+        }
+        if (Number.isFinite(currentTop) && Number.isFinite(currentHeight)) {
+            target.top = Math.round(currentTop + ((currentHeight - target.height) / 2));
+        }
+
+        return target;
+    }
+
+    _isSidebarWorkspaceView() {
+        return (
+            this._activeTab === 'foundry'
+            && this._activeFoundrySection === 'sidebar'
+            && this._activeFoundryPreviewArea === 'sidebar'
+        );
+    }
+
+    _isChatLogWorkspaceView() {
+        return (
+            this._activeTab === 'foundry'
+            && this._activeFoundrySection === 'chatLog'
+            && this._activeFoundryPreviewArea === 'chatLog'
+        );
+    }
+
+    _isPlayerListWorkspaceView() {
+        return (
+            this._activeTab === 'foundry'
+            && this._activeFoundrySection === 'players'
+            && this._activeFoundryPreviewArea === 'players'
+        );
+    }
+
+    _isWindowsWorkspaceView() {
+        return (
+            this._activeTab === 'foundry'
+            && this._activeFoundrySection === 'windows'
+            && this._activeFoundryPreviewArea === 'windows'
+        );
+    }
+
+    _isPauseWorkspaceView() {
+        return (
+            this._activeTab === 'foundry'
+            && this._activeFoundrySection === 'pause'
+            && this._activeFoundryPreviewArea === 'pause'
+        );
     }
 
     _getMinimumPositionForCurrentView() {
+        if (this._activeTab === 'overview') {
+            return CONFIG_APP_OVERVIEW_POSITION;
+        }
+        if (CONFIG_APP_FIXED_TABS.has(this._activeTab)) {
+            return CONFIG_APP_CHAT_ROLLS_POSITION;
+        }
+        if (this._activeTab === 'foundry' && this._activeFoundrySection === 'global') {
+            return CONFIG_APP_CHAT_ROLLS_POSITION;
+        }
+
         const previewMode = this._getActivePreviewMode();
-        if (previewMode === 'foundry' && this._activeFoundryPreviewArea === 'navigation') {
+        if (
+            previewMode === 'foundry'
+            && this._activeFoundrySection === 'navigation'
+            && this._activeFoundryPreviewArea === 'navigation'
+        ) {
             return CONFIG_APP_SCENE_NAVIGATION_POSITION;
+        }
+        if (
+            previewMode === 'foundry'
+            && this._activeFoundrySection === 'controls'
+            && this._activeFoundryPreviewArea === 'controls'
+        ) {
+            return CONFIG_APP_TOKEN_CONTROLS_POSITION;
+        }
+        if (
+            previewMode === 'foundry'
+            && this._activeFoundrySection === 'hotbar'
+            && this._activeFoundryPreviewArea === 'hotbar'
+        ) {
+            return CONFIG_APP_MACRO_BAR_POSITION;
+        }
+        if (this._isSidebarWorkspaceView()) {
+            return CONFIG_APP_SIDEBAR_POSITION;
+        }
+        if (this._isChatLogWorkspaceView()) {
+            return CONFIG_APP_CHAT_LOG_POSITION;
+        }
+        if (this._isPlayerListWorkspaceView()) {
+            return CONFIG_APP_PLAYER_LIST_POSITION;
+        }
+        if (this._isWindowsWorkspaceView()) {
+            return CONFIG_APP_WINDOWS_POSITION;
+        }
+        if (this._isPauseWorkspaceView()) {
+            return CONFIG_APP_PAUSE_POSITION;
         }
 
         return CONFIG_APP_MIN_POSITION;
@@ -734,27 +1148,63 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return CHAT_PREVIEW_WIDTH.fallback;
     }
 
+    /* Teardown must not be a bare sequence of calls. Measured 2026-07-26 by
+     * making the first step throw: close() rejected, the window stayed open and
+     * in the DOM, and 1.2 MB of preview CSS stayed applied to the user's real
+     * Foundry - with no window left to switch it off. That is RISK-003 (a live
+     * preview leaving the UI stuck), reached by any one failure anywhere in the
+     * chain, including the reverts at the end that are the whole point.
+     *
+     * So: every step is isolated, a failure is logged rather than swallowed,
+     * and super.close() always runs. Order is unchanged. */
+    _closeStep(label, fn) {
+        try {
+            fn();
+        } catch (error) {
+            console.error(`${MODULE_NAME} | close: "${label}" failed, continuing teardown:`, error);
+        }
+    }
+
     async close(options = {}) {
-        this._closeColorPalette({ restoreFocus: false });
-        this.foundryCustomizer?.disableArrangeMode?.();
-        this._disableIconSelectionMode({ silent: true });
-        if (this._shouldRevertFoundryOnClose && this.foundryCustomizer) {
-            if (
-                typeof this.foundryCustomizer.clearPreview === 'function'
-                && this.foundryCustomizer.isPreviewActive?.()
-            ) {
-                this.foundryCustomizer.clearPreview();
-            } else {
-                this.foundryCustomizer.applyConfig(this._savedFoundryConfigSnapshot);
+        this._closeStep('canonical frame resize listener', () => {
+            if (!this._boundCanonicalFrameResize) return;
+            globalThis.removeEventListener('resize', this._boundCanonicalFrameResize);
+            this._boundCanonicalFrameResize = null;
+        });
+        this._closeStep('font preview choosers', () => {
+            /* One bad chooser must not keep the others alive: each destroy is
+             * its own step, since they hold document-level listeners. */
+            for (const chooser of this._fontPreviewChoosers) {
+                this._closeStep('font chooser destroy', () => chooser.destroy());
             }
-        } else if (typeof this.foundryCustomizer?.commitPreview === 'function') {
-            this.foundryCustomizer.commitPreview(this._workingFoundryConfig);
-        }
-        if (this._shouldRevertChatPreviewOnClose) {
-            this._clearChatLogPreview();
-        } else {
-            this._commitChatLogPreview();
-        }
+            this._fontPreviewChoosers = [];
+        });
+        /* A coalesced preview frame must never outlive the window: its callback
+         * would re-apply the preview AFTER the teardown reverted it, which is
+         * the stuck-preview state all over again. Cancelled first, before
+         * anything else can throw. */
+        this._closeStep('pending preview frame', () => this._cancelPendingFoundryPreview());
+        this._closeStep('colour palette', () => this._closeColorPalette({ restoreFocus: false }));
+        this._closeStep('arrange mode', () => this.foundryCustomizer?.disableArrangeMode?.());
+        this._closeStep('icon selection mode', () => this._disableIconSelectionMode({ silent: true }));
+        this._closeStep('foundry preview', () => {
+            if (this._shouldRevertFoundryOnClose && this.foundryCustomizer) {
+                if (
+                    typeof this.foundryCustomizer.clearPreview === 'function'
+                    && this.foundryCustomizer.isPreviewActive?.()
+                ) {
+                    this.foundryCustomizer.clearPreview();
+                } else {
+                    this.foundryCustomizer.applyConfig(this._savedFoundryConfigSnapshot);
+                }
+            } else if (typeof this.foundryCustomizer?.commitPreview === 'function') {
+                this.foundryCustomizer.commitPreview(this._workingFoundryConfig);
+            }
+        });
+        this._closeStep('chat preview', () => {
+            if (this._shouldRevertChatPreviewOnClose) this._clearChatLogPreview();
+            else this._commitChatLogPreview();
+        });
         return super.close(options);
     }
 
@@ -770,6 +1220,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         html.querySelectorAll('.yf-layout-option').forEach(el => {
             el.addEventListener('click', (e) => this._onLayoutClick(e));
+            el.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                if (e.target.closest('.yf-fav-btn')) return;
+                e.preventDefault();
+                this._onLayoutClick(e);
+            });
         });
 
         html.querySelectorAll('.yf-preview-card[data-action="switchPreviewFixture"]').forEach(el => {
@@ -780,12 +1236,21 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             });
         });
 
+        html.querySelectorAll('.yf-roll-preview-mode').forEach(el => {
+            el.addEventListener('keydown', event => this._onRollPreviewModeKeydown(event));
+        });
+
         html.querySelectorAll('.yf-tag').forEach(el => {
             el.addEventListener('click', (e) => this._onTagClick(e));
         });
 
         html.querySelectorAll('.yf-randomizer-constraint').forEach(el => {
-            el.addEventListener('change', () => this._syncChatRandomizerConstraintsFromDom());
+            el.addEventListener('change', () => {
+                this._syncChatRandomizerConstraintsFromDom();
+                // These read as filters above the gallery, so they have to filter it.
+                this._filterLayoutsByCategory(this._activeCategory, { resetPage: true });
+                this._updateRandomizerFilterLabel();
+            });
         });
 
         html.querySelectorAll('input, select, textarea').forEach(el => {
@@ -813,6 +1278,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     _onActorChange(event) {
+        this._syncCustomHtmlDraftFromDom();
         const actorId = event.currentTarget.value || null;
         this.configStore.selectActor(actorId);
         this.render();
@@ -831,13 +1297,85 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         this.element.querySelectorAll('.yf-tag').forEach(t => {
             t.classList.toggle('active', t.dataset.category === this._activeCategory);
+            t.setAttribute('aria-pressed', t.dataset.category === this._activeCategory ? 'true' : 'false');
         });
 
         this._filterLayoutsByCategory(this._activeCategory);
     }
 
-    _filterLayoutsByCategory(category) {
-        this.chatTab.filterLayoutsByCategory(this.element, category);
+    /**
+     * The gallery is designed to show exactly two rows inside a fixed height
+     * budget, so the page size has to follow the column count instead of being
+     * a constant. The grid drops to 4 and then 3 columns as the window narrows;
+     * with a fixed page of 8 (+2 pinned cards) that produced 3 and 4 rows, and
+     * since .yf-chat-step clips overflow, the extra rows were simply cut off.
+     * Reading the resolved template keeps this correct without duplicating the
+     * breakpoints here.
+     */
+    _getChatPresetPageSize() {
+        const grid = this.element?.querySelector?.('.yf-layout-grid');
+        if (!grid) return CHAT_PRESET_CAROUSEL_PAGE_SIZE;
+        const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
+        if (!columns) return CHAT_PRESET_CAROUSEL_PAGE_SIZE;
+        // Two rows minus the always-visible 'none' and 'custom' escape hatches.
+        return Math.max(2, columns * 2 - CHAT_PRESET_PINNED_COUNT);
+    }
+
+    _filterLayoutsByCategory(category, { resetPage = false } = {}) {
+        if (resetPage) this._chatPresetCarouselPage = 0;
+        const state = this.chatTab.filterLayouts(this.element, {
+            category,
+            constraints: this._randomizerConstraints,
+            page: this._chatPresetCarouselPage,
+            pageSize: this._getChatPresetPageSize()
+        });
+        if (state) {
+            this._chatPresetCarouselPage = state.page;
+            this._syncChatPresetCarousel(state);
+        }
+    }
+
+    /**
+     * The gallery is filtered in the DOM so the selects keep focus, so its pagination
+     * is refreshed in the DOM too rather than through a re-render.
+     */
+    _syncChatPresetCarousel(state) {
+        const root = this.element?.querySelector?.('.yf-layout-carousel');
+        if (!root) return;
+
+        root.hidden = state.pageCount <= 1 && state.total > 0;
+
+        const previous = root.querySelector('[data-action="previousChatPresetPage"]');
+        const next = root.querySelector('[data-action="nextChatPresetPage"]');
+        if (previous) previous.disabled = state.page <= 0;
+        if (next) next.disabled = state.page >= state.pageCount - 1;
+
+        const counter = root.querySelector('[data-chat-preset-counter]');
+        if (counter) counter.textContent = `${state.first}-${state.last} / ${state.total}`;
+
+        const dots = root.querySelector('[data-chat-preset-pages]');
+        if (!dots) return;
+        dots.replaceChildren(...Array.from({ length: state.pageCount }, (_, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.dataset.action = 'selectChatPresetPage';
+            dot.dataset.page = String(index);
+            dot.className = index === state.page ? 'is-active' : '';
+            const label = `${game.i18n.localize('YOUR_FLAVOR.Config.Presets.Page')} ${index + 1}`;
+            dot.title = label;
+            dot.setAttribute('aria-label', label);
+            dot.setAttribute('aria-pressed', index === state.page ? 'true' : 'false');
+            return dot;
+        }));
+    }
+
+    _goToChatPresetPage(page) {
+        this._chatPresetCarouselPage = Math.max(0, page);
+        /* Must NOT pass resetPage here: that flag exists for filter changes,
+         * and it would zero the page that was just requested - which is why
+         * neither the arrows nor the dots appeared to do anything. Paging is
+         * clamped against the real page count inside filterLayouts(). */
+        this._filterLayoutsByCategory(this._activeCategory);
     }
 
     _onLayoutClick(event) {
@@ -846,6 +1384,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
         this.element.querySelectorAll('.yf-layout-option').forEach(el => {
             el.classList.toggle('selected', el.dataset.layout === layoutId);
+            el.setAttribute('aria-selected', el.dataset.layout === layoutId ? 'true' : 'false');
         });
 
         this.chatTab.applyPreset(this._workingConfig, layoutId);
@@ -858,10 +1397,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const name = input.name;
         if (!name) return;
 
+        /* "input" streams while the user is still moving (range drag, colour
+         * picker); "change" is the value they settled on. Only the streaming
+         * half is worth coalescing - see _applyWorkingFoundryConfig. */
+        const streaming = event.type === 'input';
+
         let value = input.type === 'checkbox' ? input.checked : input.value;
 
         if (input.type === 'range' || input.type === 'number') {
             value = parseFloat(value);
+        }
+
+        if (input.type === 'color') {
+            const valueCode = input.closest('.yf-token-color-control')?.querySelector('code');
+            if (valueCode) valueCode.textContent = String(value).toUpperCase();
         }
 
         if (name.startsWith('iconOverride.')) {
@@ -869,14 +1418,33 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             if (!this._setSelectedIconOverrideField(field, value)) return;
 
             this._markFoundryFieldOverride('icons.overrides');
-            this._applyWorkingFoundryConfig();
+            this._applyWorkingFoundryConfig({ coalesce: streaming });
             this._syncIconPreviewPaletteDom();
             this._syncDirtyIndicators();
             if (field === 'inheritGroup' || field === 'hidden') this.render();
             return;
         }
 
+        if (name.startsWith('settings.')) {
+            if (!game.user.isGM) return;
+            const settingKey = name.replace(/^settings\./, '');
+            if (!this._isApprovedConfigurationWorldSetting(settingKey)) return;
+            this._stageVisualSettingDraft(settingKey, value);
+            this._syncDirtyIndicators();
+            return;
+        }
+
+        if (name === 'clientSetting.uiScale') {
+            const nextScale = Math.max(80, Math.min(150, Number(value) || 100));
+            void game.settings.set(MODULE_ID, 'uiScale', nextScale).catch(error => {
+                console.error(`${MODULE_NAME} | Error saving UI scale:`, error);
+                ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.SaveError'));
+            });
+            return;
+        }
+
         if (name.startsWith('foundry.')) {
+            if (!game.user.isGM) return;
             const foundryPath = name.replace(/^foundry\./, '');
             this._setNestedProperty(this._workingFoundryConfig, foundryPath, value);
             if (input.dataset.nullableColor === 'true') {
@@ -887,6 +1455,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             } else {
                 this._updateFoundryFieldOverride(foundryPath, value);
                 this._enableFoundryCategoryForPath(foundryPath);
+            }
+            if (foundryPath === 'theme.interfaceFont' || foundryPath === 'theme.windowFont') {
+                this._workingFoundryConfig.themeFontsCustomized = true;
             }
             const layoutComponentId = foundryPath.match(/^layout\.([^.]+)\./)?.[1];
             if (layoutComponentId) {
@@ -915,7 +1486,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 this._workingFoundryConfig.areas.windows ||= {};
                 this._workingFoundryConfig.areas.windows.windows = foundry.utils.deepClone(this._workingFoundryConfig.windows);
             }
-            this._applyWorkingFoundryConfig();
+            this._applyWorkingFoundryConfig({ coalesce: streaming });
             this._updateContrastDiagnostics();
             this._syncDirtyIndicators();
 
@@ -946,6 +1517,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         }
 
         this._setNestedProperty(this._workingConfig, name, value);
+        if (name === 'customHtml') {
+            input.dataset.draftTouched = 'true';
+            this._syncDirtyIndicators();
+            return;
+        }
         this._updatePreview();
         this._updateContrastDiagnostics();
         this._syncDirtyIndicators();
@@ -953,6 +1529,29 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (name === 'customizations.glowEnabled') {
             this.render();
         }
+    }
+
+    _syncCustomHtmlDraftFromDom() {
+        const textarea = this.element?.querySelector?.('textarea[name="customHtml"][data-custom-html-editor]');
+        if (!textarea || textarea.dataset.draftTouched !== 'true') return false;
+        if (this._workingConfig?.customHtml === textarea.value) return false;
+
+        this._setNestedProperty(this._workingConfig, 'customHtml', textarea.value);
+        this._syncDirtyIndicators();
+        return true;
+    }
+
+    _focusPendingChatEditorTarget() {
+        const focusTarget = this._pendingChatEditorFocus;
+        if (!focusTarget) return;
+        this._pendingChatEditorFocus = null;
+
+        const selector = focusTarget === 'editor'
+            ? 'textarea[name="customHtml"][data-custom-html-editor]'
+            : '[data-custom-html-entry]';
+        globalThis.queueMicrotask?.(() => {
+            this.element?.querySelector?.(selector)?.focus?.({ preventScroll: true });
+        });
     }
 
     _onRangeInput(event) {
@@ -1012,14 +1611,18 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _iconPickerDomChoiceMatchesCategory(choice, categoryId) {
         if (categoryId === 'all') return true;
         if (categoryId === 'recommended') {
-            return choice.dataset.iconRecommended === 'true' || choice.classList.contains('is-selected');
+            return choice.dataset.iconRecommended === 'true'
+                || choice.dataset.iconSaved === 'true'
+                || choice.classList.contains('is-selected');
         }
         return choice.dataset.iconCategory === categoryId;
     }
 
     _setupColorPaletteControls(html) {
         html.querySelectorAll('input[type="color"].yf-color-swatch').forEach(input => {
-            const host = input.closest('.yf-token-color-control, .yf-color-chip') || input.parentElement;
+            const host = input.closest('.yf-roll-color-well')
+                || input.closest('.yf-token-color-control, .yf-color-chip')
+                || input.parentElement;
             if (!host) return;
             const nullable = input.dataset.nullableColor === 'true';
             const stock = nullable && input.dataset.stock === 'true';
@@ -1034,7 +1637,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 trigger = document.createElement('button');
                 trigger.type = 'button';
                 trigger.className = 'yf-color-palette-button';
-                trigger.innerHTML = '<i class="fas fa-swatchbook" aria-hidden="true"></i>';
+                if (this._activeTab !== 'rolls') {
+                    trigger.innerHTML = '<i class="fas fa-swatchbook" aria-hidden="true"></i>';
+                }
                 input.insertAdjacentElement('afterend', trigger);
             }
 
@@ -1089,7 +1694,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const stock = this._isNullableColorStock(input);
         const currentColor = this._normalizePaletteColor(input.value);
         const popover = document.createElement('div');
-        popover.className = 'yf-color-palette-popover';
+        popover.className = `yf-color-palette-popover${this._activeTab === 'rolls' ? ' yf-rolls-palette-popover' : ''}`;
+        popover.dataset.yfOwnerTab = this._activeTab;
         popover.setAttribute('role', 'dialog');
         popover.setAttribute('aria-label', this._localizeWithFallback(
             'YOUR_FLAVOR.Config.ColorPalette.Label',
@@ -1271,6 +1877,35 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     /*  Actions                                     */
     /* -------------------------------------------- */
 
+    /**
+     * Build inline styles for a rendered preset sample card (Fase 11 gallery).
+     * Presets without visual defaults (none/custom) keep the icon look.
+     */
+    static #buildPresetSample(preset) {
+        const defaults = preset?.defaults;
+        if (!defaults || preset.id === 'none' || preset.id === 'custom') return { show: false };
+
+        const box = [
+            `background:${defaults.backgroundColor ?? 'rgba(24, 20, 14, 0.95)'}`,
+            `border-bottom:2px ${defaults.borderStyle ?? 'solid'} ${defaults.borderColor ?? '#665533'}`
+        ].join(';');
+
+        const nameParts = [`color:${defaults.textColor ?? '#e8dcc8'}`];
+        if (defaults.fontFamily && defaults.fontFamily !== 'inherit') {
+            nameParts.push(`font-family:'${defaults.fontFamily}', serif`);
+        }
+        if (defaults.glowEnabled && defaults.glowColor) {
+            nameParts.push(`text-shadow:0 0 8px ${defaults.glowColor}`);
+        }
+
+        return {
+            show: true,
+            boxStyle: box,
+            nameStyle: nameParts.join(';'),
+            lineStyle: `color:${defaults.textColor ?? '#e8dcc8'};opacity:.7`
+        };
+    }
+
     static async #onSelectLayout(event, target) {
         const layoutId = target.dataset.layout;
         if (layoutId) {
@@ -1281,6 +1916,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static async #onSave(event, target) {
         try {
+            this._syncCustomHtmlDraftFromDom();
             if (this.foundryCustomizer?.isArrangeModeActive?.()) {
                 this.foundryCustomizer.disableArrangeMode();
             }
@@ -1288,16 +1924,20 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             this._ensureFoundryFeatureSettingForSave();
             await this._savePendingVisualSettings();
             const dirtyAreas = this.configStore.getDirtyAreas();
-            await this.configStore.save({
-                saveFoundry: Boolean(game.user.isGM
-                    && this.foundryCustomizer
-                    && (
-                        dirtyAreas.foundry
-                        || dirtyAreas.icons
-                        || game.settings.get(MODULE_ID, 'enableFoundryCustomization')
-                        || this._pendingVisualSettings?.enableFoundryCustomization === true
-                    ))
-            });
+            const hasConfigDraft = ['chat', 'rolls', 'cards', 'foundry', 'icons']
+                .some(areaId => Boolean(dirtyAreas[areaId]));
+            if (hasConfigDraft) {
+                await this.configStore.save({
+                    saveFoundry: Boolean(game.user.isGM
+                        && this.foundryCustomizer
+                        && (
+                            dirtyAreas.foundry
+                            || dirtyAreas.icons
+                            || game.settings.get(MODULE_ID, 'enableFoundryCustomization')
+                            || this._pendingVisualSettings?.enableFoundryCustomization === true
+                        ))
+                });
+            }
             await this._savePendingVisualPresets();
 
             this._pendingVisualSettings = null;
@@ -1311,6 +1951,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         } catch (error) {
             console.error(`${MODULE_NAME} | Error saving configuration:`, error);
             ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.SaveError'));
+            await this.render();
         }
     }
 
@@ -1383,6 +2024,65 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         } catch (error) {
             console.error(`${MODULE_NAME} | Factory reset failed:`, error);
             ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.FactoryResetError'));
+        }
+    }
+
+    static async #onDisableChatStyling(event, target) {
+        if (!game.user.isGM) {
+            ui.notifications.warn(game.i18n.localize('YOUR_FLAVOR.Config.NoPermission'));
+            return;
+        }
+        if (!game.settings.get(MODULE_ID, 'moduleEnabled')) {
+            this.render();
+            return;
+        }
+
+        try {
+            await game.settings.set(MODULE_ID, 'moduleEnabled', false);
+            if (this._pendingVisualSettings) {
+                delete this._pendingVisualSettings.moduleEnabled;
+                if (Object.keys(this._pendingVisualSettings).length === 0) {
+                    this._pendingVisualSettings = null;
+                }
+            }
+            ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.ChatStylingStopped'));
+            this.render();
+        } catch (error) {
+            console.error(`${MODULE_NAME} | Failed to stop new chat styling:`, error);
+            ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.ChatStylingStopError'));
+        }
+    }
+
+    static async #onEmergencyResetFoundry(event, target) {
+        if (!game.user.isGM || !this.foundryCustomizer) {
+            ui.notifications.warn(game.i18n.localize('YOUR_FLAVOR.Config.NoPermission'));
+            return;
+        }
+
+        const confirmed = await confirmDialog({
+            title: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryTitle'),
+            content: game.i18n.localize('YOUR_FLAVOR.Dialog.ResetFoundryContent'),
+            defaultYes: false
+        });
+        if (!confirmed) return;
+
+        try {
+            this._closeColorPalette({ restoreFocus: false });
+            this._disableIconSelectionMode({ silent: true });
+            this.foundryCustomizer.disableArrangeMode?.();
+            this.foundryCustomizer.forgetLayoutMeasurement?.();
+            await this.configStore.resetFoundry();
+            this._activeFoundrySection = 'overview';
+            this._activeFoundryPreviewArea = 'navigation';
+            this._activeIconArea = 'navigation';
+            this._dynamicIconEntries = new Map();
+            this._shouldRevertFoundryOnClose = true;
+
+            ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.FoundryReset'));
+            this.render();
+        } catch (error) {
+            console.error(`${MODULE_NAME} | Emergency Foundry reset failed:`, error);
+            ui.notifications.error(game.i18n.localize('YOUR_FLAVOR.Notifications.FoundryResetError'));
         }
     }
 
@@ -1476,10 +2176,25 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this.close();
     }
 
-    static async #onToggleAdvanced(event, target) {
-        const content = target.nextElementSibling;
-        target.classList.toggle('open');
-        content.classList.toggle('open');
+    static async #onOpenCustomHtmlEditor(event, target) {
+        const isGM = game.user.isGM;
+        const canCustomize = isGM || game.settings.get(MODULE_ID, 'allowPlayerCustomization');
+        const forcedLayout = game.settings.get(MODULE_ID, 'forcePlayerLayout');
+        const hasForcedLayout = !isGM && forcedLayout && forcedLayout !== 'none';
+        const allowCustomHtml = isGM || game.settings.get(MODULE_ID, 'allowCustomHtml');
+        if (this._activeTab !== 'chat' || !canCustomize || hasForcedLayout || !allowCustomHtml) return;
+
+        this._syncChatRandomizerConstraintsFromDom();
+        this._chatEditorMode = 'customHtml';
+        this._pendingChatEditorFocus = 'editor';
+        this.render();
+    }
+
+    static async #onCloseCustomHtmlEditor(event, target) {
+        this._syncCustomHtmlDraftFromDom();
+        this._chatEditorMode = 'flavor';
+        this._pendingChatEditorFocus = 'entry';
+        this.render();
     }
 
     static async #onExportVisual(event, target) {
@@ -1514,9 +2229,15 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json,application/json';
+        input.hidden = true;
+        const cleanup = () => input.remove();
+        input.addEventListener('cancel', cleanup, { once: true });
         input.addEventListener('change', async (e) => {
             const file = e.target.files?.[0];
-            if (!file) return;
+            if (!file) {
+                cleanup();
+                return;
+            }
 
             try {
                 const text = await file.text();
@@ -1565,8 +2286,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             } catch (error) {
                 console.error(`${MODULE_NAME} | Visual import failed:`, error);
                 ui.notifications.error(game.i18n.localize(this._getVisualImportErrorKey(error)));
+            } finally {
+                cleanup();
             }
-        });
+        }, { once: true });
+        document.body.appendChild(input);
         input.click();
     }
 
@@ -1643,6 +2367,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #onSwitchPreviewFixture(event, target) {
         const fixtureId = target?.dataset?.fixture || target?.closest?.('[data-fixture]')?.dataset?.fixture;
         this._switchPreviewFixture(fixtureId);
+    }
+
+    static async #onSwitchRollPreviewState(event, target) {
+        const stateId = target?.dataset?.rollPreview
+            || target?.closest?.('[data-roll-preview]')?.dataset?.rollPreview;
+        this._switchRollPreviewState(stateId);
     }
 
     static async #onSwitchFoundryPreviewArea(event, target) {
@@ -1756,8 +2486,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     static async #onSwitchTab(event, target) {
         const tab = target.dataset.tab;
         if (!tab || tab === this._activeTab || !this._isTabAvailable(tab)) return;
+        this._syncCustomHtmlDraftFromDom();
         if (tab !== 'chat') this._clearChatLogPreview();
         if (tab !== 'icons') this._disableIconSelectionMode({ silent: true });
+        if (tab === 'cards' && !CARD_PREVIEW_FIXTURE_IDS.has(this._activePreviewFixtureId)) {
+            this._activePreviewFixtureId = 'item-card-dnd5e';
+        }
         this._activeTab = tab;
         this.render();
     }
@@ -1844,14 +2578,84 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static async #onApplyThemePreset(event, target) {
         const presetId = target.dataset.preset;
-        const preset = FOUNDRY_THEME_PRESETS.find(p => p.id === presetId);
+        const preset = getFoundryThemeCompanionPreset(presetId);
         if (!preset) return;
 
-        Object.assign(this._workingFoundryConfig.theme, foundry.utils.deepClone(preset.theme));
-        this._markFoundryFieldOverridesForObject('theme', preset.theme);
+        applyFoundryThemeCompanion(
+            this._workingFoundryConfig,
+            foundry.utils.deepClone(preset.theme),
+            {
+                preserveCustomIconColors: this._workingFoundryConfig.preserveCustomIconColors !== false,
+                preserveCustomFonts: this._workingFoundryConfig.preserveCustomFonts !== false
+            }
+        );
+
+        /* Foundry customization ships OFF (DEFAULT_FOUNDRY_CUSTOMIZATION.enabled
+         * is false), so picking a theme used to change precisely nothing on
+         * screen while the master toggle stayed dark: the reasonable conclusion
+         * is that the module is broken. Choosing a theme IS the request to be
+         * themed, so it switches the feature on - and the theme category with
+         * it, since that gate would swallow the change just as quietly.
+         * Both land in the working draft; nothing is written until Save. */
+        const wasEnabled = this._workingFoundryConfig.enabled === true;
+        const themeCategoryWasOn = this._workingFoundryConfig.categories?.theme !== false;
+        if (!wasEnabled) this._workingFoundryConfig.enabled = true;
+        if (!themeCategoryWasOn) {
+            this._workingFoundryConfig.categories = {
+                ...(this._workingFoundryConfig.categories ?? {}),
+                theme: true
+            };
+        }
+
         this._applyWorkingFoundryConfig();
         this.render();
-        ui.notifications.info(game.i18n.localize('YOUR_FLAVOR.Notifications.PresetApplied'));
+        ui.notifications.info(game.i18n.localize(
+            wasEnabled && themeCategoryWasOn
+                ? 'YOUR_FLAVOR.Notifications.PresetApplied'
+                : 'YOUR_FLAVOR.Notifications.PresetAppliedAndEnabled'
+        ));
+    }
+
+    static async #onPreviousFoundryThemePage() {
+        if (this._foundryThemeCarouselPage <= 0) return;
+        this._foundryThemeCarouselPage -= 1;
+        this.render();
+    }
+
+    static async #onNextFoundryThemePage() {
+        const pageCount = Math.max(
+            1,
+            Math.ceil(getFoundryThemeCompanionPresets().length / FOUNDRY_THEME_CAROUSEL_PAGE_SIZE)
+        );
+        if (this._foundryThemeCarouselPage >= pageCount - 1) return;
+        this._foundryThemeCarouselPage += 1;
+        this.render();
+    }
+
+    static async #onSelectFoundryThemePage(event, target) {
+        const page = Number(target?.dataset?.page);
+        const pageCount = Math.max(
+            1,
+            Math.ceil(getFoundryThemeCompanionPresets().length / FOUNDRY_THEME_CAROUSEL_PAGE_SIZE)
+        );
+        if (!Number.isInteger(page) || page < 0 || page >= pageCount || page === this._foundryThemeCarouselPage) {
+            return;
+        }
+        this._foundryThemeCarouselPage = page;
+        this.render();
+    }
+
+    static #onPreviousChatPresetPage() {
+        this._goToChatPresetPage(this._chatPresetCarouselPage - 1);
+    }
+
+    static #onNextChatPresetPage() {
+        this._goToChatPresetPage(this._chatPresetCarouselPage + 1);
+    }
+
+    static #onSelectChatPresetPage(event, target) {
+        const page = Number(target?.dataset?.page);
+        if (Number.isFinite(page)) this._goToChatPresetPage(page);
     }
 
     static async #onApplySidebarTransformer(event, target) {
@@ -1993,18 +2797,33 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         showFoundryTab = false,
         dirtyAreas = this.configStore?.getDirtyAreas?.() || {}
     } = {}) {
-        return FlavorConfigApp.TAB_DEFINITIONS
+        /* Group boundaries are computed after filtering, not from a fixed list
+         * of ids: a player without the GM tabs sees a different set, and the
+         * breathing space has to land on the first tab that is actually
+         * rendered in each group rather than on one that was filtered out. */
+        const visibleTabs = FlavorConfigApp.TAB_DEFINITIONS
             .filter(tab => !tab.gmOnly || isGM)
-            .filter(tab => !tab.requiresFoundry || showFoundryTab)
-            .map(tab => {
+            .filter(tab => !tab.requiresFoundry || showFoundryTab);
+
+        return visibleTabs
+            .map((tab, index) => {
                 const label = game.i18n.localize(tab.labelKey);
                 const isDirty = Boolean(dirtyAreas[tab.id]);
                 const canReset = this._canResetArea(tab.id);
 
+                const descKey = `YOUR_FLAVOR.Studio.HomeTab.Desc${tab.id.charAt(0).toUpperCase()}${tab.id.slice(1)}`;
+                const helpKey = `YOUR_FLAVOR.Studio.HomeTab.Help${tab.id.charAt(0).toUpperCase()}${tab.id.slice(1)}`;
+                const homeDesc = game.i18n.localize(descKey);
+                const homeHelp = game.i18n.localize(helpKey);
+
                 return {
                     ...tab,
                     label,
+                    iconAssetId: tab.iconAssetId || tab.id,
+                    homeDesc: homeDesc === descKey ? null : homeDesc,
+                    homeHelp: homeHelp === helpKey ? null : homeHelp,
                     isActive: tab.id === this._activeTab,
+                    isGroupStart: index > 0 && tab.group !== visibleTabs[index - 1].group,
                     isDirty,
                     canReset,
                     dirtyLabel: game.i18n.localize('YOUR_FLAVOR.Config.Dirty.UnsavedShort'),
@@ -2016,7 +2835,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     _countDirtyTabs(tabs = []) {
-        return tabs.filter(tab => tab.id !== 'overview' && tab.isDirty).length;
+        return tabs.filter(tab => !['overview', 'changes'].includes(tab.id) && tab.isDirty).length;
     }
 
     _canResetArea(areaId) {
@@ -2238,7 +3057,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         };
     }
 
-    _buildCardTabsContext(config = this._workingConfig) {
+    _buildCardTabsContext(config = this._workingConfig, {
+        profileName = '',
+        layoutLabel = '',
+        isDirty = false,
+        currentSystemId = 'generic'
+    } = {}) {
         config.cards = foundry.utils.mergeObject(
             foundry.utils.deepClone(DEFAULT_CARD_CONFIG),
             foundry.utils.deepClone(config.cards || {})
@@ -2248,7 +3072,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const surfaceDefinitions = [
             {
                 id: 'itemTitle',
-                icon: 'fas fa-heading',
+                icon: 'far fa-window-maximize',
                 labelKey: 'YOUR_FLAVOR.Config.CardTabs.ItemTitle',
                 fields: [
                     ['background', 'YOUR_FLAVOR.Config.CardTabs.Background'],
@@ -2267,7 +3091,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             },
             {
                 id: 'buttons',
-                icon: 'fas fa-hand-pointer',
+                icon: 'fas fa-arrow-pointer',
                 labelKey: 'YOUR_FLAVOR.Config.CardTabs.Buttons',
                 fields: [
                     ['background', 'YOUR_FLAVOR.Config.CardTabs.Background'],
@@ -2277,7 +3101,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             },
             {
                 id: 'tables',
-                icon: 'fas fa-table',
+                icon: 'fas fa-table-cells',
                 labelKey: 'YOUR_FLAVOR.Config.CardTabs.Tables',
                 fields: [
                     ['oddRow', 'YOUR_FLAVOR.Config.CardTabs.OddRow'],
@@ -2290,6 +3114,12 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return {
             enabled: config.cards.enabled !== false,
             enabledTitle: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.EnabledTitle'),
+            currentSystemLabel: game.i18n.localize('YOUR_FLAVOR.Config.CardsDesign.CurrentSystem'),
+            context: {
+                profileName,
+                layoutLabel,
+                isDirty
+            },
             surfaces: surfaceDefinitions.map(surface => ({
                 ...surface,
                 label: game.i18n.localize(surface.labelKey),
@@ -2320,31 +3150,36 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                     id: 'dnd5e-item',
                     path: 'cards.systems.dnd5e.itemCards',
                     label: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.Dnd5eItemCards'),
-                    enabled: config.cards.systems?.dnd5e?.itemCards !== false
+                    enabled: config.cards.systems?.dnd5e?.itemCards !== false,
+                    isCurrentSystem: currentSystemId === 'dnd5e'
                 },
                 {
                     id: 'dnd5e-ability',
                     path: 'cards.systems.dnd5e.abilityCards',
                     label: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.Dnd5eAbilityCards'),
-                    enabled: config.cards.systems?.dnd5e?.abilityCards !== false
+                    enabled: config.cards.systems?.dnd5e?.abilityCards !== false,
+                    isCurrentSystem: false
                 },
                 {
                     id: 'pf2e-action',
                     path: 'cards.systems.pf2e.actionCards',
                     label: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.Pf2eActionCards'),
-                    enabled: config.cards.systems?.pf2e?.actionCards !== false
+                    enabled: config.cards.systems?.pf2e?.actionCards !== false,
+                    isCurrentSystem: currentSystemId === 'pf2e'
                 },
                 {
                     id: 'pf2e-spell',
                     path: 'cards.systems.pf2e.spellCards',
                     label: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.Pf2eSpellCards'),
-                    enabled: config.cards.systems?.pf2e?.spellCards !== false
+                    enabled: config.cards.systems?.pf2e?.spellCards !== false,
+                    isCurrentSystem: false
                 },
                 {
                     id: 'generic',
                     path: 'cards.systems.generic.enabled',
                     label: game.i18n.localize('YOUR_FLAVOR.Config.CardTabs.Generic'),
-                    enabled: config.cards.systems?.generic?.enabled !== false
+                    enabled: config.cards.systems?.generic?.enabled !== false,
+                    isCurrentSystem: !['dnd5e', 'pf2e'].includes(currentSystemId)
                 }
             ]
         };
@@ -2473,6 +3308,18 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             : game.i18n.localize('YOUR_FLAVOR.Config.Randomizer.AllPresets');
     }
 
+    /**
+     * Keep the "filter" readout in step with the selects without a full re-render,
+     * which would drop focus while the user is still choosing.
+     */
+    _updateRandomizerFilterLabel() {
+        const readout = this.element?.querySelector?.('.yf-randomizer-context [data-randomizer-filter]');
+        if (!readout) return;
+        readout.textContent = this._formatI18n('YOUR_FLAVOR.Config.Randomizer.Filter', {
+            filter: this._getActiveRandomizerFilterLabel()
+        });
+    }
+
     _syncChatRandomizerConstraintsFromDom() {
         const constraints = normalizeChatRandomizerConstraints(this._randomizerConstraints);
         this.element?.querySelectorAll?.('.yf-randomizer-constraint').forEach(input => {
@@ -2480,6 +3327,154 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         });
         this._randomizerConstraints = normalizeChatRandomizerConstraints(constraints);
         return this._randomizerConstraints;
+    }
+
+    /**
+     * Configuration hub: preserves the working-draft summary while exposing only
+     * the real world/client policies and Foundry apply gates that own this studio.
+     * The route id intentionally remains "changes" for saved links and navigation.
+     */
+    _buildChangesContext({
+        config,
+        foundryConfig,
+        isGM = game.user.isGM,
+        showFoundryTab = false,
+        layouts = [],
+        dirtyAreas = {},
+        hasForcedLayout = false,
+        canCustomize = false
+    } = {}) {
+        const rows = [];
+        const localize = key => game.i18n.localize(key);
+        const format = (key, data) => this._formatI18n(key, data);
+
+        const preset = getChatPreset(config.layout);
+        const presetDefaults = preset?.defaults ?? {};
+        const baseline = { ...DEFAULT_CONFIG.customizations, ...presetDefaults };
+        const customTokens = Object.keys(config.customizations ?? {})
+            .filter(key => JSON.stringify(config.customizations[key]) !== JSON.stringify(baseline[key]))
+            .length;
+        rows.push({
+            id: 'chat',
+            icon: 'fas fa-comment-dots',
+            label: localize('YOUR_FLAVOR.Config.Tabs.ChatBasic'),
+            summary: config.enabled
+                ? format('YOUR_FLAVOR.Studio.Changes.ChatSummary', {
+                    preset: this._getChatPresetLabel(config.layout),
+                    count: customTokens
+                })
+                : localize('YOUR_FLAVOR.Studio.Changes.AreaOff'),
+            hasWork: config.enabled && (config.layout !== 'none' || customTokens > 0)
+        });
+
+        const countSetColors = surfaces => Object.values(surfaces ?? {})
+            .flatMap(surface => Object.values(surface ?? {}))
+            .filter(value => value !== null && value !== undefined && value !== '').length;
+
+        const rollColors = countSetColors(config.rolls?.surfaces);
+        rows.push({
+            id: 'rolls',
+            icon: 'fas fa-dice-d20',
+            label: localize('YOUR_FLAVOR.Config.Tabs.Rolls'),
+            summary: config.rolls?.enabled === false
+                ? localize('YOUR_FLAVOR.Studio.Changes.AreaOff')
+                : format('YOUR_FLAVOR.Studio.Changes.SurfaceSummary', { count: rollColors }),
+            hasWork: rollColors > 0
+        });
+
+        const cardColors = countSetColors(config.cards?.surfaces);
+        rows.push({
+            id: 'cards',
+            icon: 'fas fa-scroll',
+            label: localize('YOUR_FLAVOR.Config.Tabs.Cards'),
+            summary: config.cards?.enabled === false
+                ? localize('YOUR_FLAVOR.Studio.Changes.AreaOff')
+                : format('YOUR_FLAVOR.Studio.Changes.SurfaceSummary', { count: cardColors }),
+            hasWork: cardColors > 0
+        });
+
+        if (isGM && showFoundryTab) {
+            const activeAreas = Object.values(foundryConfig?.areaEnabled ?? {}).filter(Boolean).length;
+            const overrides = Object.keys(foundryConfig?.fieldOverrides ?? {}).length;
+            rows.push({
+                id: 'foundry',
+                icon: 'fas fa-wand-magic-sparkles',
+                label: localize('YOUR_FLAVOR.Config.Tabs.FoundryShell'),
+                summary: foundryConfig?.enabled
+                    ? format('YOUR_FLAVOR.Studio.Changes.FoundrySummary', { areas: activeAreas, count: overrides })
+                    : localize('YOUR_FLAVOR.Studio.Changes.AreaOff'),
+                hasWork: Boolean(foundryConfig?.enabled) && overrides > 0
+            });
+
+            const groups = Object.values(foundryConfig?.icons?.groups ?? {})
+                .filter(group => Object.values(group ?? {}).some(value => value))
+                .length;
+            const iconOverrides = Object.keys(foundryConfig?.icons?.overrides ?? {}).length;
+            rows.push({
+                id: 'icons',
+                icon: 'fas fa-icons',
+                label: localize('YOUR_FLAVOR.Config.Tabs.Icons'),
+                summary: format('YOUR_FLAVOR.Studio.Changes.IconsSummary', { groups, count: iconOverrides }),
+                hasWork: groups > 0 || iconOverrides > 0
+            });
+        }
+
+        const selectedForcedLayout = this._getVisualSettingDraftValue('forcePlayerLayout') || 'none';
+        const settings = isGM
+            ? {
+                moduleEnabled: this._getVisualSettingDraftValue('moduleEnabled') !== false,
+                allowPlayerCustomization: this._getVisualSettingDraftValue('allowPlayerCustomization') !== false,
+                forcePlayerLayout: selectedForcedLayout,
+                allowCustomHtml: this._getVisualSettingDraftValue('allowCustomHtml') === true,
+                applyToWhispers: this._getVisualSettingDraftValue('applyToWhispers') !== false,
+                messageStylingPolicy: this._getVisualSettingDraftValue('messageStylingPolicy'),
+                enableFoundryCustomization: this._getVisualSettingDraftValue('enableFoundryCustomization') === true,
+                shareFoundryCustomization: this._getVisualSettingDraftValue('shareFoundryCustomization') !== false,
+                forcePlayerLayoutChoices: [
+                    {
+                        id: 'none',
+                        label: localize('YOUR_FLAVOR.Settings.ForcePlayerLayout.Choices.None'),
+                        isSelected: selectedForcedLayout === 'none'
+                    },
+                    ...layouts
+                        .filter(layout => layout.id !== 'none')
+                        .map(layout => ({
+                            id: layout.id,
+                            label: layout.name,
+                            isSelected: layout.id === selectedForcedLayout
+                        }))
+                ],
+                messageStylingPolicyChoices: MESSAGE_STYLING_POLICIES.map(policy => ({
+                    id: policy.id,
+                    label: localize(policy.labelKey),
+                    isSelected: policy.id === this._getVisualSettingDraftValue('messageStylingPolicy')
+                }))
+            }
+            : null;
+        const uiScale = Number(game.settings.get(MODULE_ID, 'uiScale')) || 100;
+        const hasDirty = Boolean(dirtyAreas.changes);
+
+        return {
+            rows,
+            hasAny: rows.some(row => row.hasWork),
+            emptyText: localize('YOUR_FLAVOR.Studio.Changes.Empty'),
+            goToLabel: localize('YOUR_FLAVOR.Studio.Changes.GoTo'),
+            isGM,
+            showFoundryControls: Boolean(isGM && showFoundryTab),
+            settings,
+            uiScale,
+            uiScaleChoices: Array.from({ length: 15 }, (_entry, index) => {
+                const value = 80 + (index * 5);
+                return { value, isSelected: value === uiScale };
+            }),
+            hasDirty,
+            canSave: Boolean(isGM || (canCustomize && !hasForcedLayout)),
+            statusText: localize(
+                hasDirty
+                    ? 'YOUR_FLAVOR.Studio.Configuration.Unsaved'
+                    : 'YOUR_FLAVOR.Studio.Configuration.Saved'
+            )
+        };
     }
 
     _buildOverviewContext({
@@ -2494,7 +3489,15 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         pendingVisualSettingCount = 0,
         pendingVisualPresetCount = 0
     }) {
+        const hour = new Date().getHours();
+        const greetingKey = hour < 12
+            ? 'YOUR_FLAVOR.Studio.HomeTab.GreetingMorning'
+            : hour < 18
+                ? 'YOUR_FLAVOR.Studio.HomeTab.GreetingAfternoon'
+                : 'YOUR_FLAVOR.Studio.HomeTab.GreetingEvening';
+
         return {
+            greeting: game.i18n.localize(greetingKey),
             profileName: this._editingActorId
                 ? game.actors.get(this._editingActorId)?.name || playerName
                 : playerName,
@@ -2717,6 +3720,49 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return Object.keys(this._pendingVisualSettings || {}).length;
     }
 
+    _isApprovedConfigurationWorldSetting(key) {
+        return CONFIGURATION_WORLD_SETTING_KEYS.has(key);
+    }
+
+    _getVisualSettingDraftValue(key) {
+        if (Object.prototype.hasOwnProperty.call(this._pendingVisualSettings || {}, key)) {
+            return this._pendingVisualSettings[key];
+        }
+
+        try {
+            return game.settings.get(MODULE_ID, key);
+        } catch (_error) {
+            return undefined;
+        }
+    }
+
+    _stageVisualSettingDraft(key, value) {
+        if (!game.user.isGM || !this._isApprovedConfigurationWorldSetting(key)) return false;
+
+        let savedValue;
+        try {
+            savedValue = game.settings.get(MODULE_ID, key);
+        } catch (_error) {
+            return false;
+        }
+
+        if (JSON.stringify(savedValue) === JSON.stringify(value)) {
+            if (this._pendingVisualSettings) {
+                delete this._pendingVisualSettings[key];
+                if (Object.keys(this._pendingVisualSettings).length === 0) {
+                    this._pendingVisualSettings = null;
+                }
+            }
+            return true;
+        }
+
+        this._pendingVisualSettings = {
+            ...(this._pendingVisualSettings || {}),
+            [key]: value
+        };
+        return true;
+    }
+
     _getPendingVisualPresetCount() {
         const presets = this._pendingVisualPresets || null;
         if (!presets) return 0;
@@ -2907,21 +3953,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     _syncFoundryFeatureSettingDraft(enabled) {
         if (!game.user.isGM) return;
-
-        if (enabled && !this._getFoundryFeatureSetting()) {
-            this._pendingVisualSettings = {
-                ...(this._pendingVisualSettings || {}),
-                enableFoundryCustomization: true
-            };
-            return;
-        }
-
-        if (!enabled && this._pendingVisualSettings?.enableFoundryCustomization === true) {
-            delete this._pendingVisualSettings.enableFoundryCustomization;
-            if (Object.keys(this._pendingVisualSettings).length === 0) {
-                this._pendingVisualSettings = null;
-            }
-        }
+        this._stageVisualSettingDraft('enableFoundryCustomization', Boolean(enabled));
     }
 
     _enableFoundryCategoryForPath(foundryPath) {
@@ -3017,8 +4049,13 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     async _savePendingVisualSettings() {
         if (!game.user.isGM || this._getPendingVisualSettingCount() <= 0) return;
 
-        for (const [key, value] of Object.entries(this._pendingVisualSettings)) {
+        for (const [key, value] of Object.entries({ ...this._pendingVisualSettings })) {
             await game.settings.set(MODULE_ID, key, value);
+            delete this._pendingVisualSettings?.[key];
+        }
+
+        if (this._pendingVisualSettings && Object.keys(this._pendingVisualSettings).length === 0) {
+            this._pendingVisualSettings = null;
         }
     }
 
@@ -3060,8 +4097,11 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
+        a.hidden = true;
+        document.body.appendChild(a);
         a.click();
-        URL.revokeObjectURL(url);
+        a.remove();
+        globalThis.setTimeout(() => URL.revokeObjectURL(url), 0);
     }
 
     _slugifyFilename(value) {
@@ -3075,6 +4115,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     _buildIconsContext({ isGM = game.user.isGM, showFoundryTab = false } = {}) {
         const iconConfig = this._getWorkingIconConfig();
+        const savedFoundryConfig = this.configStore.normalizeFoundryConfig(this._savedFoundryConfigSnapshot);
+        const savedIconConfig = normalizeLegacyIcons(savedFoundryConfig);
         const localize = key => game.i18n.localize(key);
         const registry = getIconRegistry({ localize });
         const dynamicEntries = this._getDynamicIconEntries(iconConfig, { localize });
@@ -3103,7 +4145,18 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         const selectedArea = selectedEntry
             ? registry.areas.find(area => area.id === selectedEntry.area) || null
             : null;
-        const inspector = this._buildSelectedIconInspector({ selectedEntry, selectedGroup, selectedArea, iconConfig });
+        const selectedIdentity = buildIconSelectionIdentity(selectedEntry, {
+            areaLabel: selectedArea?.label,
+            groupLabel: selectedGroup?.label
+        });
+        const inspector = this._buildSelectedIconInspector({
+            selectedEntry,
+            selectedGroup,
+            selectedArea,
+            iconConfig,
+            savedIconConfig,
+            selectedIdentity
+        });
         const areaEntries = iconEntries.filter(entry => entry.area === this._activeIconArea);
         const activeArea = registry.areas.find(area => area.id === this._activeIconArea) ?? registry.areas[0] ?? null;
         const groupById = new Map(registry.groups.map(group => [group.id, group]));
@@ -3137,6 +4190,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                     groupLabel: selectedGroup?.label ?? selectedEntry.defaultGroup
                 }
                 : null,
+            selectedIdentity,
             selectedLabel: selectedEntry?.label ?? game.i18n.localize('YOUR_FLAVOR.Config.IconTabs.NoSelection'),
             clearSelectionLabel: game.i18n.localize('YOUR_FLAVOR.Config.IconTabs.ClearSelection'),
             noInspectorLabel: game.i18n.localize('YOUR_FLAVOR.Config.IconTabs.NoInspectorSelection'),
@@ -3264,7 +4318,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return {
             ...entry,
             groupLabel: groupLabel ?? entry.defaultGroup,
-            iconClass: hasCustomOverride && override?.iconClass ? override.iconClass : this._getIconPreviewClass(entry),
+            iconClass: getEffectiveIconClass(entry, iconConfig),
             isSelected: iconConfig.selectedIconId === entry.id,
             hasCustomOverride,
             isHidden,
@@ -3290,22 +4344,67 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         };
     }
 
-    _buildSelectedIconInspector({ selectedEntry = null, selectedGroup = null, selectedArea = null, iconConfig = null } = {}) {
+    _buildSelectedIconInspector({
+        selectedEntry = null,
+        selectedGroup = null,
+        selectedArea = null,
+        iconConfig = null,
+        savedIconConfig = null,
+        selectedIdentity = null
+    } = {}) {
         if (!selectedEntry || !iconConfig) return null;
 
         const override = iconConfig.overrides?.[selectedEntry.id] ?? null;
         const groupColors = iconConfig.groups?.[selectedEntry.defaultGroup] ?? {};
+        const savedGroupColors = savedIconConfig?.groups?.[selectedEntry.defaultGroup] ?? {};
         const inheritGroup = override?.inheritGroup ?? true;
         const hasOverride = this._iconOverrideHasCustomization(override);
         const iconClassValue = override?.iconClass || '';
         const fallbackIconClass = selectedEntry.iconClass || this._getIconPreviewClass(selectedEntry);
-        const iconPicker = this._buildIconPickerContext(iconClassValue || fallbackIconClass);
         const isHidden = Boolean(override?.hidden);
         const canHideIcon = this._canHideIconEntry(selectedEntry);
+        const savedOverride = savedIconConfig?.overrides?.[selectedEntry.id] ?? null;
+        const savedUsesIndividualColors = Boolean(savedOverride && savedOverride.inheritGroup === false);
+        const draftUsesIndividualColors = Boolean(override && override.inheritGroup === false);
+        const savedResolvedGroupColors = this._resolveIconPreviewColorSet(savedGroupColors);
+        const draftResolvedGroupColors = this._resolveIconPreviewColorSet(groupColors);
+        const savedColors = savedUsesIndividualColors
+            ? this._resolveIconPreviewColorSet(savedOverride, savedResolvedGroupColors)
+            : savedResolvedGroupColors;
+        const draftColors = draftUsesIndividualColors
+            ? this._resolveIconPreviewColorSet(override, draftResolvedGroupColors)
+            : draftResolvedGroupColors;
+        const comparison = buildIconSavedDraftComparison(selectedEntry, {
+            savedIconConfig,
+            draftIconConfig: iconConfig,
+            savedColors,
+            draftColors
+        });
+        const iconPicker = this._buildIconPickerContext(
+            comparison?.draftIconClass || iconClassValue || fallbackIconClass,
+            comparison?.savedIconClass || fallbackIconClass
+        );
+        const getPickerLabel = iconClass => (
+            FONT_AWESOME_ICON_PICKER_CATALOG.find(choice => (
+                this._normalizeIconClassInput(choice.iconClass) === this._normalizeIconClassInput(iconClass)
+            ))?.label || iconClass
+        );
 
         return {
+            identity: selectedIdentity,
             areaLabel: selectedArea?.label ?? selectedEntry.area,
             groupLabel: selectedGroup?.label ?? selectedEntry.defaultGroup,
+            comparison: comparison
+                ? {
+                    ...comparison,
+                    areaId: selectedEntry.area,
+                    areaClass: `is-area-${selectedEntry.area}`,
+                    savedLabel: getPickerLabel(comparison.savedIconClass),
+                    draftLabel: getPickerLabel(comparison.draftIconClass),
+                    savedStyle: this._buildIconPreviewStyle(savedColors),
+                    draftStyle: this._buildIconPreviewStyle(draftColors)
+                }
+                : null,
             inheritGroup,
             hasOverride,
             hidden: isHidden,
@@ -3384,31 +4483,16 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     _iconOverrideHasCustomization(override = null) {
-        return Boolean(override && (
-            override.inheritGroup === false
-            || override.iconClass
-            || override.color
-            || override.hoverColor
-            || override.activeColor
-            || override.backgroundColor
-            || override.hoverBackgroundColor
-            || override.activeBackgroundColor
-            || override.hidden === true
-        ));
+        return iconOverrideHasCustomization(override);
     }
 
     _canHideIconEntry(entry = null) {
-        if (!entry) return false;
-        return Boolean(
-            entry.dynamic
-            || entry.supportsIconClass !== false
-            || (entry.styleSelectors ?? []).some(selector => String(selector).includes('::'))
-        );
+        return canHideIconEntry(entry);
     }
 
-    _buildIconPickerContext(selectedIconClass = '') {
+    _buildIconPickerContext(selectedIconClass = '', savedIconClass = '') {
         const selectedCategoryId = this._normalizeIconPickerCategoryId(this._activeIconPickerCategory);
-        const choices = this._buildIconPickerChoices(selectedIconClass);
+        const choices = this._buildIconPickerChoices(selectedIconClass, savedIconClass);
         const availableCategories = FONT_AWESOME_ICON_PICKER_CATEGORIES.map(category => {
             const count = choices.filter(choice => this._iconPickerChoiceMatchesCategory(choice, category.id)).length;
             return {
@@ -3442,8 +4526,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         };
     }
 
-    _buildIconPickerChoices(selectedIconClass = '') {
+    _buildIconPickerChoices(selectedIconClass = '', savedIconClass = '') {
         const normalizedSelected = this._normalizeIconClassInput(selectedIconClass) || '';
+        const normalizedSaved = this._normalizeIconClassInput(savedIconClass) || '';
         const choices = FONT_AWESOME_ICON_PICKER_CATALOG.map((choice, index) => {
             const className = this._normalizeIconClassInput(choice.iconClass) || choice.iconClass;
             const searchText = [
@@ -3461,6 +4546,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 recommended: Boolean(choice.recommended),
                 searchText,
                 isSelected: normalizedSelected === className,
+                isSaved: normalizedSaved === className,
                 isAvailable: this._isFontAwesomeIconClassAvailable(className)
             };
         });
@@ -3472,7 +4558,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     _iconPickerChoiceMatchesCategory(choice, categoryId) {
         const normalizedCategoryId = this._normalizeIconPickerCategoryId(categoryId);
         if (normalizedCategoryId === 'all') return true;
-        if (normalizedCategoryId === 'recommended') return choice.recommended || choice.isSelected;
+        if (normalizedCategoryId === 'recommended') return choice.recommended || choice.isSelected || choice.isSaved;
         return choice.category === normalizedCategoryId;
     }
 
@@ -3801,7 +4887,7 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                     );
             }
 
-            const iconClass = hasCustomOverride && override?.iconClass ? override.iconClass : this._getIconPreviewClass(entry);
+            const iconClass = getEffectiveIconClass(entry, iconConfig);
             tile.querySelectorAll('[data-icon-preview-icon]').forEach(icon => {
                 icon.className = iconClass;
             });
@@ -3970,7 +5056,31 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     _syncDirtyIndicators() {
         const dirtyAreas = this.configStore.getDirtyAreas();
+        const hasPendingVisualDraft = this._getPendingVisualSettingCount() > 0
+            || this._getPendingVisualPresetCount() > 0;
+        const configurationDirty = Boolean(
+            dirtyAreas.chat
+            || dirtyAreas.rolls
+            || dirtyAreas.cards
+            || dirtyAreas.foundry
+            || dirtyAreas.icons
+            || hasPendingVisualDraft
+        );
+        if (hasPendingVisualDraft) dirtyAreas.overview = true;
+        dirtyAreas.changes = configurationDirty;
         const dirtyLabel = game.i18n.localize('YOUR_FLAVOR.Config.Dirty.UnsavedShort');
+        const rollsDirty = Boolean(dirtyAreas.rolls);
+        const rollsDirtyText = game.i18n.localize(
+            rollsDirty
+                ? 'YOUR_FLAVOR.Config.RollsDesign.UnsavedChanges'
+                : 'YOUR_FLAVOR.Config.RollsDesign.SavedChanges'
+        );
+        const foundryDirty = Boolean(dirtyAreas.foundry);
+        const foundryDirtyText = game.i18n.localize(
+            foundryDirty
+                ? 'YOUR_FLAVOR.Config.Foundry.UnsavedChanges'
+                : 'YOUR_FLAVOR.Config.Foundry.SavedChanges'
+        );
 
         this.element?.querySelectorAll('.yf-tab[data-tab], .yf-area-card[data-tab]').forEach(element => {
             const isDirty = Boolean(dirtyAreas[element.dataset.tab]);
@@ -3987,6 +5097,33 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 indicator.textContent = dirtyLabel;
             }
         });
+
+        const rollsSaveState = this.element?.querySelector('.yf-rolls-save-state');
+        if (rollsSaveState) {
+            rollsSaveState.classList.toggle('is-dirty', rollsDirty);
+            const label = rollsSaveState.querySelector('span:last-child');
+            if (label) label.textContent = rollsDirtyText;
+        }
+
+        const foundrySaveState = this.element?.querySelector('.yf-foundry-save-state');
+        if (foundrySaveState) {
+            foundrySaveState.classList.toggle('is-dirty', foundryDirty);
+            const label = foundrySaveState.querySelector('span:last-child');
+            if (label) label.textContent = foundryDirtyText;
+        }
+
+        const configurationSaveState = this.element?.querySelector('.yf-configuration-save-state');
+        if (configurationSaveState) {
+            configurationSaveState.classList.toggle('is-dirty', configurationDirty);
+            const label = configurationSaveState.querySelector('span:last-child');
+            if (label) {
+                label.textContent = game.i18n.localize(
+                    configurationDirty
+                        ? 'YOUR_FLAVOR.Studio.Configuration.Unsaved'
+                        : 'YOUR_FLAVOR.Studio.Configuration.Saved'
+                );
+            }
+        }
     }
 
     _buildDiagnosticsContext({ isGM = game.user.isGM, showFoundryTab = false } = {}) {
@@ -4071,6 +5208,9 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             }));
 
         return {
+            moduleVersion: game.modules.get(MODULE_ID)?.version ?? '',
+            moduleEnabled: game.settings.get(MODULE_ID, 'moduleEnabled') !== false,
+            emergencyResetAvailable: Boolean(isGM && this.foundryCustomizer),
             foundryVersion: game.version || game.release?.version || '',
             systemId: game.system?.id || '',
             systemTitle: game.system?.title || game.system?.id || '',
@@ -4079,10 +5219,19 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
             selectorHealth,
             selectorPresentAreas: selectorHealth?.presentAreas ?? 0,
             selectorTotalAreas: selectorHealth?.totalAreas ?? 0,
+            selectorMissingAreas: selectorHealth?.missingAreas ?? 0,
             iconDiscoveryAvailable: Boolean(iconDiscovery),
             iconDiscovery,
             iconDiscoveryPresentEntries: iconDiscovery?.presentEntries ?? 0,
             iconDiscoveryTotalEntries: iconDiscovery?.totalEntries ?? 0,
+            iconDiscoveryMissingEntries: Math.max(
+                0,
+                (iconDiscovery?.totalEntries ?? 0) - (iconDiscovery?.presentEntries ?? 0)
+            ),
+            iconDiscoveryGroupCount: iconDiscovery?.groups?.length ?? 0,
+            iconDiscoveryGroupLabel: this._formatI18n('YOUR_FLAVOR.Studio.Diagnostics.IconGroupCount', {
+                count: iconDiscovery?.groups?.length ?? 0
+            }),
             iconDiscoveryTargetCount: iconDiscovery?.targetCount ?? 0,
             iconDiscoveryTargetLabel: this._formatI18n('YOUR_FLAVOR.Config.Diagnostics.IconMatchCount', {
                 count: iconDiscovery?.targetCount ?? 0
@@ -4154,6 +5303,8 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return Boolean(
             foundryPath
             && foundryPath !== 'enabled'
+            && foundryPath !== 'preserveCustomIconColors'
+            && foundryPath !== 'preserveCustomFonts'
             && !foundryPath.startsWith('categories.')
             && !foundryPath.startsWith('areaEnabled.')
             && foundryPath !== 'icons.selectedIconId'
@@ -4181,6 +5332,35 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         if (!fixtureId || fixtureId === this._activePreviewFixtureId) return;
         this._activePreviewFixtureId = fixtureId;
         this.render();
+    }
+
+    _switchRollPreviewState(stateId) {
+        if (!ROLL_PREVIEW_STATE_IDS.includes(stateId) || stateId === this._activeRollPreviewState) return;
+        this._activeRollPreviewState = stateId;
+        this.render();
+    }
+
+    _onRollPreviewModeKeydown(event) {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        const currentIndex = ROLL_PREVIEW_STATE_IDS.indexOf(event.currentTarget?.dataset?.rollPreview);
+        if (currentIndex < 0) return;
+
+        event.preventDefault();
+        let nextIndex = currentIndex;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = ROLL_PREVIEW_STATE_IDS.length - 1;
+        if (event.key === 'ArrowLeft') {
+            nextIndex = (currentIndex - 1 + ROLL_PREVIEW_STATE_IDS.length) % ROLL_PREVIEW_STATE_IDS.length;
+        }
+        if (event.key === 'ArrowRight') {
+            nextIndex = (currentIndex + 1) % ROLL_PREVIEW_STATE_IDS.length;
+        }
+
+        const nextState = ROLL_PREVIEW_STATE_IDS[nextIndex];
+        this._activeRollPreviewState = nextState;
+        this.render().then(() => {
+            this.element?.querySelector(`[data-roll-preview="${nextState}"]`)?.focus();
+        });
     }
 
     _switchFoundryPreviewArea(areaId) {
@@ -4237,7 +5417,71 @@ export class FlavorConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return this.chatTab.tokenResetTitle(targetSource);
     }
 
-    _applyWorkingFoundryConfig() {
+    /* A range drag emits one input event per pointer sample - 60 to 120 a second
+     * on a normal mouse - and each one used to run this whole chain
+     * synchronously. Measured 2026-07-26 on foundry.sidebar.railWidth: 82.5 ms
+     * per event, so the module could absorb only 12 of them a second and the
+     * slider visibly lagged the cursor (30 replayed events took 2475 ms).
+     *
+     * Streaming events (input) are therefore coalesced into one apply per
+     * animation frame: the preview cannot render more than one frame anyway, so
+     * every extra run was work nobody could see. Committed events (change) still
+     * apply synchronously, so the value the user settles on is never left
+     * waiting on a frame that a re-render might cancel. */
+    _applyWorkingFoundryConfig({ coalesce = false } = {}) {
+        if (coalesce) {
+            this._foundryPreviewPending = true;
+            this._scheduleFoundryPreviewFrame();
+            return;
+        }
+        this._cancelPendingFoundryPreview();
+        this._applyWorkingFoundryConfigNow();
+    }
+
+    /* Applying the preview hands the browser a freshly built stylesheet - about
+     * 1.2 MB and 2000 rules - which it has to reparse and restyle the page
+     * against. Measured at ~79 ms per apply, of which only ~3 ms is actually
+     * building the CSS; the rest is the browser doing the work. Running that
+     * back to back saturates the main thread, which is why a drag lagged.
+     *
+     * So the streaming path waits, after each apply, for as long as that apply
+     * cost before running another. The module then uses at most about half the
+     * main thread during a drag, and the rule needs no magic constant: on a fast
+     * machine, where an apply is cheap, it still updates essentially every
+     * frame. The pending flag guarantees a trailing apply, so the value the user
+     * stops on is always the value on screen. */
+    _scheduleFoundryPreviewFrame() {
+        if (this._foundryPreviewFrame) return;
+        this._foundryPreviewFrame = requestAnimationFrame(() => {
+            this._foundryPreviewFrame = null;
+            if (!this._foundryPreviewPending) return;
+            if (performance.now() - this._foundryPreviewEndedAt < this._foundryPreviewCost) {
+                this._scheduleFoundryPreviewFrame();
+                return;
+            }
+            this._foundryPreviewPending = false;
+            this._applyWorkingFoundryConfigNow();
+        });
+    }
+
+    _cancelPendingFoundryPreview() {
+        this._foundryPreviewPending = false;
+        if (!this._foundryPreviewFrame) return;
+        cancelAnimationFrame(this._foundryPreviewFrame);
+        this._foundryPreviewFrame = null;
+    }
+
+    _applyWorkingFoundryConfigNow() {
+        const startedAt = performance.now();
+        try {
+            this._applyWorkingFoundryConfigBody();
+        } finally {
+            this._foundryPreviewEndedAt = performance.now();
+            this._foundryPreviewCost = this._foundryPreviewEndedAt - startedAt;
+        }
+    }
+
+    _applyWorkingFoundryConfigBody() {
         if (!this.foundryCustomizer) return;
         if (typeof this.foundryCustomizer.applyPreviewConfig === 'function') {
             this.foundryCustomizer.applyPreviewConfig(this._workingFoundryConfig, {

@@ -1,0 +1,1455 @@
+/* Icons workspace
+ * The registry and persistence behavior live in the existing Icons controller.
+ * This sheet only presents that behavior as area -> target -> replacement.
+ */
+
+.yf-config-container.yf-active-icons {
+    grid-template-columns: minmax(0, 1fr);
+    background: var(--yf-shell-paper-page);
+}
+
+.yf-active-icons .yf-controls-panel {
+    min-width: 0;
+    background: var(--yf-shell-paper-page);
+    container: yf-controls-panel / inline-size;
+}
+
+.yf-active-icons .yf-controls-scroll {
+    display: grid;
+    grid-template-rows: var(--yf-shell-toolbar-height) minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--yf-shell-paper-page);
+}
+
+.yf-active-icons .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.yf-icons-page,
+.yf-icons-page * {
+    box-sizing: border-box;
+}
+
+.yf-icons-page {
+    --yf-icons-edge: #b58b3f;
+    --yf-icons-edge-soft: rgba(148, 109, 37, 0.28);
+    --yf-icons-paper: rgba(255, 252, 240, 0.9);
+    --yf-icons-paper-strong: #fffdf6;
+    --yf-icons-muted: #755f43;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+    padding: 14px 16px 16px;
+    color: var(--yf-shell-ink);
+    overflow: hidden;
+}
+
+.yf-icons-selection-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    padding: 10px 13px 10px 16px;
+    border: 1px solid rgba(148, 109, 37, 0.42);
+    border-left: 4px solid var(--yf-icons-edge);
+    border-radius: 9px;
+    background:
+        linear-gradient(100deg, rgba(255, 251, 232, 0.96), rgba(244, 232, 195, 0.78)),
+        var(--yf-shell-paper-toolbar);
+    box-shadow: 0 5px 14px rgba(58, 37, 15, 0.1);
+}
+
+.yf-icons-selection-banner.is-active {
+    border-color: #a86d25;
+    border-left-color: #b34f31;
+    background:
+        linear-gradient(100deg, rgba(255, 246, 222, 0.98), rgba(242, 217, 166, 0.9)),
+        var(--yf-shell-paper-toolbar);
+}
+
+.yf-icons-selection-copy {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icons-selection-copy > span {
+    color: var(--yf-shell-brass);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.yf-icons-selection-copy > strong {
+    font-family: var(--font-primary, serif);
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.yf-icons-selection-copy > small {
+    color: var(--yf-icons-muted);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.yf-icons-tabletop-picker {
+    flex: 0 0 auto;
+    min-width: 172px;
+}
+
+.yf-icons-stage {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.72fr) minmax(320px, 1.28fr) minmax(480px, 2fr);
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.yf-icons-step {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid var(--yf-icons-edge-soft);
+    border-radius: 10px;
+    background: var(--yf-shell-paper-panel);
+    box-shadow: var(--yf-shell-panel-shadow);
+    overflow: hidden;
+}
+
+.yf-icons-area-step {
+    grid-template-rows: auto minmax(178px, 0.88fr) minmax(150px, 0.72fr);
+}
+
+.yf-icons-target-step {
+    grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.yf-icons-step-header {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    min-height: 51px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--yf-icons-edge-soft);
+    background:
+        linear-gradient(180deg, rgba(255, 253, 246, 0.94), rgba(235, 219, 180, 0.68));
+}
+
+.yf-icons-step-header > span:last-child {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icons-step-header strong {
+    font-family: var(--font-primary, serif);
+    font-size: 13px;
+    line-height: 1.1;
+}
+
+.yf-icons-step-header small {
+    color: var(--yf-icons-muted);
+    font-size: 9.5px;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-step-number {
+    display: grid;
+    place-items: center;
+    width: 27px;
+    height: 27px;
+    border: 1px solid #9d722c;
+    border-radius: 50%;
+    color: #fff9e7;
+    background:
+        radial-gradient(circle at 35% 25%, #c69b49, #78501f 76%);
+    box-shadow: inset 0 0 0 2px rgba(255, 245, 202, 0.24);
+    font-family: var(--font-primary, serif);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.yf-icons-area-list,
+.yf-icons-target-list,
+.yf-icons-replacement-scroll,
+.yf-icon-picker-grid {
+    scrollbar-color: rgba(127, 86, 30, 0.64) rgba(110, 74, 24, 0.1);
+    scrollbar-width: thin;
+}
+
+.yf-icons-area-list {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    min-height: 0;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yf-icons-area-card {
+    display: grid;
+    grid-template-columns: 29px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+    min-height: 41px;
+    margin: 0;
+    padding: 5px 7px;
+    border: 1px solid rgba(117, 87, 43, 0.22);
+    border-radius: 6px;
+    color: var(--yf-shell-ink);
+    background: rgba(255, 253, 246, 0.56);
+    box-shadow: none;
+    text-align: left;
+}
+
+.yf-icons-area-card:hover,
+.yf-icons-area-card:focus-visible {
+    border-color: #aa7d33;
+    background: rgba(255, 250, 229, 0.94);
+}
+
+.yf-icons-area-card[aria-pressed="true"] {
+    border-color: #92651e;
+    background:
+        linear-gradient(90deg, rgba(230, 199, 123, 0.45), rgba(255, 253, 242, 0.92));
+    box-shadow: inset 3px 0 #9b6423;
+}
+
+.yf-icons-area-glyph {
+    display: grid;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    border: 1px solid rgba(132, 94, 34, 0.3);
+    border-radius: 6px;
+    color: #725020;
+    background: rgba(238, 218, 164, 0.54);
+    font-size: 13px;
+}
+
+.yf-icons-area-copy {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icons-area-copy strong {
+    font-size: 10.5px;
+    line-height: 1.1;
+}
+
+.yf-icons-area-copy small {
+    color: var(--yf-icons-muted);
+    font-size: 8.5px;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-area-count {
+    min-width: 31px;
+    color: #7b5a26;
+    font-size: 8.5px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.yf-icons-group-dock {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    border-top: 1px solid var(--yf-icons-edge-soft);
+    background: rgba(224, 203, 157, 0.2);
+}
+
+.yf-icons-group-dock > header {
+    display: grid;
+    gap: 1px;
+    padding: 7px 9px 5px;
+}
+
+.yf-icons-group-dock > header strong {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.yf-icons-group-dock > header small {
+    color: var(--yf-icons-muted);
+    font-size: 8px;
+    line-height: 1.2;
+}
+
+.yf-icons-group-list {
+    min-height: 0;
+    padding: 0 8px 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yf-icons-group-card {
+    display: grid;
+    gap: 5px;
+    padding: 6px 0;
+    border-top: 1px dotted rgba(113, 80, 35, 0.24);
+}
+
+.yf-icons-group-card:first-child {
+    border-top: 0;
+}
+
+.yf-icons-group-summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.yf-icons-group-summary strong {
+    min-width: 0;
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-group-summary small {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    white-space: nowrap;
+}
+
+.yf-icons-group-swatches {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.yf-icons-group-swatch.yf-color-palette-host {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(22px, 1fr) 18px;
+    gap: 2px;
+    min-width: 0;
+    height: 23px;
+    padding: 2px;
+    border: 1px solid rgba(113, 80, 35, 0.26);
+    border-radius: 5px;
+    background: rgba(255, 253, 245, 0.72);
+}
+
+.yf-icons-group-swatch.yf-color-palette-host:has(> .yf-color-clear-button) {
+    grid-template-columns: minmax(18px, 1fr) 16px 16px;
+}
+
+.yf-icons-group-swatch .yf-color-swatch {
+    width: 100%;
+    min-width: 18px;
+    height: 17px;
+    margin: 0;
+    border-radius: 3px;
+}
+
+.yf-icons-group-swatch :is(.yf-color-palette-button, .yf-color-clear-button) {
+    width: 16px;
+    height: 17px;
+    min-height: 17px;
+    margin: 0;
+    padding: 0;
+    border-radius: 3px;
+    color: #725020;
+    background: rgba(226, 207, 160, 0.62);
+    font-size: 7px;
+}
+
+.yf-icons-selected-identity {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 8px 0;
+    padding: 7px;
+    border: 1px solid #99702d;
+    border-radius: 7px;
+    background: rgba(255, 250, 229, 0.9);
+    box-shadow: inset 3px 0 #9b6423;
+}
+
+.yf-icons-selected-identity.is-empty {
+    border-color: rgba(120, 91, 49, 0.28);
+    box-shadow: none;
+}
+
+.yf-icons-selected-glyph {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
+    color: var(--yf-icon-preview-color, #fff9e6);
+    background:
+        linear-gradient(rgba(42, 27, 14, 0.28), rgba(42, 27, 14, 0.28)),
+        var(--yf-icon-preview-bg, #6d4c24);
+    font-size: 16px;
+}
+
+.yf-icons-selected-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.yf-icons-selected-copy strong {
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-selected-copy small {
+    color: var(--yf-icons-muted);
+    font-size: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-selected-actions {
+    display: grid;
+    justify-items: end;
+    gap: 3px;
+}
+
+.yf-icons-state-badge,
+.yf-icons-choice-state {
+    display: inline-flex;
+    align-items: center;
+    min-height: 16px;
+    padding: 2px 6px;
+    border: 1px solid rgba(121, 82, 27, 0.32);
+    border-radius: 999px;
+    color: #6f4a18;
+    background: rgba(230, 207, 147, 0.45);
+    font-size: 7.5px;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.yf-icons-state-badge.is-draft,
+.yf-icons-choice-state.is-draft {
+    border-color: rgba(150, 69, 37, 0.38);
+    color: #843c24;
+    background: rgba(236, 174, 126, 0.34);
+}
+
+.yf-icons-clear-selection {
+    display: grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    min-height: 19px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #735934;
+    background: transparent;
+    font-size: 9px;
+}
+
+.yf-icons-clear-selection:hover,
+.yf-icons-clear-selection:focus-visible {
+    color: #6a301f;
+    background: rgba(151, 70, 39, 0.12);
+}
+
+.yf-icons-target-list {
+    min-height: 0;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yf-icons-target-group + .yf-icons-target-group {
+    margin-top: 10px;
+}
+
+.yf-icons-target-group > header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+    padding: 0 2px;
+}
+
+.yf-icons-target-group > header strong {
+    color: #6b4b1f;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.yf-icons-target-group > header small {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+}
+
+.yf-icons-target-group-list {
+    display: grid;
+    gap: 5px;
+}
+
+.yf-icon-target-card {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0;
+    padding: 5px 7px;
+    border: 1px solid rgba(108, 78, 36, 0.24);
+    border-radius: 6px;
+    color: var(--yf-shell-ink);
+    background: rgba(255, 253, 247, 0.68);
+    box-shadow: none;
+    text-align: left;
+}
+
+.yf-icon-target-card:hover,
+.yf-icon-target-card:focus-visible {
+    border-color: #a47a35;
+    background: rgba(255, 251, 233, 0.95);
+}
+
+.yf-icon-target-card.is-selected {
+    border-color: #8e5e1e;
+    background:
+        linear-gradient(90deg, rgba(230, 198, 117, 0.52), rgba(255, 253, 243, 0.94));
+    box-shadow: inset 3px 0 #9b6423, 0 3px 7px rgba(73, 48, 18, 0.1);
+}
+
+.yf-icon-target-card.has-override:not(.is-selected) {
+    border-style: dashed;
+}
+
+.yf-icon-target-card.is-hidden-override {
+    opacity: 0.72;
+}
+
+.yf-icon-target-sample {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(118, 83, 32, 0.26);
+    border-radius: 6px;
+    background: rgba(229, 211, 164, 0.52);
+    font-size: 14px;
+}
+
+.yf-icon-target-card .yf-icon-target-sample {
+    color: var(--yf-icon-preview-color, #62431d);
+    background: var(--yf-icon-preview-bg, rgba(229, 211, 164, 0.52));
+}
+
+.yf-icon-target-card:hover .yf-icon-target-sample,
+.yf-icon-target-card:focus-visible .yf-icon-target-sample {
+    color: var(--yf-icon-preview-hover, var(--yf-icon-preview-color, #62431d));
+    background: var(--yf-icon-preview-hover-bg, var(--yf-icon-preview-bg, rgba(229, 211, 164, 0.52)));
+}
+
+.yf-icon-target-card.is-selected .yf-icon-target-sample {
+    color: var(--yf-icon-preview-active, var(--yf-icon-preview-color, #62431d));
+    background: var(--yf-icon-preview-active-bg, var(--yf-icon-preview-bg, rgba(229, 211, 164, 0.52)));
+}
+
+.yf-icon-target-copy {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icon-target-copy strong {
+    /* your-flavor.css styles this selector for the old dark shell
+     * (color: var(--yf-text-primary), #f0e6d8). Redeclaring only geometry here
+     * leaves that light ink winning on parchment, which rendered the target
+     * name at 1.1:1 while its own subtitle stayed legible. */
+    color: var(--yf-shell-ink);
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The legacy sheet marks a customised target by painting its subtitle with
+ * --yf-accent (#d4872c). That signal is worth keeping, but at 2.1:1 over the
+ * selected card's warm background it was the least readable text left in the
+ * tab. This darker copper keeps "customised" reading as warm and distinct
+ * while clearing AA on both the selected (5.0:1) and resting (6.6:1) surfaces. */
+.yf-icon-target-card.has-override .yf-icon-target-copy small {
+    color: #82500f;
+}
+
+.yf-icon-target-copy small,
+.yf-icons-target-source {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-target-state {
+    max-width: 70px;
+    color: #71552e;
+    font-size: 7.5px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.yf-icon-hidden-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #8b3f2b;
+}
+
+.yf-icons-replacement-scroll {
+    min-width: 0;
+    min-height: 0;
+    padding: 9px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yf-icons-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin-bottom: 7px;
+    color: var(--yf-icons-muted);
+    font-size: 8.5px;
+}
+
+.yf-icons-breadcrumb > :is(span, strong) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-breadcrumb strong {
+    color: var(--yf-shell-ink);
+}
+
+.yf-icons-breadcrumb > i {
+    flex: 0 0 auto;
+    color: #b28c4e;
+    font-size: 6px;
+}
+
+.yf-icons-breadcrumb .yf-icons-state-badge {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.yf-icons-comparison {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.yf-icons-comparison-card {
+    min-width: 0;
+    padding: 7px;
+    border: 1px solid rgba(108, 78, 36, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 253, 247, 0.82);
+}
+
+.yf-icons-comparison-card.has-change {
+    border-color: #9c6725;
+    box-shadow: inset 0 0 0 1px rgba(180, 132, 55, 0.25);
+}
+
+.yf-icons-comparison-card > header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.yf-icons-comparison-card > header strong {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.yf-icons-comparison-card > header span {
+    max-width: 58%;
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icons-context-fixture {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 53px;
+    padding: 7px 10px;
+    border: 1px solid rgba(112, 78, 30, 0.32);
+    border-radius: 6px;
+    color: var(--yf-icon-preview-color, #efe5c6);
+    background:
+        linear-gradient(180deg, rgba(77, 54, 31, 0.96), rgba(38, 26, 17, 0.98));
+    box-shadow: inset 0 0 0 1px rgba(255, 240, 196, 0.08);
+}
+
+.yf-icons-context-fixture.is-area-sidebar,
+.yf-icons-context-fixture.is-area-controls {
+    justify-content: flex-start;
+}
+
+.yf-icons-context-fixture.is-area-controls {
+    flex-direction: column;
+    gap: 4px;
+    width: 54px;
+    min-height: 86px;
+    margin-inline: auto;
+}
+
+.yf-icons-context-fixture.is-area-pause {
+    background:
+        radial-gradient(circle, rgba(85, 56, 28, 0.72), rgba(18, 13, 10, 0.98) 72%);
+}
+
+.yf-icons-context-neighbor {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    color: rgba(228, 214, 180, 0.38);
+    font-size: 5px;
+}
+
+.yf-icons-context-selected {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 221, 140, 0.72);
+    border-radius: 5px;
+    color: var(--yf-icon-preview-color, #f0d993);
+    background: var(--yf-icon-preview-bg, rgba(222, 174, 76, 0.18));
+    box-shadow: 0 0 0 2px rgba(180, 126, 44, 0.18);
+    font-size: 15px;
+}
+
+.yf-icons-context-selected.is-hidden {
+    opacity: 0.2;
+    text-decoration: line-through;
+}
+
+.yf-icon-picker-control,
+.yf-icons-adjustments {
+    border: 1px solid rgba(108, 78, 36, 0.28);
+    border-radius: 8px;
+    background: rgba(255, 253, 247, 0.72);
+}
+
+.yf-icon-picker-control {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(146px, 1fr) auto;
+    min-height: 265px;
+    padding: 8px;
+}
+
+.yf-icon-picker-control.is-disabled {
+    grid-template-rows: auto auto;
+    min-height: 108px;
+}
+
+.yf-icon-picker-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.yf-icon-picker-header > span {
+    /* Legacy `.yf-icon-picker-header span` sets --yf-text-secondary. The child
+     * combinator here does not match that selector, so it never overrode it. */
+    color: var(--yf-shell-ink);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.yf-icon-picker-header > small {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    text-align: right;
+}
+
+.yf-icon-picker-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(125px, 0.65fr);
+    gap: 6px;
+}
+
+.yf-icon-picker-search {
+    position: relative;
+    min-width: 0;
+}
+
+.yf-icon-picker-search > i {
+    position: absolute;
+    top: 50%;
+    left: 9px;
+    z-index: 1;
+    color: #81683f;
+    font-size: 9px;
+    transform: translateY(-50%);
+}
+
+.yf-icon-picker-search .yf-input {
+    width: 100%;
+    height: 30px;
+    padding-left: 26px;
+    color: var(--yf-shell-ink);
+    background: #fffdf6;
+    border-color: rgba(126, 91, 38, 0.36);
+}
+
+.yf-icon-picker-category {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+}
+
+.yf-icon-picker-category > span {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    font-weight: 700;
+}
+
+.yf-icon-picker-category .yf-select {
+    width: 100%;
+    height: 30px;
+    min-width: 0;
+    color: var(--yf-shell-ink);
+    background-color: #fffdf6;
+    border-color: rgba(126, 91, 38, 0.36);
+}
+
+.yf-icon-picker-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 1px 4px;
+    color: var(--yf-icons-muted);
+}
+
+.yf-icon-picker-summary small {
+    font-size: 7.5px;
+    line-height: 1.2;
+}
+
+.yf-icon-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-content: start;
+    gap: 5px;
+    min-height: 146px;
+    max-height: 226px;
+    padding: 1px 3px 2px 1px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.yf-icon-picker-choice {
+    position: relative;
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    min-height: 42px;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid rgba(112, 80, 36, 0.23);
+    border-radius: 6px;
+    color: var(--yf-shell-ink);
+    background: rgba(255, 254, 249, 0.88);
+    box-shadow: none;
+    text-align: left;
+}
+
+.yf-icon-picker-choice:hover,
+.yf-icon-picker-choice:focus-visible {
+    /* The legacy dark-shell hover sets light ink and outranks the base rule
+     * above (class+pseudo beats class), so without this the label vanished
+     * against the near-white hover background. */
+    color: var(--yf-shell-ink);
+    border-color: #a57b36;
+    background: #fffaf0;
+}
+
+.yf-icon-picker-choice.is-saved {
+    border-style: dashed;
+    border-color: #8e713e;
+}
+
+.yf-icon-picker-choice.is-selected {
+    /* Legacy selected state paints the label with --yf-accent-light (#f0bf74),
+     * which on this warm selected background left the chosen icon's own name
+     * the least readable text in the panel at 1.45:1. */
+    color: var(--yf-shell-ink);
+    border-style: solid;
+    border-color: #945a22;
+    background:
+        linear-gradient(135deg, rgba(237, 206, 130, 0.58), rgba(255, 252, 237, 0.95));
+    box-shadow: inset 0 0 0 1px rgba(141, 85, 28, 0.25);
+}
+
+.yf-icon-picker-choice > i {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    color: #62431d;
+    font-size: 13px;
+}
+
+.yf-icon-picker-choice > span {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icon-picker-choice strong {
+    font-size: 8.5px;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icon-picker-choice small {
+    color: var(--yf-icons-muted);
+    font-size: 6.5px;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icon-picker-choice .yf-icons-choice-state {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-height: 12px;
+    padding: 1px 3px;
+    font-size: 5.5px;
+}
+
+.yf-icon-picker-choice.is-saved.is-selected .yf-icons-choice-state.is-saved {
+    display: none;
+}
+
+.yf-icon-picker-empty {
+    grid-column: 1 / -1;
+    display: grid;
+    place-items: center;
+    min-height: 80px;
+    color: var(--yf-icons-muted);
+    font-size: 9px;
+}
+
+.yf-icon-picker-empty[hidden],
+.yf-icon-picker-choice[hidden] {
+    display: none;
+}
+
+.yf-icon-class-advanced {
+    /* Legacy rule paints this block with the dark shell's secondary ink. */
+    color: var(--yf-icons-muted);
+    margin-top: 6px;
+    border-top: 1px solid rgba(107, 77, 34, 0.2);
+}
+
+.yf-icon-class-advanced > summary,
+.yf-icons-color-details > summary {
+    padding: 6px 1px 1px;
+    color: #6e5026;
+    font-size: 8.5px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.yf-icon-class-control {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 7px;
+    padding-top: 5px;
+}
+
+.yf-icon-class-control > span {
+    font-size: 8.5px;
+}
+
+.yf-icon-class-control .yf-input {
+    min-width: 0;
+    color: var(--yf-shell-ink);
+    background: #fffdf6;
+}
+
+.yf-icons-support-boundary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 9px;
+    border: 1px dashed rgba(126, 89, 36, 0.34);
+    border-radius: 6px;
+    color: var(--yf-icons-muted);
+    background: rgba(238, 224, 187, 0.24);
+    font-size: 9px;
+}
+
+.yf-icons-adjustments {
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.yf-icon-inherit-row,
+.yf-icon-visibility-card {
+    /* Same legacy dark-shell inheritance as the rules above: the row carried
+     * --yf-text-secondary, so "Inherit from group" and its neighbours read as
+     * light-on-light. Children that need the muted tone set it themselves.
+     * The legacy background (rgba(0,0,0,.18)) also has to be reset: over
+     * parchment it renders as a grey wash that dulled every label sitting on
+     * it. `.is-hidden` still overrides this with its own warning tint. */
+    color: var(--yf-shell-ink);
+    background: var(--yf-icons-paper);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 46px;
+    padding: 7px 9px;
+}
+
+.yf-icon-inherit-row {
+    border-bottom: 1px solid rgba(108, 78, 36, 0.2);
+}
+
+.yf-icon-inherit-row > span,
+.yf-icon-visibility-copy {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-icon-inherit-row strong,
+.yf-icon-visibility-copy strong {
+    color: var(--yf-shell-ink);
+    font-size: 9px;
+}
+
+.yf-icon-inherit-row small,
+.yf-icon-visibility-copy small {
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    line-height: 1.2;
+}
+
+.yf-icon-visibility-copy > span {
+    color: #765525;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.yf-icon-visibility-card.is-hidden {
+    background: rgba(166, 83, 50, 0.08);
+}
+
+.yf-icon-visibility-card.is-disabled {
+    opacity: 0.58;
+}
+
+.yf-icons-color-details {
+    border-top: 1px solid rgba(108, 78, 36, 0.2);
+    border-bottom: 1px solid rgba(108, 78, 36, 0.2);
+    padding: 0 9px 7px;
+}
+
+.yf-icon-color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding-top: 6px;
+}
+
+.yf-icon-color-grid.is-inherited {
+    opacity: 0.58;
+}
+
+.yf-icon-color-grid .yf-color-chip.yf-color-palette-host {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 27px 22px;
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    padding: 5px;
+}
+
+.yf-icon-color-grid .yf-color-chip > span {
+    min-width: 0;
+    font-size: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-icon-color-grid .yf-color-chip > small {
+    grid-column: 1 / -1;
+    color: var(--yf-icons-muted);
+    font-size: 6.5px;
+}
+
+.yf-icon-color-grid .yf-color-swatch {
+    width: 27px;
+    height: 24px;
+}
+
+.yf-icon-color-grid .yf-color-palette-button {
+    width: 22px;
+    height: 24px;
+    color: #725020;
+    background: rgba(226, 207, 160, 0.62);
+}
+
+.yf-icon-inspector-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 9px;
+}
+
+.yf-icon-inspector-actions > small {
+    max-width: 64%;
+    color: var(--yf-icons-muted);
+    font-size: 7.5px;
+    line-height: 1.25;
+}
+
+.yf-icon-inspector-actions .yf-btn {
+    flex: 0 0 auto;
+}
+
+.yf-icons-empty-inspector {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 7px;
+    min-height: 0;
+    padding: 24px;
+    color: var(--yf-icons-muted);
+    text-align: center;
+}
+
+.yf-icons-empty-inspector > span {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border: 1px dashed #a7864f;
+    border-radius: 50%;
+    color: #87632d;
+    background: rgba(231, 211, 161, 0.28);
+    font-size: 22px;
+}
+
+.yf-icons-empty-inspector strong {
+    color: var(--yf-shell-ink);
+    font-family: var(--font-primary, serif);
+    font-size: 14px;
+}
+
+.yf-icons-empty-inspector small {
+    max-width: 270px;
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+@container yf-controls-panel (max-width: 1000px) {
+    .yf-icons-stage {
+        grid-template-columns: minmax(172px, 0.58fr) minmax(270px, 0.95fr) minmax(390px, 1.47fr);
+        gap: 8px;
+    }
+
+    .yf-icons-page {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .yf-icon-picker-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@container yf-controls-panel (max-width: 760px) {
+    .yf-active-icons .yf-controls-scroll {
+        overflow: hidden;
+    }
+
+    .yf-icons-page {
+        display: block;
+        padding: 9px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .yf-icons-selection-banner {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        gap: 8px;
+        margin-bottom: 9px;
+        padding: 8px 9px;
+    }
+
+    .yf-icons-selection-copy > strong {
+        font-size: 13px;
+    }
+
+    .yf-icons-selection-copy > small {
+        display: none;
+    }
+
+    .yf-icons-tabletop-picker {
+        min-width: 42px;
+        width: 42px;
+        padding-inline: 0;
+    }
+
+    .yf-icons-tabletop-picker .yf-btn-label {
+        display: none;
+    }
+
+    .yf-icons-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+        overflow: visible;
+    }
+
+    .yf-icons-step {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .yf-icons-area-step {
+        grid-template-rows: auto auto auto;
+    }
+
+    .yf-icons-area-list {
+        display: flex;
+        gap: 6px;
+        padding: 7px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x proximity;
+    }
+
+    .yf-icons-area-card {
+        grid-template-columns: 29px minmax(82px, 1fr);
+        flex: 0 0 142px;
+        scroll-snap-align: start;
+    }
+
+    .yf-icons-area-count {
+        display: none;
+    }
+
+    .yf-icons-group-dock {
+        max-height: 158px;
+    }
+
+    .yf-icons-target-step {
+        grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .yf-icons-target-list {
+        max-height: 292px;
+    }
+
+    .yf-icons-replacement-step {
+        min-height: 560px;
+    }
+
+    .yf-icons-replacement-scroll {
+        overflow: visible;
+    }
+
+    .yf-icon-picker-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-height: 250px;
+    }
+
+    .yf-icon-picker-toolbar {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .yf-icon-picker-category {
+        grid-template-columns: 56px minmax(0, 1fr);
+    }
+
+    .yf-icon-color-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container yf-controls-panel (max-width: 470px) {
+    .yf-icons-page {
+        padding: 7px;
+    }
+
+    .yf-icons-selection-copy > span {
+        font-size: 8px;
+    }
+
+    .yf-icons-selection-copy > strong {
+        font-size: 12px;
+    }
+
+    .yf-icons-step-header {
+        min-height: 46px;
+    }
+
+    .yf-icons-comparison {
+        gap: 5px;
+    }
+
+    .yf-icons-context-fixture {
+        gap: 6px;
+        padding-inline: 5px;
+    }
+
+    .yf-icons-context-neighbor {
+        width: 12px;
+    }
+
+    .yf-icon-picker-choice {
+        min-height: 44px;
+    }
+
+    .yf-icon-picker-summary small:first-child {
+        max-width: 66%;
+    }
+
+    .yf-icon-inspector-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .yf-icon-inspector-actions > small {
+        max-width: none;
+    }
+
+    .yf-icon-inspector-actions .yf-btn {
+        width: 100%;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 7px;
+        min-height: 72px;
+        max-height: 72px;
+        padding: 8px;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-shell-save-state {
+        display: none !important;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer :is(.yf-footer-left, .yf-footer-right) {
+        gap: 5px;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-left :is(.yf-shell-footer-button, .yf-shell-save-button) {
+        width: 38px;
+        min-width: 38px;
+        padding-inline: 0;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-left .yf-btn-label {
+        display: none;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-right {
+        min-width: 0;
+        justify-self: stretch;
+        justify-content: flex-end;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-right :is(.yf-shell-footer-button, .yf-shell-save-button) {
+        min-width: 0;
+        padding: 7px 9px;
+        font-size: 9px;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-right .yf-shell-footer-button {
+        flex: 0 1 112px;
+    }
+
+    .yf-config-container.yf-active-icons .yf-controls-panel .yf-shell-footer .yf-footer-right .yf-shell-save-button {
+        flex: 0 0 76px;
+    }
+}

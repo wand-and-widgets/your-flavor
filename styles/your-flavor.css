@@ -89,8 +89,8 @@
     --yf-ui-scale: 1;
     --yf-preview-chat-width: 320px;
     --yf-preview-panel-width: calc(var(--yf-preview-chat-width) + 64px);
-    --yf-config-readable-width: min(680px, calc(100vw - 32px));
-    --yf-config-readable-height: min(520px, calc(100vh - 32px));
+    --yf-config-readable-width: 1512px;
+    --yf-config-readable-height: 1040px;
     container: yf-config-window / inline-size;
     min-width: var(--yf-config-readable-width);
     min-height: var(--yf-config-readable-height);
@@ -3022,7 +3022,10 @@
 
 .yf-tab-bar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
     gap: var(--yf-space-sm);
     min-width: 0;
     max-width: 100%;
@@ -3040,7 +3043,7 @@
     gap: var(--yf-space-sm);
     min-width: 0;
     min-height: 34px;
-    flex: 1 1 112px;
+    flex: 1 0 auto;
     padding: 8px 12px;
     background: transparent;
     border: none;
@@ -3236,6 +3239,49 @@
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
+}
+
+.yf-contrast-header > span {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.yf-contrast-dismiss {
+    flex: 0 0 30px;
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: -6px -6px -6px 0;
+    padding: 0;
+    border: 1px solid rgba(240, 193, 116, 0.36);
+    border-radius: 4px;
+    color: inherit;
+    background: rgba(0, 0, 0, 0.14);
+    cursor: pointer;
+}
+
+.yf-contrast-dismiss:hover {
+    border-color: currentColor;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.yf-contrast-dismiss:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.yf-config-container:is(.yf-active-chat, .yf-active-rolls, .yf-active-cards) .yf-contrast-dismiss {
+    border-color: rgba(118, 80, 25, 0.34);
+    color: #684018;
+    background: rgba(255, 249, 231, 0.42);
+}
+
+.yf-config-container:is(.yf-active-chat, .yf-active-rolls, .yf-active-cards) .yf-contrast-dismiss:hover {
+    border-color: #765019;
+    background: rgba(255, 249, 231, 0.72);
 }
 
 .yf-contrast-summary,
@@ -3563,78 +3609,6 @@
     font-size: 12px;
 }
 
-.yf-visual-share-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--yf-space-md);
-    min-width: 0;
-    padding: var(--yf-space-md);
-    background: rgba(212, 135, 44, 0.1);
-    border: 1px solid rgba(212, 135, 44, 0.28);
-    border-radius: var(--yf-radius-md);
-}
-
-.yf-visual-share-copy {
-    display: grid;
-    gap: 3px;
-    min-width: 0;
-}
-
-.yf-visual-share-copy strong {
-    color: var(--yf-text-primary);
-    font-family: var(--yf-font-display);
-    font-size: 13px;
-    line-height: 1.2;
-}
-
-.yf-visual-share-copy span {
-    color: var(--yf-text-secondary);
-    font-size: 12px;
-    line-height: 1.35;
-}
-
-.yf-visual-share-actions,
-.yf-visual-share-status {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--yf-space-sm);
-    min-width: 0;
-}
-
-.yf-visual-share-status {
-    margin-top: var(--yf-space-sm);
-}
-
-.yf-visual-share-status span {
-    min-height: 24px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    max-width: 100%;
-    padding: 4px 8px;
-    color: var(--yf-text-muted);
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid var(--yf-border-subtle);
-    border-radius: var(--yf-radius-md);
-    font-size: 11px;
-    line-height: 1.2;
-    overflow-wrap: anywhere;
-}
-
-.yf-visual-share-status span.is-pending {
-    color: #f6d8aa;
-    border-color: rgba(212, 135, 44, 0.38);
-    background: rgba(212, 135, 44, 0.12);
-}
-
-.yf-visual-share-status i {
-    color: var(--yf-accent-primary);
-    font-size: 11px;
-}
-
 .yf-factory-reset-section .yf-section-header i {
     color: #ff7777;
 }
@@ -3708,18 +3682,15 @@
 }
 
 .yf-factory-reset-card .yf-btn,
-.yf-foundry-stock-reset-card .yf-btn,
-.yf-visual-share-card .yf-btn {
+.yf-foundry-stock-reset-card .yf-btn {
     justify-self: end;
     max-width: 100%;
 }
 
 .yf-factory-reset-copy strong,
 .yf-foundry-stock-reset-copy strong,
-.yf-visual-share-copy strong,
 .yf-factory-reset-copy span,
-.yf-foundry-stock-reset-copy span,
-.yf-visual-share-copy span {
+.yf-foundry-stock-reset-copy span {
     min-width: 0;
     overflow-wrap: anywhere;
 }
@@ -4560,7 +4531,7 @@
     z-index: 100000;
     display: grid;
     gap: 8px;
-    max-height: min(420px, calc(100vh - 24px));
+    max-height: 420px;
     padding: 10px;
     border: 1px solid var(--yf-border-medium);
     border-radius: var(--yf-radius-md);
@@ -6102,11 +6073,6 @@
     opacity: 0.62;
 }
 
-@media (max-width: 720px) {
-    .yf-icon-picker-toolbar {
-        grid-template-columns: 1fr;
-    }
-}
 
 body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data-action], [data-tool], [data-control], .ui-control, .control-tool, .scene-control, .control-icon, .fa, .fas, .far, .fa-solid, .fa-regular, .fa-duotone, .fa-light, .fa-thin) {
     cursor: crosshair;
@@ -7010,8 +6976,6 @@ body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data
         flex-direction: column;
         gap: var(--yf-space-sm);
     }
-
-    .yf-visual-share-card,
     .yf-factory-reset-card,
     .yf-foundry-stock-reset-card,
     .yf-foundry-master-card,
@@ -7020,23 +6984,11 @@ body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data
         grid-template-columns: 1fr;
         align-items: stretch;
     }
-
     .yf-factory-reset-card .yf-btn,
-    .yf-foundry-stock-reset-card .yf-btn,
-    .yf-visual-share-card .yf-btn {
+    .yf-foundry-stock-reset-card .yf-btn {
         width: 100%;
         min-width: 0;
         justify-self: stretch;
-    }
-
-    .yf-visual-share-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: stretch;
-    }
-
-    .yf-visual-share-actions .yf-btn {
-        width: 100%;
     }
 
     .yf-foundry-area-page-header {
@@ -7139,80 +7091,6 @@ body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data
     }
 }
 
-@media (max-width: 600px) {
-    .your-flavor-config {
-        --yf-preview-panel-width: 100%;
-    }
-
-    .yf-config-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
-    }
-
-    .yf-preview-panel {
-        grid-row: 1;
-        border-right: none;
-        border-bottom: 1px solid var(--yf-border-subtle);
-        padding: var(--yf-space-md);
-    }
-
-    .yf-preview-container {
-        min-height: 120px;
-    }
-
-    .yf-factory-reset-card,
-    .yf-foundry-stock-reset-card {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .yf-visual-share-card {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-    }
-
-    .yf-visual-share-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    .yf-visual-share-actions .yf-btn {
-        width: 100%;
-    }
-
-    .yf-factory-reset-card .yf-btn,
-    .yf-foundry-stock-reset-card .yf-btn {
-        width: 100%;
-    }
-
-    .yf-controls-panel {
-        grid-row: 2;
-    }
-
-    .yf-config-footer {
-        grid-row: 3;
-        grid-column: 1;
-    }
-
-    .yf-tab-bar,
-    .yf-foundry-section-menu,
-    .yf-foundry-area-control-grid,
-    .yf-foundry-visibility-grid,
-    .yf-foundry-layout-grid,
-    .yf-color-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .yf-tab-bar {
-        display: grid;
-        border-radius: var(--yf-radius-md);
-    }
-
-    .yf-control-row {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-    }
-}
 
 /* ============================================= */
 /*  Animations                                   */
@@ -7234,10 +7112,15 @@ body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data
 }
 
 .yf-layout-option:nth-child(1) { animation-delay: 0.02s; }
+
 .yf-layout-option:nth-child(2) { animation-delay: 0.04s; }
+
 .yf-layout-option:nth-child(3) { animation-delay: 0.06s; }
+
 .yf-layout-option:nth-child(4) { animation-delay: 0.08s; }
+
 .yf-layout-option:nth-child(5) { animation-delay: 0.10s; }
+
 .yf-layout-option:nth-child(6) { animation-delay: 0.12s; }
 
 /* ============================================= */

@@ -1,0 +1,40 @@
+<section class="yf-chat-context" aria-label="{{localize 'YOUR_FLAVOR.Config.ChatBasics.ContextLabel'}}">
+    <div class="yf-chat-context-profile">
+        <span class="yf-chat-context-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+        <span class="yf-chat-context-label">{{localize "YOUR_FLAVOR.Config.ConfigFor"}}</span>
+        {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+                {{#if hasActors}}
+                <select class="yf-actor-select yf-select" aria-label="{{localize 'YOUR_FLAVOR.Config.ConfigFor'}}">
+                    <option value="">{{localize "YOUR_FLAVOR.Config.DefaultStyle"}} ({{playerName}})</option>
+                    {{#each ownedActors}}
+                    <option value="{{this.id}}" {{#if (eq this.id ../editingActorId)}}selected{{/if}}>{{this.name}}</option>
+                    {{/each}}
+                </select>
+                {{else}}
+                <span class="yf-chat-context-identity">{{localize "YOUR_FLAVOR.Config.DefaultStyle"}} ({{playerName}})</span>
+                {{/if}}
+            {{else}}
+            <span class="yf-chat-context-identity"><i class="fas fa-lock" aria-hidden="true"></i> {{forcedLayoutName}}</span>
+            {{/unless}}
+        {{else}}
+        <span class="yf-chat-context-identity"><i class="fas fa-lock" aria-hidden="true"></i> {{playerName}}</span>
+        {{/if}}
+    </div>
+
+    <div class="yf-chat-context-enable">
+        {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            <span class="yf-chat-context-enable-label">{{localize "YOUR_FLAVOR.Config.Enable"}}</span>
+            <label class="yf-toggle-switch yf-chat-master-toggle">
+                <input type="checkbox" name="enabled" {{#if config.enabled}}checked{{/if}}>
+                <span class="yf-toggle-slider"></span>
+            </label>
+            {{else}}
+            <span class="yf-chat-context-readonly"><i class="fas fa-lock" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Config.ForcedLayout"}}</span>
+            {{/unless}}
+        {{else}}
+        <span class="yf-chat-context-readonly"><i class="fas fa-lock" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Config.NoPermission"}}</span>
+        {{/if}}
+    </div>
+</section>

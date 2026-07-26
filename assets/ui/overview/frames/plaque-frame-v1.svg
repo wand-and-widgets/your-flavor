@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 140" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9bd70"/>
+      <stop offset=".22" stop-color="#a87b28"/>
+      <stop offset=".62" stop-color="#79551a"/>
+      <stop offset="1" stop-color="#c29a45"/>
+    </linearGradient>
+    <linearGradient id="highlight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff4ce" stop-opacity=".16"/>
+      <stop offset=".48" stop-color="#fff4ce" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#fff4ce" stop-opacity=".12"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 2H462L478 18V122L462 138H18L2 122V18Z"
+        fill="none" stroke="#684817" stroke-width="3" vector-effect="non-scaling-stroke"/>
+  <path d="M20 4H460L476 20V120L460 136H20L4 120V20Z"
+        fill="none" stroke="url(#brass)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M28 11H452L469 28V112L452 129H28L11 112V28Z"
+        fill="none" stroke="#b18b3e" stroke-width="1.1" stroke-opacity=".82"
+        vector-effect="non-scaling-stroke"/>
+  <path d="M34 15H446" stroke="url(#highlight)" stroke-width="1"
+        vector-effect="non-scaling-stroke"/>
+  <g fill="none" stroke="#8b6726" stroke-width="1.1" stroke-linecap="round"
+     vector-effect="non-scaling-stroke">
+    <path d="M11 34V23L23 11H40"/>
+    <path d="M469 34V23L457 11H440"/>
+    <path d="M11 106V117L23 129H40"/>
+    <path d="M469 106V117L457 129H440"/>
+  </g>
+</svg>

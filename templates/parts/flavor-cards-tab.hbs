@@ -5,39 +5,46 @@
             </div>
             {{else}}
             {{#if hasForcedLayout}}
-            <div class="yf-notice yf-notice-info">
+            <div class="yf-notice yf-notice-info yf-cards-notice">
                 <i class="fas fa-info-circle"></i>
                 <span>{{localize "YOUR_FLAVOR.Config.ForcedLayout"}} <strong>{{forcedLayoutName}}</strong></span>
             </div>
             {{else}}
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-scroll"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.CardTabs.Title"}}</h3>
-                </div>
-
-                <div class="yf-enable-row">
-                    <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.CardTabs.Enabled"}}</span>
-                    <label class="yf-toggle-switch" title="{{cardTabs.enabledTitle}}">
-                        <input type="checkbox" name="cards.enabled" {{#if cardTabs.enabled}}checked{{/if}}>
-                        <span class="yf-toggle-slider"></span>
-                    </label>
-                </div>
+            <section class="yf-cards-section yf-cards-surfaces">
+                <header class="yf-cards-section-heading">
+                    <span class="yf-cards-step" aria-hidden="true">1</span>
+                    <span class="yf-cards-section-icon" aria-hidden="true"><i class="fas fa-layer-group"></i></span>
+                    <h2>{{localize "YOUR_FLAVOR.Config.CardTabs.Title"}}</h2>
+                    <span class="yf-cards-section-rule" aria-hidden="true"></span>
+                </header>
 
                 <div class="yf-card-surface-grid">
                     {{#each cardTabs.surfaces}}
-                    <article class="yf-card-surface-card">
-                        <div class="yf-card-surface-header">
-                            <i class="{{this.icon}}"></i>
-                            <span>{{this.label}}</span>
-                        </div>
+                    <article class="yf-card-surface-card yf-card-surface-{{this.id}}">
+                        <header class="yf-card-surface-header">
+                            <span class="yf-card-surface-icon is-{{this.id}}" aria-hidden="true">
+                                <i class="{{this.icon}}"></i>
+                            </span>
+                            <h3>{{this.label}}</h3>
+                        </header>
                         <div class="yf-card-field-list">
                             {{#each this.fields}}
                             <div class="yf-card-field yf-token-control yf-token-color-control {{this.statusClass}}">
                                 <span class="yf-card-field-label">{{this.label}}</span>
-                                <input type="color" name="{{this.path}}" class="yf-color-swatch yf-live-input" value="{{this.value}}">
+                                <input type="color"
+                                       name="{{this.path}}"
+                                       class="yf-color-swatch yf-live-input"
+                                       value="{{this.value}}"
+                                       aria-label="{{this.label}}">
                                 <span class="yf-token-badge" title="{{this.statusTitle}}">{{this.statusLabel}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetCardToken" data-token="{{this.path}}" title="{{this.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
+                                <button type="button"
+                                        class="yf-token-reset"
+                                        data-action="resetCardToken"
+                                        data-token="{{this.path}}"
+                                        title="{{this.resetTitle}}"
+                                        aria-label="{{this.resetTitle}}">
+                                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                                </button>
                             </div>
                             {{/each}}
                         </div>
@@ -46,18 +53,28 @@
                 </div>
             </section>
 
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-shield-halved"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.CardTabs.Systems"}}</h3>
-                </div>
-                <div class="yf-readonly-grid yf-readonly-grid-sm">
+            <section class="yf-cards-section yf-cards-systems">
+                <header class="yf-cards-section-heading">
+                    <span class="yf-cards-step" aria-hidden="true">2</span>
+                    <h2>{{localize "YOUR_FLAVOR.Config.CardTabs.Systems"}}</h2>
+                    <span class="yf-cards-section-rule" aria-hidden="true"></span>
+                </header>
+                <div class="yf-card-system-grid">
                     {{#each cardTabs.systems}}
                     <article class="yf-readonly-card yf-card-system-card">
-                        <span>{{this.label}}</span>
-                        <strong>{{#if this.enabled}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}</strong>
+                        <h3>{{this.label}}</h3>
+                        <strong class="{{#if this.isCurrentSystem}}is-current{{/if}}">
+                            {{#if this.isCurrentSystem}}
+                            {{../cardTabs.currentSystemLabel}}
+                            {{else}}
+                            {{#if this.enabled}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}
+                            {{/if}}
+                        </strong>
                         <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.CardTabs.SystemEnabledTitle'}}">
-                            <input type="checkbox" name="{{this.path}}" {{#if this.enabled}}checked{{/if}}>
+                            <input type="checkbox"
+                                   name="{{this.path}}"
+                                   {{#if this.enabled}}checked{{/if}}
+                                   aria-label="{{this.label}}">
                             <span class="yf-toggle-slider"></span>
                         </label>
                     </article>

@@ -525,7 +525,13 @@ export function normalizeSidebarConfig(config = {}) {
         fontSize: clampNumber(source.fontSize, 11, 16, fallback.fontSize),
         dividerStrength: clampNumber(source.dividerStrength, 0, 100, fallback.dividerStrength),
         hoverStrength: clampNumber(source.hoverStrength, 0, 100, fallback.hoverStrength),
-        activeStrength: clampNumber(source.activeStrength, 0, 100, fallback.activeStrength)
+        activeStrength: clampNumber(source.activeStrength, 0, 100, fallback.activeStrength),
+        railOpacity: clampNumber(source.railOpacity, 0, 100, fallback.railOpacity),
+        panelOpacity: clampNumber(source.panelOpacity, 0, 100, fallback.panelOpacity),
+        folderOpacity: clampNumber(source.folderOpacity, 0, 100, fallback.folderOpacity),
+        inputOpacity: clampNumber(source.inputOpacity, 0, 100, fallback.inputOpacity),
+        actionOpacity: clampNumber(source.actionOpacity, 0, 100, fallback.actionOpacity),
+        tabRestStrength: clampNumber(source.tabRestStrength, 0, 100, fallback.tabRestStrength)
     };
 
     for (const field of Object.keys(normalized)) {

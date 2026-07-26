@@ -1,0 +1,63 @@
+<aside class="yf-preview-panel yf-foundry-player-list-preview">
+    <header class="yf-foundry-player-list-preview-header">
+        <span class="yf-foundry-player-list-preview-medallion" aria-hidden="true">
+            <i class="fas fa-user-group"></i>
+        </span>
+        <span class="yf-foundry-player-list-preview-copy">
+            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PlayersPreviewTitle"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewDraftHint"}}</small>
+        </span>
+        <span class="yf-foundry-player-list-preview-hint">
+            {{localize "YOUR_FLAVOR.Config.Foundry.AreaPreviewDescriptions.Players"}}
+        </span>
+    </header>
+
+    <div class="yf-preview-container yf-foundry-preview-container">
+        <div class="yf-foundry-area-focus">
+            <div class="yf-foundry-area-pane is-draft">
+                <div class="{{foundryAreaPreviewAfter.className}}" data-preview-state="after" data-preview-area="players" style="{{foundryAreaPreviewAfter.style}}">
+                    <div class="yf-foundry-area-real-snapshot" data-foundry-real-snapshot aria-hidden="true"></div>
+                    <div class="yf-foundry-area-fixture yf-area-fixture-players" data-foundry-preview-component="players">
+                        <div class="yf-players-preview-panel">
+                            <div class="yf-players-preview-list is-active">
+                                <div class="yf-players-preview-row active gm" style="--player-color:#b779ff;--player-border:#f0ddff;">
+                                    <span class="yf-players-preview-name">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewPlayersGM"}}</span>
+                                </div>
+                                <div class="yf-players-preview-row active self is-hover is-context" aria-selected="true" style="--player-color:#4bd6a8;--player-border:#d9fff2;">
+                                    <span class="yf-players-preview-name">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewPlayersSelfLong"}}</span>
+                                </div>
+                                <div class="yf-players-preview-row active idle" style="--player-color:#f4c542;--player-border:#fff0a8;">
+                                    <span class="yf-players-preview-name">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewPlayersIdle"}}</span>
+                                </div>
+                            </div>
+                            <div class="yf-players-preview-list is-inactive">
+                                <div class="yf-players-preview-row inactive offline" data-status="offline" style="--player-color:#333333;--player-border:#777777;">
+                                    <span class="yf-players-preview-name">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewPlayersInactive"}}</span>
+                                </div>
+                            </div>
+                            <div class="yf-players-preview-stats">
+                                <span><i class="fas fa-gauge-high"></i> 60 FPS</span>
+                                <span>42ms</span>
+                                <button type="button" aria-label="{{localize 'YOUR_FLAVOR.IconRegistry.Entries.PlayersExpand'}}">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="yf-preview-note">
+        <i class="fas fa-bolt"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+    </div>
+    <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+        {{#if foundryConfig.enabled}}
+            <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+        {{else}}
+            <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+        {{/if}}
+    </div>
+</aside>

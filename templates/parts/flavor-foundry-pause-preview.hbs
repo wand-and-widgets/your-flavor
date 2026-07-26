@@ -1,0 +1,51 @@
+<aside class="yf-preview-panel yf-foundry-pause-preview">
+    <header class="yf-foundry-pause-preview-header">
+        <span class="yf-foundry-pause-preview-medallion" aria-hidden="true">
+            <i class="fas fa-pause"></i>
+        </span>
+        <span class="yf-foundry-pause-preview-copy">
+            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.SidebarPreviewTitle"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewDraftHint"}}</small>
+        </span>
+        <span class="yf-foundry-pause-preview-hint">
+            {{localize "YOUR_FLAVOR.Config.Foundry.AreaPreviewDescriptions.Pause"}}
+        </span>
+    </header>
+
+    <div class="yf-preview-container yf-foundry-preview-container">
+        <div class="yf-foundry-area-focus">
+            <div class="yf-foundry-area-pane is-draft">
+                <div class="{{foundryAreaPreviewAfter.className}}" data-preview-state="after" data-preview-area="pause" style="{{foundryAreaPreviewAfter.style}}">
+                    <div class="yf-foundry-area-real-snapshot" data-foundry-real-snapshot aria-hidden="true"></div>
+                    <div class="yf-foundry-area-fixture yf-area-fixture-pause {{foundryAreaPreviewAfter.pauseClass}}" data-foundry-preview-component="pause">
+                        <div class="yf-area-pause-bar"></div>
+                        <div class="yf-area-pause-media">
+                            {{#if foundryAreaPreviewAfter.pauseAsset.isVideo}}
+                            <video src="{{foundryAreaPreviewAfter.pauseAsset.path}}" autoplay loop muted playsinline></video>
+                            {{else}}
+                                {{#if foundryAreaPreviewAfter.pauseAsset.hasAsset}}
+                                <img src="{{foundryAreaPreviewAfter.pauseAsset.path}}" alt="">
+                                {{else}}
+                                <span class="yf-area-pause-native-symbol" aria-hidden="true"></span>
+                                {{/if}}
+                            {{/if}}
+                        </div>
+                        <div class="yf-area-pause-label">{{foundryAreaPreviewAfter.pauseLabel}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="yf-preview-note">
+        <i class="fas fa-bolt"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+    </div>
+    <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+        {{#if foundryConfig.enabled}}
+            <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+        {{else}}
+            <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+        {{/if}}
+    </div>
+</aside>

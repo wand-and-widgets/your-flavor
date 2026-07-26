@@ -279,6 +279,9 @@ export class FlavorConfigStore {
             foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION),
             foundry.utils.deepClone(config || {})
         );
+        merged.preserveCustomIconColors = merged.preserveCustomIconColors !== false;
+        merged.preserveCustomFonts = merged.preserveCustomFonts !== false;
+        merged.themeFontsCustomized = merged.themeFontsCustomized === true;
         if (sourceFieldOverrides) merged.fieldOverrides = sourceFieldOverrides;
         delete merged.areaEnabled?.directories;
         delete merged.areas?.directories;

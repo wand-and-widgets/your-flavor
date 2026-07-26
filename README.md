@@ -1,17 +1,18 @@
-# Your Flavor
+# Your Flavor 5
 
 A visual customization studio for Foundry VTT v13 and v14. Style chat messages, rolls, item and system cards, the Foundry shell, interface icons, and shared table visuals with live previews and GM controls.
 
 ## Features
 
-- **40+ Layout Presets** - Choose from elegant, parchment, royal, class-themed (mage, warrior, bard), race-themed (elf, dwarf, orc), and more
+- **43 Foundry Themes** - Transform the Foundry interface with one click, then refine individual areas without losing your custom choices
+- **80 Built-in Chat Styles** - Choose from elegant, parchment, royal, class-themed, race-themed, modern, horror, and many other visual directions
 - **Full Customization** - Customize fonts, colors, borders, glows, shadows, and more
-- **Google Fonts** - Beautiful fantasy fonts like Cinzel, Tangerine, Pirata One
+- **Redesigned Workbench** - A parchment, walnut, and antique-gold interface with global search and clearer live previews
 - **Roll and Card Styling** - Theme dice rolls, item cards, supported system cards, and safe generic card fallbacks
-- **Foundry Shell Styling** - Customize core interface surfaces, controls, sidebar, hotbar, scene navigation, player list, pause indicator, and more
-- **Icon Customization** - Recolor, replace, hide, and tune Foundry interface icons
+- **Foundry Shell Styling** - Customize 184 mapped controls across global styling, scene navigation, token controls, macro bar, sidebar, chat log, player list, windows, and pause
+- **Icon Customization** - Choose from 215 curated icons across eight interface areas, with saved and draft previews
 - **Visual Sharing** - Export and import themed visual profiles for chat, rolls, cards, Foundry shell, icons, and presets
-- **Diagnostics and Reset Tools** - Check selector health, inspect safe fallbacks, and restore stock visuals without disabling the module
+- **Configuration and Diagnostics** - Back up, restore, import, export, check selector health, inspect safe fallbacks, and recover stock visuals
 - **GM Controls** - Force layouts for players or allow free customization
 - **Multi-language** - English and Portuguese (Brazil) support
 - **Per-User Settings** - Each player can have their own style
@@ -34,7 +35,7 @@ https://github.com/wand-and-widgets/your-flavor/releases/latest/download/module.
 3. Choose a layout preset or create your own custom style
 4. Start chatting!
 
-## Layout Categories
+## Chat Style Categories
 
 ### Basic
 - **Elegant** - Golden borders with Cinzel font

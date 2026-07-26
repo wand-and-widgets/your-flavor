@@ -1,35 +1,102 @@
-<div class="yf-config-container">
+<div class="yf-config-container yf-active-{{activeTab}} {{#if (eq activeTab "foundry")}}{{#if (eq activeFoundrySection "overview")}}yf-active-overview yf-foundry-overview-active{{/if}}{{#if (eq activeFoundrySection "global")}}yf-foundry-global-active{{/if}}{{#if (eq activeFoundrySection "navigation")}}yf-foundry-global-active yf-foundry-scene-navigation-active{{/if}}{{#if (eq activeFoundrySection "controls")}}yf-foundry-global-active yf-foundry-token-controls-active{{/if}}{{#if (eq activeFoundrySection "hotbar")}}yf-foundry-global-active yf-foundry-macro-bar-active{{/if}}{{#if (eq activeFoundrySection "sidebar")}}yf-foundry-global-active yf-foundry-sidebar-active{{/if}}{{#if (eq activeFoundrySection "chatLog")}}yf-foundry-global-active yf-foundry-chat-log-active{{/if}}{{#if (eq activeFoundrySection "players")}}yf-foundry-global-active yf-foundry-player-list-active{{/if}}{{#if (eq activeFoundrySection "windows")}}yf-foundry-global-active yf-foundry-windows-active{{/if}}{{#if (eq activeFoundrySection "pause")}}yf-foundry-global-active yf-foundry-pause-active{{/if}}{{/if}}">
+    {{#if (eq activeTab "chat")}}
+    {{> "modules/your-flavor/templates/parts/flavor-chat-preview-panel.hbs"}}
+    {{else}}
+    {{#if (eq activeTab "rolls")}}
+    {{> "modules/your-flavor/templates/parts/flavor-rolls-preview-panel.hbs"}}
+    {{else}}
+    {{#if (eq activeTab "cards")}}
+    {{> "modules/your-flavor/templates/parts/flavor-cards-preview-panel.hbs"}}
+    {{else}}
+    {{#if (eq activeTab "foundry")}}
+    {{#unless (eq activeFoundrySection "pause")}}
+    {{#unless (eq activeFoundrySection "overview")}}
+    {{#unless (eq activeFoundrySection "global")}}
+    {{#unless (eq activeFoundrySection "navigation")}}
+    {{#unless (eq activeFoundrySection "controls")}}
+    {{#unless (eq activeFoundrySection "hotbar")}}
+    {{#unless (eq activeFoundrySection "sidebar")}}
+    {{#unless (eq activeFoundrySection "chatLog")}}
+    {{#unless (eq activeFoundrySection "players")}}
+    {{#unless (eq activeFoundrySection "windows")}}
     {{> "modules/your-flavor/templates/parts/flavor-preview-panel.hbs"}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{else}}
+    {{#unless (eq activeTab "changes")}}
+    {{#unless (eq activeTab "icons")}}
+    {{#unless (eq activeTab "diagnostics")}}
+    {{> "modules/your-flavor/templates/parts/flavor-preview-panel.hbs"}}
+    {{/unless}}
+    {{/unless}}
+    {{/unless}}
+    {{/if}}
+    {{/if}}
+    {{/if}}
+    {{/if}}
 
     <main class="yf-controls-panel">
         <div class="yf-controls-scroll">
-            <div class="yf-tab-bar">
-                {{#each tabs}}
-                <button type="button" class="yf-tab {{#if this.isActive}}active{{/if}} {{#if this.isDirty}}is-dirty{{/if}}" data-action="switchTab" data-tab="{{this.id}}" aria-pressed="{{#if this.isActive}}true{{else}}false{{/if}}" title="{{this.label}}" aria-label="{{this.label}}">
-                    <i class="{{this.icon}}"></i>
-                    <span class="yf-tab-label">{{this.label}}</span>
-                    <span class="yf-dirty-indicator" title="{{this.dirtyTitle}}" aria-label="{{this.dirtyTitle}}" {{#unless this.isDirty}}hidden{{/unless}}></span>
-                </button>
-                {{/each}}
+            <div class="yf-config-toolbar yf-shell-toolbar">
+                <div class="yf-tab-bar" role="navigation" aria-label="{{localize 'YOUR_FLAVOR.Config.Title'}}">
+                    {{#each tabs}}
+                    <button type="button" class="yf-tab yf-tab-{{this.id}} {{#if this.isActive}}active{{/if}} {{#if this.isDirty}}is-dirty{{/if}} {{#if this.isGroupStart}}is-group-start{{/if}}" data-action="switchTab" data-tab="{{this.id}}" aria-pressed="{{#if this.isActive}}true{{else}}false{{/if}}" title="{{this.label}}" aria-label="{{this.label}}">
+                        <span class="yf-tab-icon" aria-hidden="true">
+                            <i class="{{this.icon}}"></i>
+                            <img class="yf-tab-rich-icon" src="modules/your-flavor/assets/ui/overview/icons/{{this.iconAssetId}}-glyph-v1.svg" alt="">
+                        </span>
+                        <span class="yf-tab-label">{{this.label}}</span>
+                        <span class="yf-dirty-indicator" title="{{this.dirtyTitle}}" aria-label="{{this.dirtyTitle}}" {{#unless this.isDirty}}hidden{{/unless}}></span>
+                    </button>
+                    {{/each}}
+                </div>
+                <div class="yf-control-search" data-control-search></div>
             </div>
+
+            {{#if (eq activeTab "chat")}}
+            {{> "modules/your-flavor/templates/parts/flavor-chat-context.hbs"}}
+            {{/if}}
+            {{#if (eq activeTab "rolls")}}
+            {{> "modules/your-flavor/templates/parts/flavor-rolls-context.hbs"}}
+            {{/if}}
+            {{#if (eq activeTab "cards")}}
+            {{> "modules/your-flavor/templates/parts/flavor-cards-context.hbs"}}
+            {{/if}}
 
             {{#if (eq activeTab "overview")}}
             {{> "modules/your-flavor/templates/parts/flavor-overview-tab.hbs"}}
             {{else}}
             {{#if (eq activeTab "chat")}}
+            <div class="yf-chat-editor">
             {{> "modules/your-flavor/templates/parts/flavor-chat-tab.hbs"}}
+            </div>
             {{/if}}
             {{#if (eq activeTab "rolls")}}
+            <div class="yf-rolls-editor">
             {{> "modules/your-flavor/templates/parts/flavor-rolls-tab.hbs"}}
+            </div>
             {{/if}}
             {{#if (eq activeTab "cards")}}
+            <div class="yf-cards-editor">
             {{> "modules/your-flavor/templates/parts/flavor-cards-tab.hbs"}}
+            </div>
             {{/if}}
             {{#if (eq activeTab "foundry")}}
             {{> "modules/your-flavor/templates/parts/flavor-foundry-tab.hbs"}}
             {{/if}}
             {{#if (eq activeTab "icons")}}
             {{> "modules/your-flavor/templates/parts/flavor-icons-tab.hbs"}}
+            {{/if}}
+            {{#if (eq activeTab "changes")}}
+            {{> "modules/your-flavor/templates/parts/flavor-changes-tab.hbs"}}
             {{/if}}
             {{#if (eq activeTab "diagnostics")}}
             {{> "modules/your-flavor/templates/parts/flavor-diagnostics-tab.hbs"}}

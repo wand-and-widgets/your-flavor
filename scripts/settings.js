@@ -213,6 +213,26 @@ export function registerSettings() {
         default: null
     });
 
+    // Client Setting: opt into the experimental Studio window (kept for reference
+    // while the Studio experience is rebuilt inside the classic config app).
+    game.settings.register(MODULE_ID, 'useStudioUi', {
+        name: game.i18n.localize('YOUR_FLAVOR.Settings.UseStudioUi.Name'),
+        hint: game.i18n.localize('YOUR_FLAVOR.Settings.UseStudioUi.Hint'),
+        scope: 'client',
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
+    // Client Setting: first-open Studio welcome already shown
+    game.settings.register(MODULE_ID, 'studioWelcomeDone', {
+        name: 'Studio Welcome Done',
+        scope: 'client',
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
     // Register settings menu button
     game.settings.registerMenu(MODULE_ID, 'configureButton', {
         name: game.i18n.localize('YOUR_FLAVOR.Settings.Configure.Name'),

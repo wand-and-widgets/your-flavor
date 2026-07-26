@@ -1,14 +1,210 @@
-        <footer class="yf-config-footer">
-            {{#if (eq activeConfigScope "foundry")}}
-            <div class="yf-footer-left">
-                <button type="button" class="yf-btn yf-btn-ghost" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ExportButton'}}"><i class="fas fa-file-export"></i></button>
-                <button type="button" class="yf-btn yf-btn-ghost" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ImportButton'}}"><i class="fas fa-file-import"></i></button>
+        <footer class="yf-config-footer yf-shell-footer">
+            {{#if (eq activeTab "diagnostics")}}
+            <div class="yf-footer-left" aria-hidden="true"></div>
+            <div class="yf-diagnostics-footer-status yf-shell-save-state" role="status">
+                <span class="yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FooterStatus"}}</span>
             </div>
             <div class="yf-footer-right">
-                {{#if activeAreaCanReset}}
-                <button type="button" class="yf-btn yf-btn-secondary" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}"><i class="fas fa-rotate-left"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span></button>
+                <button type="button" class="yf-btn yf-btn-secondary yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span>
+                </button>
+            </div>
+            {{else}}
+            {{#if (eq activeTab "chat")}}
+            <div class="yf-footer-left">
+                {{#if canCustomize}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-chat-footer-button yf-shell-footer-button" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}">
+                    <i class="fas fa-comment-dots" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ChatBasics.TestChat"}}</span>
+                </button>
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-chat-footer-button yf-shell-footer-button" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ChatBasics.ExportSavedTitle'}}">
+                    <i class="fas fa-upload" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ExportButton"}}</span>
+                </button>
+                <button type="button" class="yf-btn yf-btn-ghost yf-chat-footer-button yf-shell-footer-button" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ImportButton"}}</span>
+                </button>
+                {{/unless}}
                 {{/if}}
-                <button type="button" class="yf-btn yf-btn-primary" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span></button>
+            </div>
+            <div class="yf-chat-save-state yf-shell-save-state {{#if dirtyAreas.chat}}is-dirty{{/if}}" role="status">
+                <span class="yf-chat-save-dot yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{#if dirtyAreas.chat}}{{localize "YOUR_FLAVOR.Config.ChatBasics.UnsavedChanges"}}{{else}}{{localize "YOUR_FLAVOR.Config.ChatBasics.SavedChanges"}}{{/if}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if canCustomize}}
+                {{#unless hasForcedLayout}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-chat-footer-button yf-shell-footer-button" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}">
+                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span>
+                </button>
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary yf-chat-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span>
+                </button>
+                {{/unless}}
+                {{else}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-chat-footer-button yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span>
+                </button>
+                {{/if}}
+            </div>
+            {{else}}
+            {{#if (eq activeTab "rolls")}}
+            <div class="yf-footer-left">
+                {{#if canCustomize}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-rolls-footer-button yf-shell-footer-button" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.RollsDesign.TestChatTitle'}}">
+                    <i class="fas fa-comment-dots" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ChatBasics.TestChat"}}</span>
+                </button>
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-rolls-footer-button yf-shell-footer-button" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ChatBasics.ExportSavedTitle'}}">
+                    <i class="fas fa-upload" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ExportButton"}}</span>
+                </button>
+                <button type="button" class="yf-btn yf-btn-ghost yf-rolls-footer-button yf-shell-footer-button" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ImportButton"}}</span>
+                </button>
+                {{/unless}}
+                {{/if}}
+            </div>
+            <div class="yf-rolls-save-state yf-shell-save-state {{#if dirtyAreas.rolls}}is-dirty{{/if}}" role="status">
+                <span class="yf-rolls-save-dot yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{#if dirtyAreas.rolls}}{{localize "YOUR_FLAVOR.Config.RollsDesign.UnsavedChanges"}}{{else}}{{localize "YOUR_FLAVOR.Config.RollsDesign.SavedChanges"}}{{/if}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if canCustomize}}
+                {{#unless hasForcedLayout}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-rolls-footer-button yf-shell-footer-button" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}">
+                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.RollsDesign.ResetRolls"}}</span>
+                </button>
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary yf-rolls-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span>
+                </button>
+                {{/unless}}
+                {{else}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-rolls-footer-button yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span>
+                </button>
+                {{/if}}
+            </div>
+            {{else}}
+            {{#if (eq activeTab "cards")}}
+            <div class="yf-footer-left">
+                {{#if canCustomize}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-cards-footer-button yf-shell-footer-button" data-action="test" title="{{localize 'YOUR_FLAVOR.Config.TestButton'}}">
+                    <i class="fas fa-comment-dots" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ChatBasics.TestChat"}}</span>
+                </button>
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-ghost yf-cards-footer-button yf-shell-footer-button" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.ChatBasics.ExportSavedTitle'}}">
+                    <i class="fas fa-upload" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ExportButton"}}</span>
+                </button>
+                <button type="button" class="yf-btn yf-btn-ghost yf-cards-footer-button yf-shell-footer-button" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.ImportButton'}}">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.ImportButton"}}</span>
+                </button>
+                {{/unless}}
+                {{/if}}
+            </div>
+            <div class="yf-cards-save-state yf-shell-save-state {{#if dirtyAreas.cards}}is-dirty{{/if}}" role="status">
+                <span class="yf-cards-save-dot yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{#if dirtyAreas.cards}}{{localize "YOUR_FLAVOR.Config.CardsDesign.UnsavedChanges"}}{{else}}{{localize "YOUR_FLAVOR.Config.CardsDesign.SavedChanges"}}{{/if}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if canCustomize}}
+                {{#unless hasForcedLayout}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-cards-footer-button yf-shell-footer-button" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}">
+                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CardsDesign.ResetCards"}}</span>
+                </button>
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary yf-cards-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span>
+                </button>
+                {{/unless}}
+                {{else}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-cards-footer-button yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span>
+                </button>
+                {{/if}}
+            </div>
+            {{else}}
+            {{#if (eq activeTab "overview")}}
+            <div class="yf-footer-left" aria-hidden="true"></div>
+            <div class="yf-overview-save-state yf-shell-save-state {{#if overview.hasDirtyAreas}}is-dirty{{/if}}" role="status">
+                <span class="yf-overview-save-dot yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{overview.dirtyStatus}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if canCustomize}}
+                {{#unless hasForcedLayout}}
+                <button type="button" class="yf-btn yf-btn-primary yf-overview-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Studio.HomeTab.SaveChanges"}}</span></button>
+                {{/unless}}
+                {{else}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}"><i class="fas fa-times" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span></button>
+                {{/if}}
+            </div>
+            {{else}}
+            {{#if (eq activeTab "changes")}}
+            <div class="yf-footer-left" aria-hidden="true"></div>
+            <div class="yf-configuration-save-state yf-shell-save-state {{#if changes.hasDirty}}is-dirty{{/if}}" role="status">
+                <span class="yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{changes.statusText}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if changes.canSave}}
+                <button type="button" class="yf-btn yf-btn-primary yf-configuration-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span></button>
+                {{else}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-shell-footer-button" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}"><i class="fas fa-times" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span></button>
+                {{/if}}
+            </div>
+            {{else}}
+            {{#if (eq activeConfigScope "foundry")}}
+            <div class="yf-footer-left">
+                <button type="button" class="yf-btn yf-btn-ghost yf-foundry-footer-button yf-shell-footer-button" data-action="exportConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ExportButton'}}">
+                    <i class="fas fa-file-export" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.Foundry.ExportButton"}}</span>
+                </button>
+                <button type="button" class="yf-btn yf-btn-ghost yf-foundry-footer-button yf-shell-footer-button" data-action="importConfig" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ImportButton'}}">
+                    <i class="fas fa-file-import" aria-hidden="true"></i>
+                    <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.Foundry.ImportButton"}}</span>
+                </button>
+            </div>
+            <div class="yf-foundry-save-state yf-shell-save-state {{#if dirtyAreas.foundry}}is-dirty{{/if}}" role="status">
+                <span class="yf-foundry-save-dot yf-shell-save-dot" aria-hidden="true"></span>
+                <span>{{#if dirtyAreas.foundry}}{{localize "YOUR_FLAVOR.Config.Foundry.UnsavedChanges"}}{{else}}{{localize "YOUR_FLAVOR.Config.Foundry.SavedChanges"}}{{/if}}</span>
+            </div>
+            <div class="yf-footer-right">
+                {{#if (eq activeTab "icons")}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-foundry-footer-button yf-shell-footer-button" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}"><i class="fas fa-rotate-left" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span></button>
+                {{/if}}
+                {{else}}
+                {{#unless (eq activeFoundrySection "overview")}}
+                {{#if activeAreaCanReset}}
+                <button type="button" class="yf-btn yf-btn-secondary yf-foundry-footer-button yf-shell-footer-button" data-action="resetArea" data-area="{{activeAreaReset.area}}" title="{{activeAreaReset.title}}" aria-label="{{activeAreaReset.title}}"><i class="fas fa-rotate-left" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.AreaReset.Button"}}</span></button>
+                {{/if}}
+                {{/unless}}
+                {{/if}}
+                <button type="button" class="yf-btn yf-btn-primary yf-foundry-save-button yf-shell-save-button" data-action="save" title="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.SaveButton'}}"><i class="fas fa-save" aria-hidden="true"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.SaveButton"}}</span></button>
             </div>
             {{else}}
             {{#if canCustomize}}
@@ -31,6 +227,12 @@
             <div class="yf-footer-right">
                 <button type="button" class="yf-btn yf-btn-secondary" data-action="close" title="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.CloseButton'}}"><i class="fas fa-times"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.CloseButton"}}</span></button>
             </div>
+            {{/if}}
+            {{/if}}
+            {{/if}}
+            {{/if}}
+            {{/if}}
+            {{/if}}
             {{/if}}
             {{/if}}
         </footer>

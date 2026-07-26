@@ -1,147 +1,252 @@
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-stethoscope"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.Title"}}</h3>
-                </div>
-                <div class="yf-overview-grid">
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryVersion"}}</span>
-                        <strong>{{diagnostics.foundryVersion}}</strong>
+<div class="yf-diagnostics-workbench">
+    <aside class="yf-diagnostics-summary" aria-labelledby="yf-diagnostics-title">
+        <header class="yf-diagnostics-summary-header">
+            <span class="yf-diagnostics-emblem" aria-hidden="true">
+                <img src="modules/your-flavor/assets/ui/overview/icons/diagnostics-glyph-v1.svg" alt="">
+            </span>
+            <span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Kicker"}}</small>
+                <h2 id="yf-diagnostics-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.Title"}}</h2>
+                <p>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Sub"}}</p>
+            </span>
+        </header>
+
+        <div class="yf-diagnostics-scope-row" aria-label="{{localize 'YOUR_FLAVOR.Studio.Diagnostics.ScopeLabel'}}">
+            <span><i class="fas fa-shield-halved" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.GMOnly"}}</span>
+            <span><i class="fas fa-gauge-high" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.LiveSession"}}</span>
+            <span><i class="fas fa-globe" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.WorldControls"}}</span>
+        </div>
+
+        <section class="yf-diagnostics-environment" aria-labelledby="yf-diagnostics-environment-title">
+            <header>
+                <span>
+                    <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.CurrentState"}}</small>
+                    <strong id="yf-diagnostics-environment-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.Environment"}}</strong>
+                </span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.LiveWhenOpened"}}</small>
+            </header>
+            <div class="yf-diagnostics-environment-list">
+                <article>
+                    <span class="yf-diagnostics-environment-icon">YF</span>
+                    <span><strong>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Module"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.InstalledModule"}}</small></span>
+                    <em>v{{diagnostics.moduleVersion}}</em>
+                </article>
+                <article>
+                    <span class="yf-diagnostics-environment-icon">FV</span>
+                    <span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryVersion"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.RuntimeVersion"}}</small></span>
+                    <em>{{diagnostics.foundryVersion}}</em>
+                </article>
+                <article>
+                    <span class="yf-diagnostics-environment-icon">S</span>
+                    <span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.System"}}</strong><small>{{diagnostics.systemId}}</small></span>
+                    <em>{{diagnostics.systemTitle}}</em>
+                </article>
+                <article>
+                    <span class="yf-diagnostics-environment-icon"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></span>
+                    <span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryTab"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.GMSurface"}}</small></span>
+                    <em>{{#if diagnostics.foundryTabAvailable}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}</em>
+                </article>
+            </div>
+        </section>
+
+        <p class="yf-diagnostics-trust-note">
+            <i class="fas fa-circle-info" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Studio.Diagnostics.TrustNote"}}</span>
+        </p>
+    </aside>
+
+    <section class="yf-diagnostics-main" aria-labelledby="yf-diagnostics-health-title">
+        <header class="yf-diagnostics-main-header">
+            <span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.LeastDisruptive"}}</small>
+                <h3 id="yf-diagnostics-health-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.HealthRecovery"}}</h3>
+                <p>{{localize "YOUR_FLAVOR.Studio.Diagnostics.HealthHint"}}</p>
+            </span>
+            <span class="yf-diagnostics-pill"><i class="fas fa-shield-halved" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Configuration.GMView"}}</span>
+        </header>
+
+        <div class="yf-diagnostics-main-scroll">
+            <section class="yf-diagnostics-section yf-diagnostics-snapshot" aria-labelledby="yf-diagnostics-snapshot-title">
+                <header>
+                    <span><strong id="yf-diagnostics-snapshot-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.Snapshot"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.SnapshotHint"}}</small></span>
+                    <span class="yf-diagnostics-pill is-healthy"><i class="fas fa-circle" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.LiveChecks"}}</span>
+                </header>
+                <div class="yf-diagnostics-metric-grid">
+                    <article class="{{#if diagnostics.totalWarningCount}}has-warning{{else}}is-healthy{{/if}}">
+                        <span class="yf-diagnostics-metric-icon"><i class="fas {{#if diagnostics.totalWarningCount}}fa-triangle-exclamation{{else}}fa-check{{/if}}" aria-hidden="true"></i></span>
+                        <span><strong>{{diagnostics.totalWarningCount}}</strong><small>{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</small><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.ChatFoundryDraft"}}</em></span>
                     </article>
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.System"}}</span>
-                        <strong>{{diagnostics.systemTitle}}</strong>
-                        <span>{{diagnostics.systemId}}</span>
+                    <article class="{{#if diagnostics.selectorMissingAreas}}has-warning{{else}}is-healthy{{/if}}">
+                        <span class="yf-diagnostics-metric-icon"><i class="fas fa-bullseye" aria-hidden="true"></i></span>
+                        <span><strong>{{diagnostics.selectorPresentAreas}} / {{diagnostics.selectorTotalAreas}}</strong><small>{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorTargets"}}</small><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.CurrentFoundryDom"}}</em></span>
                     </article>
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</span>
-                        <strong>{{diagnostics.totalWarningCount}}</strong>
+                    <article class="{{#if diagnostics.iconDiscoveryMissingEntries}}has-warning{{else}}is-healthy{{/if}}">
+                        <span class="yf-diagnostics-metric-icon"><i class="fas fa-icons" aria-hidden="true"></i></span>
+                        <span><strong>{{diagnostics.iconDiscoveryPresentEntries}} / {{diagnostics.iconDiscoveryTotalEntries}}</strong><small>{{localize "YOUR_FLAVOR.Config.Diagnostics.IconTargets"}}</small><em>{{diagnostics.iconDiscoveryGroupLabel}}</em></span>
                     </article>
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.FoundryTab"}}</span>
-                        <strong>{{#if diagnostics.foundryTabAvailable}}{{localize "YOUR_FLAVOR.Config.TabStatus.Available"}}{{else}}{{localize "YOUR_FLAVOR.Config.TabStatus.Disabled"}}{{/if}}</strong>
-                    </article>
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorTargets"}}</span>
-                        <strong>{{diagnostics.selectorPresentAreas}}/{{diagnostics.selectorTotalAreas}}</strong>
-                    </article>
-                    <article class="yf-status-card">
-                        <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.IconTargets"}}</span>
-                        <strong>{{diagnostics.iconDiscoveryPresentEntries}}/{{diagnostics.iconDiscoveryTotalEntries}}</strong>
-                        <span>{{diagnostics.iconDiscoveryTargetLabel}}</span>
+                    <article class="{{#if diagnostics.safeFallbackCount}}has-warning{{else}}is-healthy{{/if}}">
+                        <span class="yf-diagnostics-metric-icon"><i class="fas fa-shield-halved" aria-hidden="true"></i></span>
+                        <span><strong>{{diagnostics.safeFallbackCount}}</strong><small>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</small><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.ThisSessionOnly"}}</em></span>
                     </article>
                 </div>
             </section>
 
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-icons"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</h3>
+            <section class="yf-diagnostics-recovery-grid" aria-label="{{localize 'YOUR_FLAVOR.Studio.Diagnostics.RecoveryActions'}}">
+                <article class="yf-diagnostics-recovery-card is-limited">
+                    <span class="yf-diagnostics-recovery-icon"><i class="fas fa-pause" aria-hidden="true"></i></span>
+                    <span class="yf-diagnostics-recovery-copy">
+                        <span class="yf-diagnostics-card-pills">
+                            <span class="yf-diagnostics-pill is-healthy">{{localize "YOUR_FLAVOR.Studio.Diagnostics.Reversible"}}</span>
+                            <span class="yf-diagnostics-pill">{{localize "YOUR_FLAVOR.Studio.Configuration.WorldGM"}}</span>
+                        </span>
+                        <strong>{{localize "YOUR_FLAVOR.Studio.Diagnostics.StopNewChatStyling"}}</strong>
+                        <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.StopNewChatStylingHint"}}</small>
+                    </span>
+                    {{#if diagnostics.moduleEnabled}}
+                    <button type="button" class="yf-btn yf-diagnostics-action-primary" data-action="disableChatStyling">
+                        <i class="fas fa-pause" aria-hidden="true"></i>
+                        <span>{{localize "YOUR_FLAVOR.Studio.Diagnostics.StopNewChatStyling"}}</span>
+                    </button>
+                    {{else}}
+                    <span class="yf-diagnostics-action-state"><i class="fas fa-circle-check" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.ChatStylingStopped"}}</span>
+                    {{/if}}
+                </article>
+
+                <article class="yf-diagnostics-recovery-card">
+                    <span class="yf-diagnostics-recovery-icon"><i class="fas fa-life-ring" aria-hidden="true"></i></span>
+                    <span class="yf-diagnostics-recovery-copy">
+                        <span class="yf-diagnostics-card-pills">
+                            <span class="yf-diagnostics-pill">{{localize "YOUR_FLAVOR.Studio.Diagnostics.FoundryShellOnly"}}</span>
+                        </span>
+                        <strong>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FixFoundryInterface"}}</strong>
+                        <small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.EmergencyResetHint"}}</small>
+                    </span>
+                    <button type="button" class="yf-btn yf-diagnostics-action-secondary" data-action="emergencyResetFoundry" {{#unless diagnostics.emergencyResetAvailable}}disabled{{/unless}}>
+                        <i class="fas fa-life-ring" aria-hidden="true"></i>
+                        <span>{{localize "YOUR_FLAVOR.Settings.ResetFoundryCustomization.Label"}}</span>
+                    </button>
+                </article>
+            </section>
+
+            <section class="yf-diagnostics-section yf-diagnostics-coverage" aria-labelledby="yf-diagnostics-coverage-title">
+                <header>
+                    <span><strong id="yf-diagnostics-coverage-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.Coverage"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.CoverageHint"}}</small></span>
+                    <span class="yf-diagnostics-pill">{{localize "YOUR_FLAVOR.Studio.Diagnostics.CurrentSession"}}</span>
+                </header>
+                <div class="yf-diagnostics-coverage-grid">
+                    <article><i class="fas fa-bullseye" aria-hidden="true"></i><span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.SelectorCoverage"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Live"}}</em></article>
+                    <article><i class="fas fa-icons" aria-hidden="true"></i><span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.IconCoverage"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Live"}}</em></article>
+                    <article><i class="fas fa-font" aria-hidden="true"></i><span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastSection"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.ContrastCoverage"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Draft"}}</em></article>
+                    <article><i class="fas fa-shield-halved" aria-hidden="true"></i><span><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FallbackCoverage"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Diagnostics.Session"}}</em></article>
                 </div>
-                {{#if diagnostics.iconDiscoveryAvailable}}
-                <div class="yf-diagnostics-list">
-                    {{#each diagnostics.iconDiscovery.rows}}
-                    <div class="yf-diagnostic-row yf-selector-health-row yf-icon-discovery-row is-{{this.status}}">
-                        <span>{{this.label}}</span>
-                        <strong>{{this.statusLabel}}</strong>
-                        <small>{{this.summaryLabel}}</small>
-                        <div class="yf-selector-chip-list">
-                            {{#each this.entries}}
-                            <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.selector}}">
-                                <span>{{this.label}}</span>
-                                <strong>{{this.countLabel}}</strong>
-                            </code>
-                            {{/each}}
+            </section>
+
+            <section class="yf-diagnostics-live-details" aria-labelledby="yf-diagnostics-live-detail-title">
+                <header class="yf-diagnostics-live-details-header">
+                    <span><strong id="yf-diagnostics-live-detail-title">{{localize "YOUR_FLAVOR.Studio.Diagnostics.LiveDetail"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.LiveDetailHint"}}</small></span>
+                </header>
+
+                <details class="yf-diagnostics-disclosure" {{#if diagnostics.totalWarningCount}}open{{/if}}>
+                    <summary><span><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastSection"}}</strong><small>{{diagnostics.totalWarningCount}} {{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
+                    <div class="yf-diagnostics-list">
+                        {{#if diagnostics.totalWarningCount}}
+                        {{#each diagnostics.chatWarnings}}
+                        <div class="yf-diagnostic-row"><span>{{this.label}}</span><strong>{{this.ratioLabel}}</strong></div>
+                        {{/each}}
+                        {{#each diagnostics.foundryWarnings}}
+                        <div class="yf-diagnostic-row"><span>{{this.label}}</span><strong>{{this.ratioLabel}}</strong></div>
+                        {{/each}}
+                        {{else}}
+                        <div class="yf-diagnostics-empty"><i class="fas fa-circle-check" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoContrastWarnings"}}</strong></div>
+                        {{/if}}
+                    </div>
+                </details>
+
+                <details class="yf-diagnostics-disclosure" {{#if diagnostics.safeFallbackCount}}open{{/if}}>
+                    <summary><span><i class="fas fa-shield-halved" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</strong><small>{{diagnostics.safeFallbackCount}} {{localize "YOUR_FLAVOR.Studio.Diagnostics.SessionEntries"}}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
+                    <div class="yf-diagnostics-list">
+                        {{#if diagnostics.safeFallbackCount}}
+                        {{#each diagnostics.safeFallbackMessages}}
+                        <div class="yf-diagnostic-row">
+                            <span>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackApplied"}}: {{this.fallbackLabel}}</span>
+                            <strong>{{this.systemLabel}}</strong>
+                            <small>{{this.reasonLabel}}</small>
                         </div>
+                        {{/each}}
+                        {{else}}
+                        <div class="yf-diagnostics-empty"><i class="fas fa-circle-check" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSafeFallbacks"}}</strong></div>
+                        {{/if}}
                     </div>
-                    {{/each}}
-                </div>
-                {{else}}
-                <div class="yf-status-card yf-status-card-wide">
-                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</span>
-                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoIconDiscovery"}}</strong>
-                </div>
-                {{/if}}
-            </section>
+                </details>
 
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-bullseye"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</h3>
-                </div>
-                {{#if diagnostics.selectorHealthAvailable}}
-                <div class="yf-diagnostics-list">
-                    {{#each diagnostics.selectorHealth.rows}}
-                    <div class="yf-diagnostic-row yf-selector-health-row is-{{this.status}}">
-                        <span>{{this.label}}</span>
-                        <strong>{{this.statusLabel}}</strong>
-                        <small>{{this.summaryLabel}}</small>
-                        <div class="yf-selector-chip-list">
-                            {{#each this.selectors}}
-                            <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.error}}">
-                                <span>{{this.selector}}</span>
-                                <strong>{{this.countLabel}}</strong>
-                            </code>
-                            {{/each}}
+                <details class="yf-diagnostics-disclosure">
+                    <summary><span><i class="fas fa-icons" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.IconDiscoverySection"}}</strong><small>{{diagnostics.iconDiscoveryPresentEntries}}/{{diagnostics.iconDiscoveryTotalEntries}} · {{diagnostics.iconDiscoveryTargetLabel}}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
+                    {{#if diagnostics.iconDiscoveryAvailable}}
+                    <div class="yf-diagnostics-list">
+                        {{#each diagnostics.iconDiscovery.rows}}
+                        <div class="yf-diagnostic-row yf-selector-health-row yf-icon-discovery-row is-{{this.status}}">
+                            <span>{{this.label}}</span>
+                            <strong>{{this.statusLabel}}</strong>
+                            <small>{{this.summaryLabel}}</small>
+                            <div class="yf-selector-chip-list">
+                                {{#each this.entries}}
+                                <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.selector}}">
+                                    <span>{{this.label}}</span>
+                                    <strong>{{this.countLabel}}</strong>
+                                </code>
+                                {{/each}}
+                            </div>
                         </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
-                </div>
-                {{else}}
-                <div class="yf-status-card yf-status-card-wide">
-                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</span>
-                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSelectorHealth"}}</strong>
-                </div>
-                {{/if}}
+                    {{else}}
+                    <div class="yf-diagnostics-empty"><i class="fas fa-circle-info" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoIconDiscovery"}}</strong></div>
+                    {{/if}}
+                </details>
+
+                <details class="yf-diagnostics-disclosure">
+                    <summary><span><i class="fas fa-bullseye" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.SelectorHealthSection"}}</strong><small>{{diagnostics.selectorPresentAreas}}/{{diagnostics.selectorTotalAreas}}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
+                    {{#if diagnostics.selectorHealthAvailable}}
+                    <div class="yf-diagnostics-list">
+                        {{#each diagnostics.selectorHealth.rows}}
+                        <div class="yf-diagnostic-row yf-selector-health-row is-{{this.status}}">
+                            <span>{{this.label}}</span>
+                            <strong>{{this.statusLabel}}</strong>
+                            <small>{{this.summaryLabel}}</small>
+                            <div class="yf-selector-chip-list">
+                                {{#each this.selectors}}
+                                <code class="yf-selector-chip {{#if this.present}}is-found{{else}}is-missing{{/if}} {{#if this.invalid}}is-invalid{{/if}}" title="{{this.error}}">
+                                    <span>{{this.selector}}</span>
+                                    <strong>{{this.countLabel}}</strong>
+                                </code>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    {{else}}
+                    <div class="yf-diagnostics-empty"><i class="fas fa-circle-info" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSelectorHealth"}}</strong></div>
+                    {{/if}}
+                </details>
             </section>
 
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-shield-halved"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</h3>
+            <section class="yf-diagnostics-danger-zone" aria-labelledby="yf-diagnostics-factory-reset-title">
+                <header>
+                    <span><strong id="yf-diagnostics-factory-reset-title">{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Heading"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FactoryResetKicker"}}</small></span>
+                    <span class="yf-diagnostics-pill is-danger"><i class="fas fa-shield-halved" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Diagnostics.GMOnly"}}</span>
+                </header>
+                <div>
+                    <span>
+                        <strong>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FactoryResetClears"}}</strong>
+                        <p>{{localize "YOUR_FLAVOR.Studio.Diagnostics.FactoryResetScope"}}</p>
+                        <p class="yf-diagnostics-preserved">{{localize "YOUR_FLAVOR.Studio.Diagnostics.FactoryResetPreserves"}}</p>
+                    </span>
+                    <button type="button" class="yf-btn yf-btn-danger yf-diagnostics-factory-reset" data-action="factoryReset" title='{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.ButtonTitle"}}'>
+                        <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                        <span>{{localize "YOUR_FLAVOR.Config.Overview.FactoryReset.Button"}}…</span>
+                    </button>
                 </div>
-                {{#if diagnostics.safeFallbackCount}}
-                <div class="yf-diagnostics-list">
-                    {{#each diagnostics.safeFallbackMessages}}
-                    <div class="yf-diagnostic-row">
-                        <span>{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackApplied"}}: {{this.fallbackLabel}}</span>
-                        <strong>{{this.systemLabel}}</strong>
-                        <small>{{this.reasonLabel}}</small>
-                    </div>
-                    {{/each}}
-                </div>
-                {{else}}
-                <div class="yf-status-card yf-status-card-wide">
-                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.SafeFallbackSection"}}</span>
-                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoSafeFallbacks"}}</strong>
-                </div>
-                {{/if}}
             </section>
-
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastSection"}}</h3>
-                </div>
-                {{#if diagnostics.totalWarningCount}}
-                <div class="yf-diagnostics-list">
-                    {{#each diagnostics.chatWarnings}}
-                    <div class="yf-diagnostic-row">
-                        <span>{{this.label}}</span>
-                        <strong>{{this.ratioLabel}}</strong>
-                    </div>
-                    {{/each}}
-                    {{#each diagnostics.foundryWarnings}}
-                    <div class="yf-diagnostic-row">
-                        <span>{{this.label}}</span>
-                        <strong>{{this.ratioLabel}}</strong>
-                    </div>
-                    {{/each}}
-                </div>
-                {{else}}
-                <div class="yf-status-card yf-status-card-wide">
-                    <span class="yf-status-card-label">{{localize "YOUR_FLAVOR.Config.Diagnostics.ContrastWarnings"}}</span>
-                    <strong>{{localize "YOUR_FLAVOR.Config.Diagnostics.NoContrastWarnings"}}</strong>
-                </div>
-                {{/if}}
-            </section>
+        </div>
+    </section>
+</div>

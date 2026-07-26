@@ -1,0 +1,86 @@
+@font-face {
+    font-family: "YF Cinzel";
+    src: url("../assets/ui/overview/fonts/cinzel-latin-ext.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    unicode-range: U+0100-02FF, U+1E00-1EFF, U+20A0-20CF, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: "YF Cinzel";
+    src: url("../assets/ui/overview/fonts/cinzel-latin.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2191, U+2193;
+}
+
+@font-face {
+    font-family: "YF Crimson";
+    src: url("../assets/ui/overview/fonts/crimson-pro-latin-ext.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    unicode-range: U+0100-02FF, U+1E00-1EFF, U+20A0-20CF, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: "YF Crimson";
+    src: url("../assets/ui/overview/fonts/crimson-pro-latin.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2191, U+2193;
+}
+
+.yf-config-container {
+    --yfp-paper: #f2e7d1;
+    --yfp-paper-light: #faf3e4;
+    --yfp-paper-warm: #ead8b6;
+    --yfp-paper-deep: #d9c39b;
+    --yfp-ink: #392718;
+    --yfp-ink-dim: #705a3e;
+    --yfp-ink-faint: #9b825d;
+    --yfp-brass: #946d25;
+    --yfp-brass-light: #d9bd70;
+    --yfp-brass-dark: #59400f;
+    --yfp-danger-ink: #6f3514;
+    --yfp-success: #6f9b50;
+    --yfp-motion-fast: 140ms;
+    --yfp-focus: 0 0 0 2px #fff4d2, 0 0 0 4px #946d25;
+    --yfp-plaque-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .82),
+        inset 0 -2px 5px rgba(91, 61, 28, .12),
+        0 2px 2px rgba(70, 40, 13, .18),
+        0 8px 18px rgba(70, 40, 13, .11);
+    --yfp-plaque-shadow-hover:
+        inset 0 1px 0 rgba(255, 255, 255, .94),
+        inset 0 -2px 5px rgba(91, 61, 28, .1),
+        0 3px 3px rgba(70, 40, 13, .2),
+        0 14px 26px rgba(70, 40, 13, .16);
+    --yfp-plaque-shadow-pressed:
+        inset 0 3px 7px rgba(67, 40, 17, .18),
+        inset 0 -1px 0 rgba(255, 255, 255, .52),
+        0 1px 1px rgba(70, 40, 13, .18);
+}
+
+.your-flavor-config button[data-action] * {
+    pointer-events: none;
+}
+
+.yf-config-container :is(button, input, select, textarea):focus-visible {
+    outline: none;
+    box-shadow: var(--yfp-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .yf-config-container *,
+    .yf-config-container *::before,
+    .yf-config-container *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

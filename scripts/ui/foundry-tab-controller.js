@@ -235,6 +235,40 @@ const SIDEBAR_COLOR_FIELDS = Object.freeze([
     ...new Set(SIDEBAR_COLOR_GROUPS.flatMap(group => group.controls.map(([field]) => field)))
 ]);
 
+const buildSidebarTransformerPreviewStyle = preset => {
+    const sidebar = preset.sidebar || {};
+    const layoutWidth = Number(preset.layout?.sidebar?.width) || 320;
+    const scale = (value, factor, minimum = 0) => Math.max(minimum, Math.round((Number(value) || 0) * factor));
+    const ratio = (value, divisor = 100) => Math.max(0, Math.min(1, (Number(value) || 0) / divisor));
+    const declarations = [
+        ['--yf-transformer-preview-width', `${Math.max(68, Math.min(100, (layoutWidth / 420) * 100)).toFixed(1)}%`],
+        ['--yf-transformer-preview-rail', `${scale(sidebar.railWidth, 0.32, 12)}px`],
+        ['--yf-transformer-preview-tab', `${scale(sidebar.tabSize, 0.32, 9)}px`],
+        ['--yf-transformer-preview-gap', `${scale(sidebar.tabGap, 0.3, 1)}px`],
+        ['--yf-transformer-preview-padding', `${scale(sidebar.panelPadding, 0.36, 2)}px`],
+        ['--yf-transformer-preview-radius', `${scale(sidebar.panelRadius, 0.5, 1)}px`],
+        ['--yf-transformer-preview-border', `${Math.max(1, Number(sidebar.panelBorderWidth) || 1)}px`],
+        ['--yf-transformer-preview-shadow', `${scale(sidebar.panelShadowIntensity, 0.38, 2)}px`],
+        ['--yf-transformer-preview-search', `${scale(sidebar.searchHeight, 0.28, 7)}px`],
+        ['--yf-transformer-preview-folder', `${scale(sidebar.folderHeight, 0.24, 5)}px`],
+        ['--yf-transformer-preview-row', `${scale(sidebar.rowHeight, 0.24, 8)}px`],
+        ['--yf-transformer-preview-indent', `${scale(sidebar.folderIndent, 0.45, 2)}px`],
+        ['--yf-transformer-preview-font', `${scale(sidebar.fontSize, 0.54, 6)}px`],
+        ['--yf-transformer-preview-divider', ratio(sidebar.dividerStrength).toFixed(2)],
+        ['--yf-transformer-preview-hover', ratio(sidebar.hoverStrength).toFixed(2)],
+        ['--yf-transformer-preview-active', ratio(sidebar.activeStrength).toFixed(2)],
+        // Surface weights, so the gallery card reads as a different sidebar rather than
+        // the same one at a different density.
+        ['--yf-transformer-preview-rail-alpha', ratio(sidebar.railOpacity).toFixed(2)],
+        ['--yf-transformer-preview-panel-alpha', ratio(sidebar.panelOpacity).toFixed(2)],
+        ['--yf-transformer-preview-folder-alpha', ratio(sidebar.folderOpacity).toFixed(2)],
+        ['--yf-transformer-preview-input-alpha', ratio(sidebar.inputOpacity).toFixed(2)],
+        ['--yf-transformer-preview-action-alpha', ratio(sidebar.actionOpacity).toFixed(2)],
+        ['--yf-transformer-preview-tab-alpha', ratio(sidebar.tabRestStrength).toFixed(2)]
+    ];
+    return declarations.map(([property, value]) => `${property}: ${value}`).join('; ');
+};
+
 const CHAT_LOG_COLOR_GROUPS = [
     {
         id: 'composer',
@@ -421,12 +455,6 @@ const FOUNDRY_SECTION_DEFINITIONS = [
         labelKey: 'YOUR_FLAVOR.Config.Foundry.Sections.Pause',
         descriptionKey: 'YOUR_FLAVOR.Config.Foundry.AreaPreviewDescriptions.Pause',
         type: 'pause'
-    },
-    {
-        id: 'advanced',
-        icon: 'fas fa-code',
-        labelKey: 'YOUR_FLAVOR.Config.Foundry.Sections.Advanced',
-        type: 'advanced'
     }
 ];
 
@@ -901,7 +929,8 @@ export class FlavorFoundryTabController {
             transformerPresets: SIDEBAR_TRANSFORMER_PRESETS.map(preset => ({
                 ...preset,
                 label: this.localize(preset.labelKey),
-                description: this.localize(preset.descriptionKey)
+                description: this.localize(preset.descriptionKey),
+                previewStyle: buildSidebarTransformerPreviewStyle(preset)
             }))
         };
     }

@@ -1,0 +1,74 @@
+<aside class="yf-preview-panel yf-foundry-windows-preview">
+    <header class="yf-foundry-windows-preview-header">
+        <span class="yf-foundry-windows-preview-medallion" aria-hidden="true">
+            <i class="far fa-window-maximize"></i>
+        </span>
+        <span class="yf-foundry-windows-preview-copy">
+            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.SidebarPreviewTitle"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewDraftHint"}}</small>
+        </span>
+        <span class="yf-foundry-windows-preview-hint">
+            {{localize "YOUR_FLAVOR.Config.Foundry.AreaPreviewDescriptions.Windows"}}
+        </span>
+    </header>
+
+    <div class="yf-preview-container yf-foundry-preview-container">
+        <div class="yf-foundry-area-focus">
+            <div class="yf-foundry-area-pane is-draft">
+                <div class="{{foundryAreaPreviewAfter.className}}" data-preview-state="after" data-preview-area="windows" style="{{foundryAreaPreviewAfter.style}}">
+                    <div class="yf-foundry-area-real-snapshot" data-foundry-real-snapshot aria-hidden="true"></div>
+                    <div class="yf-foundry-area-fixture yf-area-fixture-windows" data-foundry-preview-component="windows">
+                        <section class="yf-window-preview-frame is-active-window">
+                            <header class="yf-window-preview-header">
+                                <span class="yf-window-preview-title">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowLongTitle"}}</span>
+                                <span class="yf-window-preview-controls" aria-hidden="true">
+                                    <i class="fas fa-gear"></i>
+                                    <i class="fas fa-minus"></i>
+                                    <i class="fas fa-xmark"></i>
+                                </span>
+                            </header>
+                            <div class="yf-window-preview-content">
+                                <div class="yf-window-preview-form-row">
+                                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowFieldName"}}</span>
+                                    <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowFieldValue"}}</strong>
+                                </div>
+                                <div class="yf-window-preview-list">
+                                    <span class="is-selected">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowListOne"}}</span>
+                                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowListTwo"}}</span>
+                                    <span>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowListThree"}}</span>
+                                </div>
+                                <div class="yf-window-preview-scrollbar"></div>
+                            </div>
+                            <span class="yf-window-preview-resize"></span>
+                        </section>
+                        <section class="yf-window-preview-frame is-inactive-window">
+                            <header class="yf-window-preview-header">
+                                <span class="yf-window-preview-title">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewWindowInactiveTitle"}}</span>
+                                <span class="yf-window-preview-controls" aria-hidden="true">
+                                    <i class="fas fa-ellipsis-vertical"></i>
+                                    <i class="fas fa-xmark"></i>
+                                </span>
+                            </header>
+                            <div class="yf-window-preview-content">
+                                <span class="yf-window-preview-line is-primary"></span>
+                                <span class="yf-window-preview-line"></span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="yf-preview-note">
+        <i class="fas fa-bolt"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+    </div>
+    <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+        {{#if foundryConfig.enabled}}
+            <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+        {{else}}
+            <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+        {{/if}}
+    </div>
+</aside>

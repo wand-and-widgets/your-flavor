@@ -9,6 +9,7 @@ import { FlavorManager } from './flavor-manager.js';
 import { LAYOUTS } from './layouts.js';
 import { getChatPresetChoices } from './chat-presets.js';
 import { FlavorConfigApp } from './ui/flavor-config-app.js';
+import { FlavorStudioApp } from './ui/studio/studio-app.js';
 import { FoundryCustomizer } from './foundry-customizer.js';
 import { applyFlavorStyles } from './style-utils.js';
 import {
@@ -57,10 +58,19 @@ class YourFlavor {
     }
 
     /**
-     * Open the configuration UI
+     * Open the configuration UI.
+     * Routes to the Studio (new UI) unless the user disabled it or asked for
+     * the classic app explicitly via options.forceClassic.
      */
     openConfig(options = {}) {
-        const app = new FlavorConfigApp(options);
+        let useStudio = false;
+        try {
+            useStudio = !options.forceClassic && game.settings.get(MODULE_ID, 'useStudioUi');
+        } catch (error) {
+            void error;
+        }
+
+        const app = useStudio ? new FlavorStudioApp(options) : new FlavorConfigApp(options);
         renderApplication(app, { force: true });
         return app;
     }
@@ -694,7 +704,25 @@ Hooks.once('init', () => {
  */
 Hooks.once('ready', async () => {
     yourFlavor = new YourFlavor();
-    await yourFlavor.initialize();
+
+    /* Initialization used to run unguarded, so ANY failure inside it - a world
+     * setting holding something unexpected, a system that renders differently,
+     * a migration that hits a shape it did not plan for - skipped the API
+     * assignment below. The result was the worst possible failure mode: the
+     * module silently absent, no configuration window to repair it from, and
+     * game.modules.get('your-flavor').api undefined.
+     *
+     * The API is now exposed either way. A half-initialized module is still far
+     * more useful than no module: the window can open, Diagnostics can be read
+     * and factory reset can be reached, which is exactly what someone in this
+     * state needs. The GM is told once, plainly, rather than left guessing. */
+    let bootError = null;
+    try {
+        await yourFlavor.initialize();
+    } catch (error) {
+        bootError = error;
+        console.error(`${MODULE_NAME} | Initialization failed. The module is exposed but degraded:`, error);
+    }
 
     // Expose API
     game.modules.get(MODULE_ID).api = {
@@ -713,10 +741,20 @@ Hooks.once('ready', async () => {
         getIconDiscoveryDiagnostics: () => yourFlavor.getIconDiscoveryDiagnostics(),
         getIconOverrideDiagnostics: () => yourFlavor.getIconOverrideDiagnostics(),
         factoryReset: () => yourFlavor.factoryReset(),
-        clearAppliedChatStyles: (options) => yourFlavor.clearAppliedChatStyles(options)
+        clearAppliedChatStyles: (options) => yourFlavor.clearAppliedChatStyles(options),
+        /* Lets Diagnostics and any support conversation see the real state
+         * instead of inferring it from things not working. */
+        getBootError: () => (bootError ? String(bootError?.stack ?? bootError) : null)
     };
 
     globalThis.YourFlavor = game.modules.get(MODULE_ID).api;
+
+    if (bootError) {
+        if (game.user?.isGM) {
+            ui.notifications?.error(game.i18n.localize('YOUR_FLAVOR.Notifications.InitializationFailed'), { permanent: true });
+        }
+        return;
+    }
 
     // Re-style existing chat messages after page reload
     _restyleExistingMessages();
@@ -845,7 +883,26 @@ function _loadGoogleFonts() {
         'New+Rocker',
         'Audiowide',
         'Lora:wght@400;500;700',
-        'Griffy'
+        'Griffy',
+        'Alegreya:ital,wght@0,400;0,500;0,700;1,400',
+        'Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400',
+        'Alegreya+Sans+SC:wght@400;500;700',
+        'Bitter:ital,wght@0,400;0,500;0,600;1,400',
+        'Cabin:wght@400;500;600',
+        'Caudex:ital,wght@0,400;0,700;1,400',
+        'EB+Garamond:ital,wght@0,400;0,500;0,600;1,400',
+        'Eczar:wght@400;500;600',
+        'Enriqueta:wght@400;500;700',
+        'Exo+2:wght@400;500;600',
+        'Gelasio:ital,wght@0,400;0,500;0,600;1,400',
+        'Grenze:ital,wght@0,400;0,500;0,600;1,400',
+        'Jost:wght@400;500;600',
+        'Mulish:ital,wght@0,400;0,600;0,700;1,400',
+        'Oswald:wght@400;500;600',
+        'Rajdhani:wght@400;500;600',
+        'Spectral:ital,wght@0,400;0,500;0,600;1,400',
+        'Vollkorn:ital,wght@0,400;0,600;0,700;1,400',
+        'Zen+Maru+Gothic:wght@400;500;700'
     ];
 
     const link = document.createElement('link');

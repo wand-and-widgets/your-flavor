@@ -1,0 +1,934 @@
+/* Window frame */
+.your-flavor-config:has(.yf-active-overview) {
+    overflow: hidden;
+    border: 1px solid #6f4d1c;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px #1c1009,
+        0 0 0 3px #8a6428,
+        0 22px 65px rgba(0, 0, 0, .58);
+}
+
+.your-flavor-config:has(.yf-active-overview) .window-header {
+    min-height: 52px;
+    padding: 7px 13px;
+    color: #ead38d;
+    background:
+        linear-gradient(180deg, rgba(10, 6, 3, .28), rgba(8, 5, 3, .7)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    border-bottom: 1px solid #795520;
+    box-shadow:
+        inset 0 1px rgba(255, 235, 167, .1),
+        inset 0 -2px rgba(0, 0, 0, .55);
+}
+
+.your-flavor-config:has(.yf-active-overview) .window-header .window-title {
+    color: #d9b85f;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-shadow: 0 2px 2px #0a0603;
+}
+
+.your-flavor-config:has(.yf-active-overview) .window-header .header-control {
+    min-width: 32px;
+    min-height: 32px;
+    border: 1px solid rgba(174, 128, 50, .62);
+    border-radius: 5px;
+    color: #f1dfaa;
+    background: linear-gradient(#452b18, #21130b);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .12),
+        0 2px 4px rgba(0, 0, 0, .4);
+}
+
+.your-flavor-config:has(.yf-active-overview) .window-header .header-control:hover {
+    color: #fff0bd;
+    border-color: #d2a750;
+    background: linear-gradient(#51351e, #29180e);
+}
+
+/* Paper surface */
+.yf-config-container.yf-active-overview {
+    --yfp-paper: #f2e7d1;
+    --yfp-paper-light: #faf3e4;
+    --yfp-paper-warm: #ead8b6;
+    --yfp-ink: #392718;
+    --yfp-ink-dim: #705a3e;
+    --yfp-ink-faint: #9b825d;
+    --yfp-brass: #946d25;
+    --yfp-brass-light: #d9bd70;
+    --yfp-brass-dark: #59400f;
+    --yfp-plaque-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .82),
+        inset 0 -2px 5px rgba(91, 61, 28, .12),
+        0 2px 2px rgba(70, 40, 13, .18),
+        0 8px 18px rgba(70, 40, 13, .11);
+    --yfp-plaque-shadow-hover:
+        inset 0 1px 0 rgba(255, 255, 255, .94),
+        inset 0 -2px 5px rgba(91, 61, 28, .1),
+        0 3px 3px rgba(70, 40, 13, .2),
+        0 14px 26px rgba(70, 40, 13, .16);
+    --yfp-plaque-shadow-pressed:
+        inset 0 3px 7px rgba(67, 40, 17, .18),
+        inset 0 -1px 0 rgba(255, 255, 255, .52),
+        0 1px 1px rgba(70, 40, 13, .18);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    font-family: "YF Crimson", Georgia, serif;
+}
+
+.yf-active-overview .yf-preview-panel {
+    display: none;
+}
+
+.yf-active-overview .yf-controls-panel {
+    position: relative;
+    color: var(--yfp-ink);
+    background:
+        radial-gradient(1100px 420px at 15% -7%, rgba(255, 255, 247, .8), transparent 62%),
+        radial-gradient(800px 560px at 96% 112%, rgba(161, 119, 58, .17), transparent 64%),
+        linear-gradient(rgba(242, 231, 209, .72), rgba(242, 231, 209, .72)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 820px auto repeat,
+        var(--yfp-paper);
+}
+
+.yf-active-overview .yf-controls-panel::after {
+    content: "";
+    position: absolute;
+    inset: 5px 5px 67px;
+    z-index: 0;
+    pointer-events: none;
+    border: 1px solid rgba(111, 75, 24, .36);
+    box-shadow: inset 0 0 26px rgba(91, 58, 19, .09);
+}
+
+.yf-active-overview .yf-controls-scroll {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-color: rgba(119, 83, 30, .46) transparent;
+}
+
+/* Real tab navigation plus global search */
+.yf-active-overview .yf-config-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 310px);
+    align-items: stretch;
+    min-height: 58px;
+    background:
+        linear-gradient(rgba(249, 241, 224, .82), rgba(235, 219, 188, .82)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 640px auto repeat;
+    border-bottom: 1px solid rgba(125, 88, 31, .45);
+    box-shadow: 0 3px 10px rgba(71, 42, 15, .08);
+}
+
+.yf-active-overview .yf-config-toolbar .yf-control-search {
+    order: initial;
+}
+
+.yf-active-overview .yf-tab-bar {
+    align-self: stretch;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.yf-active-overview .yf-tab {
+    position: relative;
+    flex: 0 0 73px;
+    min-width: 73px;
+    min-height: 58px;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 0;
+    border-right: 1px solid rgba(127, 92, 41, .2);
+    border-radius: 0;
+    color: #594326;
+    background: rgba(255, 250, 238, .18);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    box-shadow: none;
+    transition: background .14s ease, color .14s ease;
+}
+
+.yf-active-overview .yf-tab:hover {
+    color: #2f2013;
+    background: rgba(255, 251, 242, .64);
+}
+
+.yf-active-overview .yf-tab.active {
+    flex-basis: auto;
+    min-width: 176px;
+    color: #2e1e11;
+    background: rgba(255, 252, 244, .72);
+    box-shadow: inset 0 -4px #b47b22;
+}
+
+.yf-active-overview .yf-tab .yf-tab-icon > i {
+    display: none;
+}
+
+.yf-active-overview .yf-tab-rich-icon {
+    display: block;
+    width: 29px;
+    height: 29px;
+    filter: drop-shadow(0 1px 1px rgba(54, 30, 9, .26));
+}
+
+.yf-active-overview .yf-tab:not(.active) .yf-tab-label {
+    display: none;
+}
+
+.yf-active-overview .yf-tab.active .yf-tab-label {
+    display: block;
+    white-space: nowrap;
+}
+
+.yf-active-overview .yf-dirty-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid #f7edda;
+    background: #aa5c27;
+    box-shadow: 0 0 0 1px rgba(91, 47, 17, .2);
+}
+
+.yf-active-overview .yf-control-search {
+    position: relative;
+    align-self: center;
+    min-width: 0;
+    margin: 0 14px;
+}
+
+.yf-active-overview .yf-control-search::before {
+    content: "";
+    top: 50%;
+    left: 13px;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23725a39' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m15.5 15.5 5 5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.yf-active-overview .yf-control-search input {
+    height: 38px;
+    padding: 7px 14px 7px 39px;
+    border: 1px solid rgba(125, 88, 31, .42);
+    border-radius: 7px;
+    color: var(--yfp-ink);
+    background: rgba(255, 252, 244, .58);
+    box-shadow: inset 0 1px 3px rgba(81, 49, 17, .08);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 15px;
+    font-style: italic;
+}
+
+.yf-active-overview .yf-control-search input::placeholder {
+    color: #887153;
+    opacity: 1;
+}
+
+.yf-active-overview .yf-control-search input:focus {
+    border-color: #a7792d;
+    outline: none;
+    background: rgba(255, 253, 247, .88);
+    box-shadow:
+        0 0 0 2px rgba(168, 121, 45, .14),
+        inset 0 1px 3px rgba(81, 49, 17, .06);
+}
+
+.yf-active-overview .yf-control-search-results {
+    top: calc(100% + 6px);
+    color: var(--yfp-ink);
+    background: #f7edd8;
+    border: 1px solid #a77d39;
+    box-shadow: 0 12px 28px rgba(49, 29, 10, .28);
+}
+
+/* Hero and calm reading rhythm */
+.yf-active-overview .yf-home {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 34px 72px 30px;
+    color: var(--yfp-ink);
+}
+
+.yf-active-overview .yf-home-greeting {
+    padding: 0;
+}
+
+.yf-active-overview .yf-home-greeting h2 {
+    margin: 0 0 5px;
+    border: 0;
+    color: #2d1d11;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 42px;
+    font-variant: normal;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: .025em;
+    text-wrap: balance;
+}
+
+.yf-active-overview .yf-home-greeting p {
+    margin: 0;
+    color: #715e45;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 21px;
+    line-height: 1.28;
+}
+
+.yf-home-workbench {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.yf-home-section-title {
+    display: grid;
+    grid-template-columns: 7px auto 1fr;
+    align-items: center;
+    gap: 10px;
+    min-height: 21px;
+    padding: 0 1px;
+}
+
+.yf-home-section-title > span {
+    width: 7px;
+    height: 7px;
+    background: #ae7a25;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .45);
+    transform: rotate(45deg);
+}
+
+.yf-home-section-title h3 {
+    margin: 0;
+    border: 0;
+    color: #62492d;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .075em;
+    text-transform: uppercase;
+}
+
+.yf-home-section-title > i {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(148, 109, 37, .55), rgba(148, 109, 37, .08));
+}
+
+/* Tactile plaques */
+.yf-active-overview .yf-home-cards {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: 15px 18px;
+}
+
+.yf-active-overview .yf-home-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 112px;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(
+        12px 0,
+        calc(100% - 12px) 0,
+        100% 12px,
+        100% calc(100% - 12px),
+        calc(100% - 12px) 100%,
+        12px 100%,
+        0 calc(100% - 12px),
+        0 12px
+    );
+    color: var(--yfp-ink);
+    background:
+        radial-gradient(circle at 14% 3%, rgba(255, 255, 255, .7), transparent 46%),
+        linear-gradient(rgba(246, 236, 214, .78), rgba(238, 220, 185, .78)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") 50% / 560px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    filter: drop-shadow(0 5px 5px rgba(70, 40, 13, .14));
+    transition:
+        transform .14s ease,
+        filter .14s ease,
+        background .14s ease;
+}
+
+.yf-active-overview .yf-home-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: url("../assets/ui/overview/frames/plaque-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-active-overview .yf-home-card:hover {
+    transform: translateY(-3px);
+    background:
+        radial-gradient(circle at 14% 3%, rgba(255, 255, 255, .86), transparent 48%),
+        linear-gradient(rgba(250, 241, 220, .84), rgba(241, 224, 190, .84)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") 50% / 560px auto;
+    box-shadow: var(--yfp-plaque-shadow-hover);
+    filter: brightness(1.025) drop-shadow(0 10px 10px rgba(70, 40, 13, .2));
+}
+
+.yf-active-overview .yf-home-card:active {
+    transform: translateY(1px);
+    box-shadow: var(--yfp-plaque-shadow-pressed);
+    filter: brightness(.98) drop-shadow(0 2px 2px rgba(70, 40, 13, .16));
+}
+
+.yf-active-overview .yf-home-card.is-dirty {
+    background:
+        radial-gradient(circle at 14% 3%, rgba(255, 255, 255, .74), transparent 46%),
+        linear-gradient(rgba(247, 231, 199, .82), rgba(231, 202, 151, .82)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") 50% / 560px auto;
+}
+
+.yf-active-overview .yf-home-card-chat,
+.yf-active-overview .yf-home-card-rolls,
+.yf-active-overview .yf-home-card-cards {
+    grid-column: span 2;
+}
+
+.yf-active-overview .yf-home-card-foundry,
+.yf-active-overview .yf-home-card-icons,
+.yf-active-overview .yf-home-card-changes,
+.yf-active-overview .yf-home-card-diagnostics {
+    grid-column: span 3;
+}
+
+.yf-active-overview .yf-home-card:last-child:nth-child(4) {
+    grid-column: span 6;
+}
+
+.yf-active-overview .yf-home-card-main {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    min-width: 0;
+    margin: 0;
+    padding: 11px 26px 11px 18px;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.yf-active-overview .yf-home-card-main:focus-visible {
+    outline: 2px solid #a8782b;
+    outline-offset: -6px;
+}
+
+.yf-active-overview .yf-home-card-medallion {
+    position: relative;
+    display: block;
+    width: 82px;
+    height: 82px;
+    filter: drop-shadow(0 7px 6px rgba(55, 31, 12, .25));
+    transition: transform .14s ease, filter .14s ease;
+}
+
+.yf-active-overview .yf-home-card:hover .yf-home-card-medallion {
+    transform: translateY(-2px) rotate(-1deg);
+    filter: brightness(1.06) drop-shadow(0 10px 7px rgba(55, 31, 12, .29));
+}
+
+.yf-active-overview .yf-home-card:active .yf-home-card-medallion {
+    transform: translateY(2px);
+    filter: brightness(.94) drop-shadow(0 2px 2px rgba(55, 31, 12, .2));
+}
+
+.yf-home-medallion-frame,
+.yf-home-medallion-glyph {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.yf-home-medallion-glyph {
+    inset: 25%;
+    width: 50%;
+    height: 50%;
+}
+
+.yf-active-overview .yf-home-dirty {
+    position: absolute;
+    z-index: 4;
+    top: 3px;
+    right: 3px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #f6e8cc;
+    border-radius: 50%;
+    background: #a95727;
+    box-shadow: 0 2px 4px rgba(65, 34, 13, .28);
+}
+
+.yf-active-overview .yf-home-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 0;
+}
+
+.yf-active-overview .yf-home-card-copy strong {
+    color: #2f1e11;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 25px;
+    font-variant: normal;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: .025em;
+}
+
+.yf-active-overview .yf-home-card-copy small {
+    color: #725d43;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.18;
+    white-space: normal;
+}
+
+.yf-home-card-arrow {
+    display: none;
+    color: #8a651e;
+    font: 600 42px / 1 "YF Crimson", Georgia, serif;
+}
+
+.yf-active-overview .yf-home-card-changes,
+.yf-active-overview .yf-home-card-diagnostics {
+    min-height: 72px;
+}
+
+.yf-active-overview .yf-home-card-changes .yf-home-card-main,
+.yf-active-overview .yf-home-card-diagnostics .yf-home-card-main {
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    padding-block: 7px;
+}
+
+.yf-active-overview .yf-home-card-changes .yf-home-card-medallion,
+.yf-active-overview .yf-home-card-diagnostics .yf-home-card-medallion {
+    width: 58px;
+    height: 58px;
+}
+
+.yf-active-overview .yf-home-card-changes .yf-home-card-copy strong,
+.yf-active-overview .yf-home-card-diagnostics .yf-home-card-copy strong {
+    font-size: 18px;
+}
+
+.yf-active-overview .yf-home-card-changes .yf-home-card-copy small,
+.yf-active-overview .yf-home-card-diagnostics .yf-home-card-copy small {
+    font-size: 14px;
+}
+
+.yf-active-overview .yf-home-card-changes .yf-home-card-arrow,
+.yf-active-overview .yf-home-card-diagnostics .yf-home-card-arrow {
+    display: block;
+}
+
+/* Share plaque and its real actions */
+.yf-active-overview .yf-home-share {
+    position: relative;
+    display: grid;
+    grid-template-columns: 76px minmax(190px, 1fr) minmax(360px, 1.08fr);
+    align-items: center;
+    gap: 18px;
+    min-height: 88px;
+    margin-top: 0;
+    padding: 10px 24px 10px 16px;
+    border: 0;
+    clip-path: polygon(
+        12px 0,
+        calc(100% - 12px) 0,
+        100% 12px,
+        100% calc(100% - 12px),
+        calc(100% - 12px) 100%,
+        12px 100%,
+        0 calc(100% - 12px),
+        0 12px
+    );
+    background:
+        radial-gradient(circle at 12% 0, rgba(255, 255, 255, .72), transparent 46%),
+        linear-gradient(rgba(246, 236, 214, .79), rgba(237, 218, 183, .79)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") 50% / 560px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    filter: drop-shadow(0 5px 6px rgba(70, 40, 13, .14));
+}
+
+.yf-active-overview .yf-home-share::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: url("../assets/ui/overview/frames/plaque-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-home-share-seal {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: 66px;
+    height: 66px;
+    filter: sepia(.18) saturate(.85) drop-shadow(0 6px 5px rgba(55, 31, 12, .22));
+}
+
+.yf-home-share-seal img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.yf-home-share-seal img + img {
+    inset: 26%;
+    width: 48%;
+    height: 48%;
+}
+
+.yf-active-overview .yf-home-share-copy {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+    padding-left: 18px;
+    border-left: 1px solid rgba(142, 103, 34, .3);
+}
+
+.yf-active-overview .yf-home-share-copy strong {
+    color: #49321c;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 16px;
+    font-variant: normal;
+    font-weight: 600;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+
+.yf-active-overview .yf-home-share-copy small {
+    color: #8a7353;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.yf-active-overview .yf-home-share-actions {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.yf-active-overview .yf-home-share-button {
+    min-height: 48px;
+    padding: 9px 18px;
+    border: 1px solid rgba(133, 94, 31, .5);
+    border-radius: 0;
+    color: #3c2917;
+    background:
+        linear-gradient(rgba(249, 240, 221, .78), rgba(231, 211, 172, .78)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 480px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+
+.yf-active-overview .yf-home-share-button:hover {
+    color: #2e1e10;
+    border-color: #9a6e25;
+    transform: translateY(-2px);
+    background:
+        linear-gradient(rgba(255, 247, 228, .88), rgba(238, 217, 176, .88)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 480px auto;
+    box-shadow: var(--yfp-plaque-shadow-hover);
+}
+
+.yf-active-overview .yf-home-share-button:active {
+    transform: translateY(1px);
+    box-shadow: var(--yfp-plaque-shadow-pressed);
+}
+
+.yf-active-overview .yf-home-share-button:disabled {
+    opacity: .48;
+    filter: grayscale(.4);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Wood footer and save state */
+.yf-active-overview .yf-config-footer {
+    position: relative;
+    z-index: 3;
+    min-height: 64px;
+    padding: 8px 24px;
+    color: #d8c18f;
+    background:
+        linear-gradient(180deg, rgba(8, 5, 3, .42), rgba(9, 5, 3, .72)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    border-top: 1px solid #7a5621;
+    box-shadow:
+        inset 0 1px rgba(255, 235, 167, .08),
+        inset 0 3px 8px rgba(0, 0, 0, .25);
+}
+
+.yf-overview-save-state {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    color: #cfb987;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 15px;
+}
+
+.yf-overview-save-dot {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #a98a4f;
+    border-radius: 50%;
+    background: #79a252;
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .28),
+        inset 0 1px rgba(255, 255, 255, .5);
+}
+
+.yf-overview-save-state.is-dirty {
+    color: #e0bd73;
+}
+
+.yf-overview-save-state.is-dirty .yf-overview-save-dot {
+    background: #c58232;
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .28),
+        0 0 10px rgba(197, 130, 50, .35),
+        inset 0 1px rgba(255, 255, 255, .48);
+}
+
+.yf-active-overview .yf-overview-save-button {
+    position: relative;
+    min-width: 214px;
+    min-height: 46px;
+    padding: 9px 25px;
+    border: 0;
+    border-radius: 0;
+    color: #fff1bf;
+    text-shadow: 0 1px 1px #342006;
+    background: linear-gradient(#b98d32, #795518);
+    box-shadow:
+        inset 0 1px rgba(255, 246, 196, .42),
+        inset 0 -3px 5px rgba(55, 32, 4, .26),
+        0 2px 2px rgba(0, 0, 0, .32),
+        0 7px 13px rgba(0, 0, 0, .2);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+
+.yf-active-overview .yf-overview-save-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: url("../assets/ui/overview/frames/gold-button-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-active-overview .yf-overview-save-button:hover {
+    color: #fff5cf;
+    transform: translateY(-1px);
+    background: linear-gradient(#c99c3b, #855f1c);
+    box-shadow:
+        inset 0 1px rgba(255, 246, 196, .48),
+        inset 0 -3px 5px rgba(55, 32, 4, .22),
+        0 3px 3px rgba(0, 0, 0, .35),
+        0 10px 18px rgba(0, 0, 0, .24);
+}
+
+.yf-active-overview .yf-overview-save-button:active {
+    transform: translateY(1px);
+    box-shadow:
+        inset 0 4px 7px rgba(55, 32, 4, .3),
+        0 1px 2px rgba(0, 0, 0, .3);
+}
+
+@container yf-controls-panel (max-width: 980px) {
+    .yf-active-overview .yf-config-toolbar {
+        grid-template-columns: minmax(0, 1fr) 230px;
+    }
+
+    .yf-active-overview .yf-tab {
+        flex-basis: 58px;
+        min-width: 58px;
+        padding-inline: 9px;
+    }
+
+    .yf-active-overview .yf-tab.active {
+        min-width: 142px;
+    }
+
+    .yf-active-overview .yf-home {
+        padding-inline: 30px;
+    }
+
+    .yf-active-overview .yf-home-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .yf-active-overview .yf-home-card {
+        grid-column: span 1;
+        min-height: 102px;
+    }
+
+    .yf-active-overview .yf-home-card-cards,
+    .yf-active-overview .yf-home-card:last-child:nth-child(4) {
+        grid-column: span 2;
+    }
+
+    .yf-active-overview .yf-home-share {
+        grid-template-columns: 64px minmax(150px, .8fr) minmax(300px, 1.2fr);
+    }
+}
+
+@container yf-controls-panel (max-width: 720px) {
+    .yf-active-overview .yf-config-toolbar {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .yf-active-overview .yf-tab-bar {
+        order: 1;
+        min-height: 52px;
+    }
+
+    .yf-active-overview .yf-config-toolbar .yf-control-search {
+        order: 2;
+        margin: 8px 14px;
+    }
+
+    .yf-active-overview .yf-home {
+        padding: 26px 22px;
+    }
+
+    .yf-active-overview .yf-home-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .yf-active-overview .yf-home-card,
+    .yf-active-overview .yf-home-card-cards,
+    .yf-active-overview .yf-home-card:last-child:nth-child(4) {
+        grid-column: span 1;
+    }
+
+    .yf-active-overview .yf-home-share {
+        grid-template-columns: 58px minmax(0, 1fr);
+        padding: 12px 20px 14px;
+    }
+
+    .yf-active-overview .yf-home-share-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@container yf-controls-panel (max-width: 500px) {
+    .yf-active-overview .yf-home-greeting h2 {
+        font-size: 25px;
+    }
+
+    .yf-active-overview .yf-home-card-main {
+        grid-template-columns: 68px minmax(0, 1fr) auto;
+        padding-inline: 14px;
+    }
+
+    .yf-active-overview .yf-home-card-medallion {
+        width: 64px;
+        height: 64px;
+    }
+
+    .yf-active-overview .yf-home-share-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .yf-active-overview .yf-config-footer {
+        align-items: stretch;
+    }
+
+    .yf-overview-save-state {
+        font-size: 13px;
+    }
+
+    .yf-active-overview .yf-overview-save-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .yf-active-overview .yf-home-card,
+    .yf-active-overview .yf-home-card-medallion,
+    .yf-active-overview .yf-home-share-button,
+    .yf-active-overview .yf-overview-save-button {
+        transition: none;
+    }
+
+    .yf-active-overview .yf-home-card:hover,
+    .yf-active-overview .yf-home-card:active,
+    .yf-active-overview .yf-home-card:hover .yf-home-card-medallion,
+    .yf-active-overview .yf-home-card:active .yf-home-card-medallion,
+    .yf-active-overview .yf-home-share-button:hover,
+    .yf-active-overview .yf-home-share-button:active,
+    .yf-active-overview .yf-overview-save-button:hover,
+    .yf-active-overview .yf-overview-save-button:active {
+        transform: none;
+    }
+}

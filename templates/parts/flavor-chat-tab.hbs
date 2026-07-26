@@ -1,332 +1,427 @@
-            {{! ══════════════ CHAT TAB ══════════════ }}
-            {{#unless canCustomize}}
-            <div class="yf-notice yf-notice-warning">
-                <i class="fas fa-lock"></i>
-                <span>{{localize "YOUR_FLAVOR.Config.NoPermission"}}</span>
+{{! ══════════════ CHAT BASICS — APPROVED REDESIGN ══════════════ }}
+{{#unless canCustomize}}
+<div class="yf-chat-notice yf-chat-notice-warning" role="status">
+    <i class="fas fa-lock" aria-hidden="true"></i>
+    <span>{{localize "YOUR_FLAVOR.Config.NoPermission"}}</span>
+</div>
+{{else}}
+    {{#if hasForcedLayout}}
+    <div class="yf-chat-notice yf-chat-notice-info" role="status">
+        <i class="fas fa-lock" aria-hidden="true"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.ForcedLayout"}} <strong>{{forcedLayoutName}}</strong></span>
+    </div>
+    {{/if}}
+{{/unless}}
+
+{{#if canCustomize}}
+{{#unless hasForcedLayout}}
+{{#if isCustomHtmlMode}}
+<section id="yf-chat-html-panel" class="yf-chat-html-mode" aria-labelledby="yf-chat-html-heading">
+    <header class="yf-chat-html-header">
+        <div class="yf-chat-html-title">
+            <span class="yf-chat-html-icon" aria-hidden="true"><i class="fas fa-code"></i></span>
+            <div>
+                <p>{{localize "YOUR_FLAVOR.Config.ChatBasics.CustomHtmlEyebrow"}}</p>
+                <h2 id="yf-chat-html-heading">{{localize "YOUR_FLAVOR.Config.ChatBasics.CustomHtmlHeading"}}</h2>
+            </div>
+        </div>
+        <button type="button" class="yf-chat-html-back" data-action="closeCustomHtmlEditor">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Config.ChatBasics.BackToFlavorEditor"}}</span>
+        </button>
+    </header>
+
+    <div id="yf-chat-html-warning" class="yf-warning-box yf-chat-html-warning" role="note">
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        <div>
+            <strong>{{localize "YOUR_FLAVOR.Config.ChatBasics.CustomHtmlWarningTitle"}}</strong>
+            <span>{{localize "YOUR_FLAVOR.Config.AdvancedWarning"}}</span>
+        </div>
+    </div>
+
+    <div class="yf-chat-html-field">
+        <label for="yf-chat-custom-html">{{localize "YOUR_FLAVOR.Config.ChatBasics.CustomHtmlEditorLabel"}}</label>
+        <textarea
+            id="yf-chat-custom-html"
+            name="customHtml"
+            class="yf-textarea yf-chat-html-textarea yf-live-input"
+            data-custom-html-editor
+            aria-describedby="yf-chat-html-warning"
+            placeholder="{{localize 'YOUR_FLAVOR.Config.CustomHtmlPlaceholder'}}"
+            spellcheck="false">{{config.customHtml}}</textarea>
+    </div>
+</section>
+{{else}}
+<section class="yf-chat-step yf-chat-presets" aria-labelledby="yf-chat-presets-heading">
+    <header class="yf-chat-step-header">
+        <span class="yf-chat-step-number" aria-hidden="true">1</span>
+        <h2 id="yf-chat-presets-heading">{{localize "YOUR_FLAVOR.Config.ChatBasics.ChooseFlavor"}}</h2>
+        <span class="yf-chat-step-rule" aria-hidden="true"></span>
+        <div class="yf-chat-step-actions">
+            <button type="button" class="yf-chat-action yf-chat-action-paper" data-action="exportUserPreset" title="{{localize 'YOUR_FLAVOR.Config.Presets.ExportTitle'}}">
+                <i class="fas fa-upload" aria-hidden="true"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.Presets.ExportButton"}}</span>
+            </button>
+            <button type="button" class="yf-chat-action yf-chat-action-paper" data-action="importUserPreset" title="{{localize 'YOUR_FLAVOR.Config.Presets.ImportTitle'}}">
+                <i class="fas fa-download" aria-hidden="true"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.Presets.ImportButton"}}</span>
+            </button>
+            <button type="button" class="yf-chat-action yf-chat-action-gold" data-action="randomizeChat" title="{{randomizer.actionTitle}}">
+                <i class="fas fa-shuffle" aria-hidden="true"></i>
+                <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Action"}}</span>
+            </button>
+        </div>
+    </header>
+
+    <nav class="yf-category-tags" aria-label="{{localize 'YOUR_FLAVOR.Config.ChatBasics.PresetCategories'}}">
+        {{#if hasFavorites}}
+        <button type="button" class="yf-tag yf-tag-fav {{#if (eq activeCategory 'favorites')}}active{{/if}}" data-category="favorites" aria-pressed="{{#if (eq activeCategory 'favorites')}}true{{else}}false{{/if}}">
+            <i class="fas fa-star" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Favorites"}}</span>
+        </button>
+        {{/if}}
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'basic')}}active{{/if}}" data-category="basic" aria-pressed="{{#if (eq activeCategory 'basic')}}true{{else}}false{{/if}}">
+            <i class="fas fa-dice-d20" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Basic"}}</span>
+        </button>
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'class')}}active{{/if}}" data-category="class" aria-pressed="{{#if (eq activeCategory 'class')}}true{{else}}false{{/if}}">
+            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Classes"}}</span>
+        </button>
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'race')}}active{{/if}}" data-category="race" aria-pressed="{{#if (eq activeCategory 'race')}}true{{else}}false{{/if}}">
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Races"}}</span>
+        </button>
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'theme')}}active{{/if}}" data-category="theme" aria-pressed="{{#if (eq activeCategory 'theme')}}true{{else}}false{{/if}}">
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Themes"}}</span>
+        </button>
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'modern')}}active{{/if}}" data-category="modern" aria-pressed="{{#if (eq activeCategory 'modern')}}true{{else}}false{{/if}}">
+            <i class="fas fa-landmark" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Modern"}}</span>
+        </button>
+        <button type="button" class="yf-tag {{#if (eq activeCategory 'misc')}}active{{/if}}" data-category="misc" aria-pressed="{{#if (eq activeCategory 'misc')}}true{{else}}false{{/if}}">
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Categories.Misc"}}</span>
+        </button>
+    </nav>
+
+    <div class="yf-randomizer-panel">
+        <label>
+            <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Tone"}}</span>
+            <select class="yf-select yf-refined-select yf-randomizer-constraint" data-constraint="tone">
+                {{#each randomizer.toneOptions}}
+                <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </label>
+        <label>
+            <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Intensity"}}</span>
+            <select class="yf-select yf-refined-select yf-randomizer-constraint" data-constraint="intensity">
+                {{#each randomizer.intensityOptions}}
+                <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </label>
+        <label>
+            <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Motion"}}</span>
+            <select class="yf-select yf-refined-select yf-randomizer-constraint" data-constraint="motion">
+                {{#each randomizer.motionOptions}}
+                <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </label>
+        <div class="yf-randomizer-context">
+            <span><i class="fas fa-crosshairs" aria-hidden="true"></i> {{randomizer.scopeLabel}}</span>
+            <span><i class="fas fa-filter" aria-hidden="true"></i> <span data-randomizer-filter>{{randomizer.filterLabel}}</span></span>
+        </div>
+    </div>
+
+    <div class="yf-layout-carousel">
+        <button type="button" class="yf-layout-arrow" data-action="previousChatPresetPage" title="{{localize 'YOUR_FLAVOR.Config.Presets.PreviousPage'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Presets.PreviousPage'}}" disabled>
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <div class="yf-layout-pagination">
+            <span data-chat-preset-counter></span>
+            <div role="group" data-chat-preset-pages aria-label="{{localize 'YOUR_FLAVOR.Config.Presets.PageNavigation'}}"></div>
+        </div>
+        <button type="button" class="yf-layout-arrow" data-action="nextChatPresetPage" title="{{localize 'YOUR_FLAVOR.Config.Presets.NextPage'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Presets.NextPage'}}" disabled>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <div class="yf-layout-grid" role="listbox" aria-label="{{localize 'YOUR_FLAVOR.Config.LayoutSection'}}">
+        {{#each layouts}}
+        <article class="yf-layout-option {{#if (eq this.id ../config.layout)}}selected{{/if}} {{#if this.isEdited}}is-edited{{/if}}"
+                 data-layout="{{this.id}}"
+                 data-category="{{this.category}}"
+                 data-preset-tone="{{this.metadata.tone.value}}"
+                 data-preset-intensity="{{this.metadata.intensity.value}}"
+                 data-preset-motion="{{this.metadata.motion.value}}"
+                 data-preset-areas="{{this.metadata.compatibleAreasString}}"
+                 data-preset-tags="{{this.metadata.tagsString}}"
+                 role="option"
+                 tabindex="0"
+                 aria-selected="{{#if (eq this.id ../config.layout)}}true{{else}}false{{/if}}"
+                 title="{{this.tooltip}}">
+            {{#if this.sample.show}}
+            <div class="yf-layout-sample" style="{{this.sample.boxStyle}}">
+                <b style="{{this.sample.nameStyle}}">{{this.name}}</b>
+                <i style="{{this.sample.lineStyle}}">{{localize "YOUR_FLAVOR.Studio.Gallery.SampleLine"}}</i>
             </div>
             {{else}}
-                {{#if hasForcedLayout}}
-                <div class="yf-notice yf-notice-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span>{{localize "YOUR_FLAVOR.Config.ForcedLayout"}} <strong>{{forcedLayoutName}}</strong></span>
-                </div>
-                {{/if}}
-            {{/unless}}
-
-            {{#if canCustomize}}
-            {{#unless hasForcedLayout}}
-            {{#if hasActors}}
-            <div class="yf-actor-selector">
-                <label><i class="fas fa-user"></i> {{localize "YOUR_FLAVOR.Config.ConfigFor"}}</label>
-                <select class="yf-actor-select yf-select">
-                    <option value="">{{localize "YOUR_FLAVOR.Config.DefaultStyle"}} ({{playerName}})</option>
-                    {{#each ownedActors}}
-                    <option value="{{this.id}}" {{#if (eq this.id ../editingActorId)}}selected{{/if}}>{{this.name}}</option>
-                    {{/each}}
-                </select>
+            <div class="yf-layout-empty">
+                <i class="{{this.icon}}" aria-hidden="true"></i>
+                <span>{{this.name}}</span>
             </div>
             {{/if}}
-            {{/unless}}
-            {{/if}}
 
-            {{#if canCustomize}}
-            {{#unless hasForcedLayout}}
-            <div class="yf-enable-row">
-                <span class="yf-enable-label">{{localize "YOUR_FLAVOR.Config.Enable"}}</span>
-                <label class="yf-toggle-switch">
-                    <input type="checkbox" name="enabled" {{#if config.enabled}}checked{{/if}}>
+            <div class="yf-layout-metadata" aria-label="{{this.metadata.title}}">
+                {{#each this.metadata.badges}}
+                <span class="yf-layout-meta-pill yf-layout-meta-{{this.type}} yf-layout-meta-{{this.value}}" title="{{this.title}}">
+                    <i class="{{this.icon}}" aria-hidden="true"></i>
+                    <span>{{this.shortLabel}}</span>
+                </span>
+                {{/each}}
+            </div>
+            {{#if this.metadata.previewTags}}
+            <div class="yf-layout-tag-row">
+                {{#each this.metadata.previewTags}}
+                <span class="yf-layout-tag" title="{{this.title}}">{{this.label}}</span>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{#if this.metadata.areas}}
+            <div class="yf-layout-areas" title="{{this.metadata.title}}">
+                {{#each this.metadata.areas}}
+                <i class="{{this.icon}}" title="{{this.title}}"></i>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{#if this.isEdited}}
+            <span class="yf-preset-edited-badge" title="{{this.editedTitle}}"><i class="fas fa-pen" aria-hidden="true"></i></span>
+            {{/if}}
+            {{#unless (eq this.id "none")}}
+            <button type="button" class="yf-fav-btn {{#if this.isFavorite}}active{{/if}}" data-action="toggleFavorite" title="{{localize 'YOUR_FLAVOR.Config.Favorite'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Favorite'}}">
+                <i class="{{#if this.isFavorite}}fas{{else}}far{{/if}} fa-star" aria-hidden="true"></i>
+            </button>
+            {{/unless}}
+        </article>
+        {{/each}}
+        <p class="yf-layout-empty" data-layout-empty hidden>
+            <i class="fas fa-filter-circle-xmark" aria-hidden="true"></i>
+            <span>{{localize "YOUR_FLAVOR.Config.Randomizer.NoMatches"}}</span>
+        </p>
+    </div>
+</section>
+
+{{#if showCustomization}}
+<section class="yf-chat-step yf-chat-customization" aria-labelledby="yf-chat-customization-heading">
+    <header class="yf-chat-step-header">
+        <span class="yf-chat-step-number" aria-hidden="true">2</span>
+        <h2 id="yf-chat-customization-heading">{{localize "YOUR_FLAVOR.Config.ChatBasics.MakeItYours"}}</h2>
+        <span class="yf-chat-step-rule" aria-hidden="true"></span>
+    </header>
+
+    <div class="yf-chat-control-board">
+        <section class="yf-chat-control-group yf-chat-control-type">
+            <h3>{{localize "YOUR_FLAVOR.Config.ChatBasics.Type"}}</h3>
+            <div class="yf-chat-field">
+                <div class="yf-chat-field-label">
+                    <label for="yf-chat-font-family">{{localize "YOUR_FLAVOR.Config.FontFamily"}}</label>
+                    <span class="yf-token-badge" title="{{tokenStates.fontFamily.title}}">{{tokenStates.fontFamily.label}}</span>
+                </div>
+                <div class="yf-token-control yf-token-control-compact {{tokenStates.fontFamily.statusClass}}">
+                    <select id="yf-chat-font-family" name="customizations.fontFamily" class="yf-select yf-refined-select" data-yf-font-preview="true">
+                        {{#each fonts}}
+                        <option value="{{this.family}}" {{#if (eq this.family ../config.customizations.fontFamily)}}selected{{/if}}>{{this.name}}</option>
+                        {{/each}}
+                    </select>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.fontFamily" title="{{tokenStates.fontFamily.resetTitle}}" aria-label="{{tokenStates.fontFamily.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-field">
+                <div class="yf-chat-field-label">
+                    <label for="yf-chat-font-size">{{localize "YOUR_FLAVOR.Config.FontSize"}}</label>
+                    <span class="yf-token-badge" title="{{tokenStates.fontSize.title}}">{{tokenStates.fontSize.label}}</span>
+                </div>
+                <div class="yf-token-control yf-token-control-compact {{tokenStates.fontSize.statusClass}}">
+                    <div class="yf-range-wrapper">
+                        <input id="yf-chat-font-size" type="range" name="customizations.fontSize" class="yf-range" min="10" max="24" value="{{config.customizations.fontSize}}">
+                        <span class="yf-range-value">{{config.customizations.fontSize}}px</span>
+                    </div>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.fontSize" title="{{tokenStates.fontSize.resetTitle}}" aria-label="{{tokenStates.fontSize.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="yf-chat-control-group yf-chat-control-palette">
+            <h3>{{localize "YOUR_FLAVOR.Config.ChatBasics.Palette"}}</h3>
+            <div class="yf-chat-color-field">
+                <label for="yf-chat-text-color">{{localize "YOUR_FLAVOR.Config.TextColor"}}</label>
+                <div class="yf-token-control yf-token-color-control {{tokenStates.textColor.statusClass}}">
+                    <input id="yf-chat-text-color" type="color" name="customizations.textColor" class="yf-color-swatch" value="{{config.customizations.textColor}}">
+                    <code>{{config.customizations.textColor}}</code>
+                    <span class="yf-token-badge" title="{{tokenStates.textColor.title}}">{{tokenStates.textColor.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.textColor" title="{{tokenStates.textColor.resetTitle}}" aria-label="{{tokenStates.textColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-color-field">
+                <label for="yf-chat-background-color">{{localize "YOUR_FLAVOR.Config.BackgroundColor"}}</label>
+                <div class="yf-token-control yf-token-color-control {{tokenStates.backgroundColor.statusClass}}">
+                    <input id="yf-chat-background-color" type="color" name="customizations.backgroundColor" class="yf-color-swatch" value="{{backgroundColorHex}}">
+                    <code>{{backgroundColorHex}}</code>
+                    <span class="yf-token-badge" title="{{tokenStates.backgroundColor.title}}">{{tokenStates.backgroundColor.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.backgroundColor" title="{{tokenStates.backgroundColor.resetTitle}}" aria-label="{{tokenStates.backgroundColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-color-field">
+                <label for="yf-chat-border-color">{{localize "YOUR_FLAVOR.Config.BorderColor"}}</label>
+                <div class="yf-token-control yf-token-color-control {{tokenStates.borderColor.statusClass}}">
+                    <input id="yf-chat-border-color" type="color" name="customizations.borderColor" class="yf-color-swatch" value="{{config.customizations.borderColor}}">
+                    <code>{{config.customizations.borderColor}}</code>
+                    <span class="yf-token-badge" title="{{tokenStates.borderColor.title}}">{{tokenStates.borderColor.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderColor" title="{{tokenStates.borderColor.resetTitle}}" aria-label="{{tokenStates.borderColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-color-field">
+                <label for="yf-chat-name-color">{{localize "YOUR_FLAVOR.Config.NameColor"}}</label>
+                <div class="yf-token-control yf-token-color-control {{tokenStates.nameColor.statusClass}}">
+                    <input id="yf-chat-name-color" type="color" name="customizations.nameColor" class="yf-color-swatch" value="{{#if config.customizations.nameColor}}{{config.customizations.nameColor}}{{else}}{{config.customizations.borderColor}}{{/if}}">
+                    <code>{{#if config.customizations.nameColor}}{{config.customizations.nameColor}}{{else}}{{config.customizations.borderColor}}{{/if}}</code>
+                    <span class="yf-token-badge" title="{{tokenStates.nameColor.title}}">{{tokenStates.nameColor.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.nameColor" title="{{tokenStates.nameColor.resetTitle}}" aria-label="{{tokenStates.nameColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-color-field">
+                <label for="yf-chat-timestamp-color">{{localize "YOUR_FLAVOR.Config.TimestampColor"}}</label>
+                <div class="yf-token-control yf-token-color-control {{tokenStates.timestampColor.statusClass}}">
+                    <input id="yf-chat-timestamp-color" type="color" name="customizations.timestampColor" class="yf-color-swatch" value="{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}">
+                    <code>{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}</code>
+                    <span class="yf-token-badge" title="{{tokenStates.timestampColor.title}}">{{tokenStates.timestampColor.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.timestampColor" title="{{tokenStates.timestampColor.resetTitle}}" aria-label="{{tokenStates.timestampColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="yf-chat-control-group yf-chat-control-frame">
+            <h3>{{localize "YOUR_FLAVOR.Config.ChatBasics.Frame"}}</h3>
+            <div class="yf-chat-field">
+                <label for="yf-chat-opacity">{{localize "YOUR_FLAVOR.Config.Opacity"}}</label>
+                <div class="yf-token-control {{tokenStates.backgroundOpacity.statusClass}}">
+                    <div class="yf-range-wrapper">
+                        <input id="yf-chat-opacity" type="range" name="customizations.backgroundOpacity" class="yf-range" min="0" max="100" step="5" value="{{config.customizations.backgroundOpacity}}">
+                        <span class="yf-range-value">{{config.customizations.backgroundOpacity}}%</span>
+                    </div>
+                    <span class="yf-token-badge" title="{{tokenStates.backgroundOpacity.title}}">{{tokenStates.backgroundOpacity.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.backgroundOpacity" title="{{tokenStates.backgroundOpacity.resetTitle}}" aria-label="{{tokenStates.backgroundOpacity.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-field">
+                <label for="yf-chat-border-style">{{localize "YOUR_FLAVOR.Config.BorderStyle"}}</label>
+                <div class="yf-token-control {{tokenStates.borderStyle.statusClass}}">
+                    <select id="yf-chat-border-style" name="customizations.borderStyle" class="yf-select yf-refined-select">
+                        <option value="solid" {{#if (eq config.customizations.borderStyle "solid")}}selected{{/if}}>Solid</option>
+                        <option value="dashed" {{#if (eq config.customizations.borderStyle "dashed")}}selected{{/if}}>Dashed</option>
+                        <option value="dotted" {{#if (eq config.customizations.borderStyle "dotted")}}selected{{/if}}>Dotted</option>
+                        <option value="double" {{#if (eq config.customizations.borderStyle "double")}}selected{{/if}}>Double</option>
+                        <option value="groove" {{#if (eq config.customizations.borderStyle "groove")}}selected{{/if}}>Groove</option>
+                        <option value="ridge" {{#if (eq config.customizations.borderStyle "ridge")}}selected{{/if}}>Ridge</option>
+                    </select>
+                    <span class="yf-token-badge" title="{{tokenStates.borderStyle.title}}">{{tokenStates.borderStyle.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderStyle" title="{{tokenStates.borderStyle.resetTitle}}" aria-label="{{tokenStates.borderStyle.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-field">
+                <label for="yf-chat-border-width">{{localize "YOUR_FLAVOR.Config.BorderWidth"}}</label>
+                <div class="yf-token-control {{tokenStates.borderWidth.statusClass}}">
+                    <div class="yf-range-wrapper">
+                        <input id="yf-chat-border-width" type="range" name="customizations.borderWidth" class="yf-range" min="0" max="8" value="{{config.customizations.borderWidth}}">
+                        <span class="yf-range-value">{{config.customizations.borderWidth}}px</span>
+                    </div>
+                    <span class="yf-token-badge" title="{{tokenStates.borderWidth.title}}">{{tokenStates.borderWidth.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderWidth" title="{{tokenStates.borderWidth.resetTitle}}" aria-label="{{tokenStates.borderWidth.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="yf-chat-field">
+                <label for="yf-chat-border-radius">{{localize "YOUR_FLAVOR.Config.BorderRadius"}}</label>
+                <div class="yf-token-control {{tokenStates.borderRadius.statusClass}}">
+                    <div class="yf-range-wrapper">
+                        <input id="yf-chat-border-radius" type="range" name="customizations.borderRadius" class="yf-range" min="0" max="50" value="{{config.customizations.borderRadius}}">
+                        <span class="yf-range-value">{{config.customizations.borderRadius}}px</span>
+                    </div>
+                    <span class="yf-token-badge" title="{{tokenStates.borderRadius.title}}">{{tokenStates.borderRadius.label}}</span>
+                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderRadius" title="{{tokenStates.borderRadius.resetTitle}}" aria-label="{{tokenStates.borderRadius.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="yf-chat-control-group yf-chat-control-effects">
+            <h3>{{localize "YOUR_FLAVOR.Config.Effects"}}</h3>
+            <div class="yf-chat-effect-row">
+                <span>{{localize "YOUR_FLAVOR.Config.Glow"}}</span>
+                <span class="yf-token-badge" title="{{tokenStates.glowEnabled.title}}">{{tokenStates.glowEnabled.label}}</span>
+                <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.GlowEnabled'}}">
+                    <input type="checkbox" name="customizations.glowEnabled" {{#if config.customizations.glowEnabled}}checked{{/if}}>
                     <span class="yf-toggle-slider"></span>
                 </label>
+                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowEnabled" title="{{tokenStates.glowEnabled.resetTitle}}" aria-label="{{tokenStates.glowEnabled.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
             </div>
-            {{/unless}}
+            {{#if config.customizations.glowEnabled}}
+            <div class="yf-chat-effects-nested">
+                <div class="yf-chat-color-field">
+                    <label for="yf-chat-glow-color">{{localize "YOUR_FLAVOR.Config.GlowColor"}}</label>
+                    <div class="yf-token-control yf-token-color-control {{tokenStates.glowColor.statusClass}}">
+                        <input id="yf-chat-glow-color" type="color" name="customizations.glowColor" class="yf-color-swatch" value="{{config.customizations.glowColor}}">
+                        <code>{{config.customizations.glowColor}}</code>
+                        <span class="yf-token-badge" title="{{tokenStates.glowColor.title}}">{{tokenStates.glowColor.label}}</span>
+                        <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowColor" title="{{tokenStates.glowColor.resetTitle}}" aria-label="{{tokenStates.glowColor.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="yf-chat-field">
+                    <label for="yf-chat-glow-intensity">{{localize "YOUR_FLAVOR.Config.GlowIntensity"}}</label>
+                    <div class="yf-token-control {{tokenStates.glowIntensity.statusClass}}">
+                        <div class="yf-range-wrapper">
+                            <input id="yf-chat-glow-intensity" type="range" name="customizations.glowIntensity" class="yf-range" min="5" max="25" value="{{config.customizations.glowIntensity}}">
+                            <span class="yf-range-value">{{config.customizations.glowIntensity}}px</span>
+                        </div>
+                        <span class="yf-token-badge" title="{{tokenStates.glowIntensity.title}}">{{tokenStates.glowIntensity.label}}</span>
+                        <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowIntensity" title="{{tokenStates.glowIntensity.resetTitle}}" aria-label="{{tokenStates.glowIntensity.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
             {{/if}}
+            <div class="yf-chat-effect-row">
+                <span>{{localize "YOUR_FLAVOR.Config.Shadow"}}</span>
+                <span class="yf-token-badge" title="{{tokenStates.shadowEnabled.title}}">{{tokenStates.shadowEnabled.label}}</span>
+                <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.ShadowEnabled'}}">
+                    <input type="checkbox" name="customizations.shadowEnabled" {{#if config.customizations.shadowEnabled}}checked{{/if}}>
+                    <span class="yf-toggle-slider"></span>
+                </label>
+                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.shadowEnabled" title="{{tokenStates.shadowEnabled.resetTitle}}" aria-label="{{tokenStates.shadowEnabled.resetTitle}}"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+            </div>
+        </section>
+    </div>
+</section>
+{{/if}}
 
-            {{#if canCustomize}}
-            {{#unless hasForcedLayout}}
-            <section class="yf-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-th-large"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.LayoutSection"}}</h3>
-                    <div class="yf-section-actions">
-                        <button type="button" class="yf-btn yf-btn-secondary yf-btn-compact" data-action="exportUserPreset" title="{{localize 'YOUR_FLAVOR.Config.Presets.ExportTitle'}}">
-                            <i class="fas fa-file-export"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.Presets.ExportButton"}}</span>
-                        </button>
-                        <button type="button" class="yf-btn yf-btn-secondary yf-btn-compact" data-action="importUserPreset" title="{{localize 'YOUR_FLAVOR.Config.Presets.ImportTitle'}}">
-                            <i class="fas fa-file-import"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.Presets.ImportButton"}}</span>
-                        </button>
-                        <button type="button" class="yf-btn yf-btn-secondary yf-btn-compact" data-action="randomizeChat" title="{{randomizer.actionTitle}}">
-                            <i class="fas fa-shuffle"></i> <span class="yf-btn-label">{{localize "YOUR_FLAVOR.Config.Randomizer.Action"}}</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="yf-category-tags">
-                    {{#if hasFavorites}}<span class="yf-tag yf-tag-fav" data-category="favorites"><i class="fas fa-star"></i> {{localize "YOUR_FLAVOR.Categories.Favorites"}}</span>{{/if}}
-                    <span class="yf-tag" data-category="basic">{{localize "YOUR_FLAVOR.Categories.Basic"}}</span>
-                    <span class="yf-tag" data-category="class">{{localize "YOUR_FLAVOR.Categories.Classes"}}</span>
-                    <span class="yf-tag" data-category="race">{{localize "YOUR_FLAVOR.Categories.Races"}}</span>
-                    <span class="yf-tag" data-category="theme">{{localize "YOUR_FLAVOR.Categories.Themes"}}</span>
-                    <span class="yf-tag" data-category="modern">{{localize "YOUR_FLAVOR.Categories.Modern"}}</span>
-                    <span class="yf-tag" data-category="misc">{{localize "YOUR_FLAVOR.Categories.Misc"}}</span>
-                </div>
-                <div class="yf-randomizer-panel">
-                    <label>
-                        <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Tone"}}</span>
-                        <select class="yf-select yf-randomizer-constraint" data-constraint="tone">
-                            {{#each randomizer.toneOptions}}
-                            <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
-                            {{/each}}
-                        </select>
-                    </label>
-                    <label>
-                        <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Intensity"}}</span>
-                        <select class="yf-select yf-randomizer-constraint" data-constraint="intensity">
-                            {{#each randomizer.intensityOptions}}
-                            <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
-                            {{/each}}
-                        </select>
-                    </label>
-                    <label>
-                        <span>{{localize "YOUR_FLAVOR.Config.Randomizer.Motion"}}</span>
-                        <select class="yf-select yf-randomizer-constraint" data-constraint="motion">
-                            {{#each randomizer.motionOptions}}
-                            <option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>
-                            {{/each}}
-                        </select>
-                    </label>
-                    <div class="yf-randomizer-context">
-                        <span><i class="fas fa-crosshairs"></i> {{randomizer.scopeLabel}}</span>
-                        <span><i class="fas fa-filter"></i> {{randomizer.filterLabel}}</span>
-                    </div>
-                </div>
-                <div class="yf-layout-grid">
-                    {{#each layouts}}
-                    <div class="yf-layout-option {{#if (eq this.id ../config.layout)}}selected{{/if}} {{#if this.isEdited}}is-edited{{/if}}"
-                         data-layout="{{this.id}}"
-                         data-category="{{this.category}}"
-                         data-preset-tone="{{this.metadata.tone.value}}"
-                         data-preset-intensity="{{this.metadata.intensity.value}}"
-                         data-preset-motion="{{this.metadata.motion.value}}"
-                         data-preset-areas="{{this.metadata.compatibleAreasString}}"
-                         data-preset-tags="{{this.metadata.tagsString}}"
-                         title="{{this.tooltip}}">
-                        <div class="yf-layout-icon"><i class="{{this.icon}}"></i></div>
-                        <div class="yf-layout-name">{{this.name}}</div>
-                        <div class="yf-layout-metadata" aria-label="{{this.metadata.title}}">
-                            {{#each this.metadata.badges}}
-                            <span class="yf-layout-meta-pill yf-layout-meta-{{this.type}} yf-layout-meta-{{this.value}}" title="{{this.title}}">
-                                <i class="{{this.icon}}"></i>
-                                <span>{{this.shortLabel}}</span>
-                            </span>
-                            {{/each}}
-                        </div>
-                        {{#if this.metadata.previewTags}}
-                        <div class="yf-layout-tag-row">
-                            {{#each this.metadata.previewTags}}
-                            <span class="yf-layout-tag" title="{{this.title}}">{{this.label}}</span>
-                            {{/each}}
-                        </div>
-                        {{/if}}
-                        {{#if this.metadata.areas}}
-                        <div class="yf-layout-areas" title="{{this.metadata.title}}">
-                            {{#each this.metadata.areas}}
-                            <i class="{{this.icon}}" title="{{this.title}}"></i>
-                            {{/each}}
-                        </div>
-                        {{/if}}
-                        {{#if this.isEdited}}
-                        <span class="yf-preset-edited-badge" title="{{this.editedTitle}}"><i class="fas fa-pen"></i></span>
-                        {{/if}}
-                        {{#unless (eq this.id "none")}}
-                        <button type="button" class="yf-fav-btn {{#if this.isFavorite}}active{{/if}}" data-action="toggleFavorite" title="{{localize 'YOUR_FLAVOR.Config.Favorite'}}">
-                            <i class="{{#if this.isFavorite}}fas{{else}}far{{/if}} fa-star"></i>
-                        </button>
-                        {{/unless}}
-                    </div>
-                    {{/each}}
-                </div>
-            </section>
-            {{/unless}}
-            {{/if}}
-
-            {{#if canCustomize}}
-            {{#unless hasForcedLayout}}
-            {{#if showCustomization}}
-            <section class="yf-section yf-customization-section">
-                <div class="yf-section-header">
-                    <i class="fas fa-sliders-h"></i>
-                    <h3>{{localize "YOUR_FLAVOR.Config.CustomizeSection"}}</h3>
-                </div>
-                <div class="yf-customize-grid">
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.FontFamily"}}</label>
-                        <div class="yf-token-control {{tokenStates.fontFamily.statusClass}}">
-                            <select name="customizations.fontFamily" class="yf-select">
-                                {{#each fonts}}
-                                <option value="{{this.family}}" {{#if (eq this.family ../config.customizations.fontFamily)}}selected{{/if}}>{{this.name}}</option>
-                                {{/each}}
-                            </select>
-                            <span class="yf-token-badge" title="{{tokenStates.fontFamily.title}}">{{tokenStates.fontFamily.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.fontFamily" title="{{tokenStates.fontFamily.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.FontSize"}}</label>
-                        <div class="yf-token-control {{tokenStates.fontSize.statusClass}}">
-                            <div class="yf-range-wrapper">
-                                <input type="range" name="customizations.fontSize" class="yf-range" min="10" max="24" value="{{config.customizations.fontSize}}">
-                                <span class="yf-range-value">{{config.customizations.fontSize}}px</span>
-                            </div>
-                            <span class="yf-token-badge" title="{{tokenStates.fontSize.title}}">{{tokenStates.fontSize.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.fontSize" title="{{tokenStates.fontSize.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.Colors"}}</label>
-                        <div class="yf-color-row">
-                            <div class="yf-token-control yf-token-color-control {{tokenStates.textColor.statusClass}}">
-                                <input type="color" name="customizations.textColor" class="yf-color-swatch" value="{{config.customizations.textColor}}" title="{{localize 'YOUR_FLAVOR.Config.TextColor'}}">
-                                <span class="yf-token-badge" title="{{tokenStates.textColor.title}}">{{tokenStates.textColor.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.textColor" title="{{tokenStates.textColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                            <div class="yf-token-control yf-token-color-control {{tokenStates.backgroundColor.statusClass}}">
-                                <input type="color" name="customizations.backgroundColor" class="yf-color-swatch" value="{{backgroundColorHex}}" title="{{localize 'YOUR_FLAVOR.Config.BackgroundColor'}}">
-                                <span class="yf-token-badge" title="{{tokenStates.backgroundColor.title}}">{{tokenStates.backgroundColor.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.backgroundColor" title="{{tokenStates.backgroundColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                            <div class="yf-token-control yf-token-color-control {{tokenStates.borderColor.statusClass}}">
-                                <input type="color" name="customizations.borderColor" class="yf-color-swatch" value="{{config.customizations.borderColor}}" title="{{localize 'YOUR_FLAVOR.Config.BorderColor'}}">
-                                <span class="yf-token-badge" title="{{tokenStates.borderColor.title}}">{{tokenStates.borderColor.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderColor" title="{{tokenStates.borderColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.Opacity"}}</label>
-                        <div class="yf-token-control {{tokenStates.backgroundOpacity.statusClass}}">
-                            <div class="yf-range-wrapper">
-                                <input type="range" name="customizations.backgroundOpacity" class="yf-range" min="0" max="100" step="5" value="{{config.customizations.backgroundOpacity}}">
-                                <span class="yf-range-value">{{config.customizations.backgroundOpacity}}%</span>
-                            </div>
-                            <span class="yf-token-badge" title="{{tokenStates.backgroundOpacity.title}}">{{tokenStates.backgroundOpacity.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.backgroundOpacity" title="{{tokenStates.backgroundOpacity.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.NameTimestampColors"}}</label>
-                        <div class="yf-color-row">
-                            <div class="yf-token-control yf-token-color-control {{tokenStates.nameColor.statusClass}}">
-                                <input type="color" name="customizations.nameColor" class="yf-color-swatch" value="{{#if config.customizations.nameColor}}{{config.customizations.nameColor}}{{else}}{{config.customizations.borderColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.NameColor'}}">
-                                <span class="yf-token-badge" title="{{tokenStates.nameColor.title}}">{{tokenStates.nameColor.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.nameColor" title="{{tokenStates.nameColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                            <div class="yf-token-control yf-token-color-control {{tokenStates.timestampColor.statusClass}}">
-                                <input type="color" name="customizations.timestampColor" class="yf-color-swatch" value="{{#if config.customizations.timestampColor}}{{config.customizations.timestampColor}}{{else}}{{config.customizations.textColor}}{{/if}}" title="{{localize 'YOUR_FLAVOR.Config.TimestampColor'}}">
-                                <span class="yf-token-badge" title="{{tokenStates.timestampColor.title}}">{{tokenStates.timestampColor.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.timestampColor" title="{{tokenStates.timestampColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.BorderStyle"}}</label>
-                        <div class="yf-token-control {{tokenStates.borderStyle.statusClass}}">
-                            <select name="customizations.borderStyle" class="yf-select">
-                                <option value="solid" {{#if (eq config.customizations.borderStyle "solid")}}selected{{/if}}>Solid</option>
-                                <option value="dashed" {{#if (eq config.customizations.borderStyle "dashed")}}selected{{/if}}>Dashed</option>
-                                <option value="dotted" {{#if (eq config.customizations.borderStyle "dotted")}}selected{{/if}}>Dotted</option>
-                                <option value="double" {{#if (eq config.customizations.borderStyle "double")}}selected{{/if}}>Double</option>
-                                <option value="groove" {{#if (eq config.customizations.borderStyle "groove")}}selected{{/if}}>Groove</option>
-                                <option value="ridge" {{#if (eq config.customizations.borderStyle "ridge")}}selected{{/if}}>Ridge</option>
-                            </select>
-                            <span class="yf-token-badge" title="{{tokenStates.borderStyle.title}}">{{tokenStates.borderStyle.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderStyle" title="{{tokenStates.borderStyle.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.BorderWidth"}}</label>
-                        <div class="yf-token-control {{tokenStates.borderWidth.statusClass}}">
-                            <div class="yf-range-wrapper">
-                                <input type="range" name="customizations.borderWidth" class="yf-range" min="0" max="8" value="{{config.customizations.borderWidth}}">
-                                <span class="yf-range-value">{{config.customizations.borderWidth}}px</span>
-                            </div>
-                            <span class="yf-token-badge" title="{{tokenStates.borderWidth.title}}">{{tokenStates.borderWidth.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderWidth" title="{{tokenStates.borderWidth.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.BorderRadius"}}</label>
-                        <div class="yf-token-control {{tokenStates.borderRadius.statusClass}}">
-                            <div class="yf-range-wrapper">
-                                <input type="range" name="customizations.borderRadius" class="yf-range" min="0" max="50" value="{{config.customizations.borderRadius}}">
-                                <span class="yf-range-value">{{config.customizations.borderRadius}}px</span>
-                            </div>
-                            <span class="yf-token-badge" title="{{tokenStates.borderRadius.title}}">{{tokenStates.borderRadius.label}}</span>
-                            <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.borderRadius" title="{{tokenStates.borderRadius.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                    <div class="yf-control-row">
-                        <label>{{localize "YOUR_FLAVOR.Config.Effects"}}</label>
-                        <div class="yf-effects-row">
-                            <div class="yf-token-control yf-token-toggle-control {{tokenStates.glowEnabled.statusClass}}">
-                                <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.GlowEnabled'}}"><input type="checkbox" name="customizations.glowEnabled" {{#if config.customizations.glowEnabled}}checked{{/if}}><span class="yf-toggle-slider"></span></label>
-                                <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Glow"}}</span>
-                                <span class="yf-token-badge" title="{{tokenStates.glowEnabled.title}}">{{tokenStates.glowEnabled.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowEnabled" title="{{tokenStates.glowEnabled.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                            <div class="yf-token-control yf-token-toggle-control {{tokenStates.shadowEnabled.statusClass}}">
-                                <label class="yf-toggle-switch yf-toggle-mini" title="{{localize 'YOUR_FLAVOR.Config.ShadowEnabled'}}"><input type="checkbox" name="customizations.shadowEnabled" {{#if config.customizations.shadowEnabled}}checked{{/if}}><span class="yf-toggle-slider"></span></label>
-                                <span class="yf-effect-label">{{localize "YOUR_FLAVOR.Config.Shadow"}}</span>
-                                <span class="yf-token-badge" title="{{tokenStates.shadowEnabled.title}}">{{tokenStates.shadowEnabled.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.shadowEnabled" title="{{tokenStates.shadowEnabled.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    {{#if config.customizations.glowEnabled}}
-                    <div class="yf-sub-options">
-                        <div class="yf-control-row">
-                            <label>{{localize "YOUR_FLAVOR.Config.GlowColor"}}</label>
-                            <div class="yf-color-row">
-                                <div class="yf-token-control yf-token-color-control {{tokenStates.glowColor.statusClass}}">
-                                    <input type="color" name="customizations.glowColor" class="yf-color-swatch" value="{{config.customizations.glowColor}}">
-                                    <span class="yf-token-badge" title="{{tokenStates.glowColor.title}}">{{tokenStates.glowColor.label}}</span>
-                                    <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowColor" title="{{tokenStates.glowColor.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="yf-control-row">
-                            <label>{{localize "YOUR_FLAVOR.Config.GlowIntensity"}}</label>
-                            <div class="yf-token-control {{tokenStates.glowIntensity.statusClass}}">
-                                <div class="yf-range-wrapper">
-                                    <input type="range" name="customizations.glowIntensity" class="yf-range" min="5" max="25" value="{{config.customizations.glowIntensity}}">
-                                    <span class="yf-range-value">{{config.customizations.glowIntensity}}px</span>
-                                </div>
-                                <span class="yf-token-badge" title="{{tokenStates.glowIntensity.title}}">{{tokenStates.glowIntensity.label}}</span>
-                                <button type="button" class="yf-token-reset" data-action="resetChatToken" data-token="customizations.glowIntensity" title="{{tokenStates.glowIntensity.resetTitle}}"><i class="fas fa-rotate-left"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    {{/if}}
-                </div>
-            </section>
-            {{/if}}
-            {{/unless}}
-            {{/if}}
-
-            {{#if canCustomize}}
-            {{#unless hasForcedLayout}}
-            {{#if allowCustomHtml}}
-            <section class="yf-section yf-advanced-section">
-                <div class="yf-advanced-toggle" data-action="toggleAdvanced">
-                    <i class="fas fa-chevron-right"></i>
-                    <span>{{localize "YOUR_FLAVOR.Config.AdvancedSection"}}</span>
-                </div>
-                <div class="yf-advanced-content">
-                    <div class="yf-warning-box">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>{{localize "YOUR_FLAVOR.Config.AdvancedWarning"}}</span>
-                    </div>
-                    <textarea name="customHtml" class="yf-textarea" placeholder="{{localize 'YOUR_FLAVOR.Config.CustomHtmlPlaceholder'}}">{{config.customHtml}}</textarea>
-                </div>
-            </section>
-            {{/if}}
-            {{/unless}}
-            {{/if}}
+{{#if allowCustomHtml}}
+<section class="yf-chat-html-entry" aria-label="{{localize 'YOUR_FLAVOR.Config.ChatBasics.CustomHtml'}}">
+    <button
+        type="button"
+        class="yf-chat-html-entry-button"
+        data-action="openCustomHtmlEditor"
+        data-custom-html-entry
+        aria-controls="yf-chat-html-panel">
+        <i class="fas fa-code" aria-hidden="true"></i>
+        <span>
+            <strong>{{localize "YOUR_FLAVOR.Config.ChatBasics.EditCustomHtml"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.ChatBasics.EditCustomHtmlHint"}}</small>
+        </span>
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </button>
+</section>
+{{/if}}
+{{/if}}
+{{/unless}}
+{{/if}}

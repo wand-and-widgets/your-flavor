@@ -1,0 +1,56 @@
+<aside class="yf-preview-panel yf-chat-proof" aria-label="{{localize 'YOUR_FLAVOR.Config.Preview'}}">
+    <div class="yf-chat-panel-heading">
+        <h2>{{localize "YOUR_FLAVOR.Config.ChatBasics.LivePreview"}}</h2>
+        <span aria-hidden="true"></span>
+    </div>
+
+    <nav class="yf-chat-fixtures" aria-label="{{localize 'YOUR_FLAVOR.Config.ChatBasics.FixturePicker'}}">
+        {{#each previewFixtures}}
+        <button type="button"
+                class="yf-chat-fixture {{#if this.isActive}}is-active{{/if}}"
+                data-action="switchPreviewFixture"
+                data-fixture="{{this.id}}"
+                aria-pressed="{{#if this.isActive}}true{{else}}false{{/if}}"
+                title="{{this.description}}">
+            {{#if this.chatIconClass}}
+            <i class="{{this.chatIconClass}}" aria-hidden="true"></i>
+            {{else}}
+            <img src="{{this.iconAsset}}" alt="" aria-hidden="true">
+            {{/if}}
+            <span>{{this.label}}</span>
+        </button>
+        {{/each}}
+    </nav>
+
+    {{#if previewCompare}}
+    <div class="yf-chat-proof-stack">
+        <section class="yf-chat-proof-state">
+            <span class="yf-chat-proof-label">{{previewCompare.afterLabel}}</span>
+            <article class="yf-preview-card yf-preview-compare-card yf-card yf-card-{{previewCompare.afterLayout}} {{previewCompare.fixture.messageClassString}}"
+                     data-preview-slot="comparison"
+                     data-preview-state="after"
+                     data-preview-fixture="{{previewCompare.fixture.id}}"
+                     data-fixture-classes="{{previewCompare.fixture.messageClassString}}">
+                <div class="yf-preview-header">
+                    <img src="{{previewCompare.fixture.speaker.avatar}}" alt="{{previewCompare.fixture.speaker.name}}" class="yf-preview-avatar">
+                    <div class="yf-preview-header-text">
+                        <span class="yf-preview-name">{{previewCompare.fixture.speaker.name}}</span>
+                        <span class="yf-preview-time">{{previewCompare.fixture.timestamp}}</span>
+                    </div>
+                </div>
+                <div class="yf-preview-content">{{{previewCompare.fixture.html}}}</div>
+            </article>
+        </section>
+    </div>
+    {{/if}}
+
+    <div class="yf-preview-status {{#if config.enabled}}enabled{{else}}disabled{{/if}}" role="status">
+        {{#if config.enabled}}
+        <i class="fas fa-check-circle" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Config.StatusEnabled"}}
+        {{else}}
+        <i class="fas fa-times-circle" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Config.StatusDisabled"}}
+        {{/if}}
+    </div>
+
+    <div class="yf-contrast-diagnostics is-empty" data-contrast-diagnostics role="region"></div>
+</aside>

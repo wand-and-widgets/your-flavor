@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 154" preserveAspectRatio="none" fill="none">
+  <path d="M7 1h166l6 6v140l-6 6H7l-6-6V7l6-6Z" stroke="#7b581d" stroke-width="1.4" vector-effect="non-scaling-stroke"/>
+  <path d="M10 5h160l5 5v134l-5 5H10l-5-5V10l5-5Z" stroke="#d2b46a" stroke-opacity=".72" stroke-width=".8" vector-effect="non-scaling-stroke"/>
+  <path d="M1 18h5V7h11M179 18h-5V7h-11M1 136h5v11h11M179 136h-5v11h-11" stroke="#9c7125" stroke-width="2" vector-effect="non-scaling-stroke"/>
+  <path d="m8 1 5 5-5 5-5-5 5-5Zm164 0 5 5-5 5-5-5 5-5ZM8 143l5 5-5 5-5-5 5-5Zm164 0 5 5-5 5-5-5 5-5Z" fill="#b48832" stroke="#5c3e12" stroke-width=".75" vector-effect="non-scaling-stroke"/>
+</svg>

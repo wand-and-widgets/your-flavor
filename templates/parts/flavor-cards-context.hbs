@@ -1,0 +1,38 @@
+<section class="yf-cards-context" aria-label="{{localize 'YOUR_FLAVOR.Config.CardsDesign.ContextLabel'}}">
+    <div class="yf-cards-context-title">
+        <span>{{localize "YOUR_FLAVOR.Config.CardsDesign.Workbench"}}</span>
+    </div>
+
+    <div class="yf-cards-context-profile">
+        <small>{{localize "YOUR_FLAVOR.Config.CardsDesign.Editing"}}</small>
+        <strong>{{cardTabs.context.profileName}}</strong>
+    </div>
+
+    <div class="yf-cards-context-theme" title="{{localize 'YOUR_FLAVOR.Config.CardTabs.ThemeTitle'}}">
+        <small>{{localize "YOUR_FLAVOR.Config.CardsDesign.Theme"}}</small>
+        <strong>{{cardTabs.context.layoutLabel}}</strong>
+    </div>
+
+    <div class="yf-cards-context-enable">
+        {{#if canCustomize}}
+            {{#unless hasForcedLayout}}
+            <span>{{localize "YOUR_FLAVOR.Config.CardTabs.Enabled"}}</span>
+            <label class="yf-toggle-switch yf-cards-master-toggle" title="{{cardTabs.enabledTitle}}">
+                <input type="checkbox"
+                       name="cards.enabled"
+                       {{#if cardTabs.enabled}}checked{{/if}}
+                       aria-label="{{localize 'YOUR_FLAVOR.Config.CardTabs.Enabled'}}">
+                <span class="yf-toggle-slider"></span>
+            </label>
+            {{else}}
+            <span class="yf-cards-context-readonly">
+                {{localize "YOUR_FLAVOR.Config.ForcedLayout"}}
+            </span>
+            {{/unless}}
+        {{else}}
+        <span class="yf-cards-context-readonly">
+            {{localize "YOUR_FLAVOR.Config.CardsDesign.ReadOnlyTitle"}}
+        </span>
+        {{/if}}
+    </div>
+</section>

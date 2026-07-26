@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 40" preserveAspectRatio="none" fill="none">
+  <path d="M6 1h168l5 5v28l-5 5H6l-5-5V6l5-5Z" stroke="#7a571d" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+  <path d="M9 4h162l4 4v24l-4 4H9l-4-4V8l4-4Z" stroke="#d1b66e" stroke-opacity=".7" stroke-width=".75" vector-effect="non-scaling-stroke"/>
+  <path d="m6 1 4 4-4 4-4-4 4-4Zm168 0 4 4-4 4-4-4 4-4ZM6 31l4 4-4 4-4-4 4-4Zm168 0 4 4-4 4-4-4 4-4Z" fill="#a97d2e" stroke="#5d3f12" stroke-width=".6" vector-effect="non-scaling-stroke"/>
+</svg>

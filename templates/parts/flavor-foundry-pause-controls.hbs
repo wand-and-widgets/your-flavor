@@ -1,0 +1,294 @@
+<section class="yf-section yf-foundry-pause-section is-visual">
+    <div class="yf-section-header">
+        <i class="fas fa-wand-magic-sparkles"></i>
+        <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PauseVisualSection"}}</h3>
+    </div>
+    <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.PauseVisualHint"}}</p>
+    <div class="yf-pause-control-grid">
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseVisualMode"}}</label>
+            <select name="foundry.pause.visualMode" class="yf-select yf-refined-select">
+                {{#each pauseVisualModes}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.visualMode)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseMotion"}}</label>
+            <select name="foundry.pause.motion" class="yf-select yf-refined-select">
+                {{#each pauseMotionModes}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.motion)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseEffect"}}</label>
+            <select name="foundry.pause.effect" class="yf-select yf-refined-select">
+                {{#each pauseEffects}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.effect)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseAnimationStrength"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.animationStrength" class="yf-range" min="0" max="200" step="5" value="{{foundryConfig.pause.animationStrength}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.animationStrength}}%</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="yf-section yf-foundry-pause-section is-symbol">
+    <div class="yf-section-header">
+        <i class="fas fa-circle-pause"></i>
+        <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PauseSymbolSection"}}</h3>
+    </div>
+    <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.PauseSymbolHint"}}</p>
+    <div class="yf-foundry-toggle-card yf-pause-asset-toggle">
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.EnablePauseOverride"}}</span>
+        <label class="yf-toggle-switch yf-toggle-mini">
+            <input type="checkbox" name="foundry.pause.enabled" {{#if foundryConfig.pause.enabled}}checked{{/if}}>
+            <span class="yf-toggle-slider"></span>
+        </label>
+    </div>
+    <div class="yf-warning-box yf-pause-specs">
+        <i class="fas fa-circle-info"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.PauseSpecs"}}</span>
+    </div>
+    <div class="yf-control-row yf-pause-asset-row">
+        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseAsset"}}</label>
+        <div class="yf-input-with-buttons">
+            <input type="text" name="foundry.pause.assetPath" class="yf-input yf-live-input" value="{{foundryConfig.pause.assetPath}}" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.PausePlaceholder'}}">
+            <button type="button" class="yf-btn yf-btn-ghost" data-action="uploadPauseAsset" title="{{localize 'YOUR_FLAVOR.Config.Foundry.UploadPauseAsset'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Foundry.UploadPauseAsset'}}"><i class="fas fa-upload"></i></button>
+            <button type="button" class="yf-btn yf-btn-ghost" data-action="browsePauseAsset" title="{{localize 'YOUR_FLAVOR.Config.Foundry.BrowsePauseAsset'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Foundry.BrowsePauseAsset'}}"><i class="fas fa-folder-open"></i></button>
+            <button type="button" class="yf-btn yf-btn-ghost" data-action="clearPauseAsset" title="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearPauseAsset'}}" aria-label="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearPauseAsset'}}"><i class="fas fa-xmark"></i></button>
+        </div>
+    </div>
+    <div class="yf-pause-control-grid">
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseOpacity"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.opacity" class="yf-range" min="10" max="100" step="5" value="{{foundryConfig.pause.opacity}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.opacity}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseScale"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.scale" class="yf-range" min="40" max="300" step="5" value="{{foundryConfig.pause.scale}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.scale}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseSymbolFilter"}}</label>
+            <select name="foundry.pause.symbolFilter" class="yf-select yf-refined-select">
+                {{#each pauseSymbolFilters}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.symbolFilter)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBlendMode"}}</label>
+            <select name="foundry.pause.blendMode" class="yf-select yf-refined-select">
+                {{#each pauseBlendModes}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.blendMode)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseGlow"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.glowStrength" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.glowStrength}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.glowStrength}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseShadow"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.shadowStrength" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.shadowStrength}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.shadowStrength}}%</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="yf-section yf-foundry-pause-section is-position">
+    <div class="yf-section-header">
+        <i class="fas fa-crosshairs"></i>
+        <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PausePositionSection"}}</h3>
+    </div>
+    <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.PausePositionHint"}}</p>
+    <div class="yf-pause-control-grid is-three">
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PausePositionX"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.positionX" class="yf-range" min="10" max="90" step="1" value="{{foundryConfig.pause.positionX}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.positionX}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PausePositionY"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.positionY" class="yf-range" min="20" max="80" step="1" value="{{foundryConfig.pause.positionY}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.positionY}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseRotation"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.rotation" class="yf-range" min="-180" max="180" step="5" value="{{foundryConfig.pause.rotation}}" data-unit="deg">
+                <span class="yf-range-value">{{foundryConfig.pause.rotation}}deg</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="yf-section yf-foundry-pause-section is-label">
+    <div class="yf-section-header">
+        <i class="fas fa-font"></i>
+        <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelSection"}}</h3>
+    </div>
+    <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelHint"}}</p>
+    <div class="yf-control-row yf-pause-label-text-row">
+        <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelText"}}</label>
+        <input type="text" name="foundry.pause.labelText" class="yf-input yf-live-input" value="{{foundryConfig.pause.labelText}}" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.PauseLabelPlaceholder'}}">
+    </div>
+    <div class="yf-pause-control-grid">
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelPlacement"}}</label>
+            <select name="foundry.pause.labelPlacement" class="yf-select yf-refined-select">
+                {{#each pauseLabelPlacements}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.labelPlacement)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label for="yf-foundry-pause-label-font">{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelFont"}}</label>
+            <select id="yf-foundry-pause-label-font" name="foundry.pause.labelFont" class="yf-select yf-refined-select" data-yf-font-preview="true">
+                {{#each foundryFonts}}
+                <option value="{{this.family}}" {{#if (eq this.family ../foundryConfig.pause.labelFont)}}selected{{/if}}>{{this.name}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row is-color">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelColor"}}</label>
+            <div class="yf-color-row">
+                <input type="color" name="foundry.pause.labelColor" class="yf-color-swatch yf-nullable-color {{#unless foundryConfig.pause.labelColor}}is-stock{{/unless}}" value="{{#if foundryConfig.pause.labelColor}}{{foundryConfig.pause.labelColor}}{{else}}#000000{{/if}}" data-nullable-color="true" data-stock="{{#if foundryConfig.pause.labelColor}}false{{else}}true{{/if}}" data-stock-label="{{localize 'YOUR_FLAVOR.Config.Foundry.StockInheritColor'}}" data-clear-title="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearColorOverride'}}">
+                {{#unless foundryConfig.pause.labelColor}}<small>{{localize "YOUR_FLAVOR.Config.Foundry.StockInheritColor"}}</small>{{/unless}}
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelSize"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.labelSize" class="yf-range" min="12" max="60" step="1" value="{{foundryConfig.pause.labelSize}}">
+                <span class="yf-range-value">{{foundryConfig.pause.labelSize}}px</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelWeight"}}</label>
+            <select name="foundry.pause.labelWeight" class="yf-select yf-refined-select">
+                {{#each pauseLabelWeights}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.labelWeight)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelSpacing"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.labelLetterSpacing" class="yf-range" min="0" max="24" step="1" value="{{foundryConfig.pause.labelLetterSpacing}}">
+                <span class="yf-range-value">{{foundryConfig.pause.labelLetterSpacing}}px</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelOffset"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.labelOffsetY" class="yf-range" min="-120" max="120" step="2" value="{{foundryConfig.pause.labelOffsetY}}">
+                <span class="yf-range-value">{{foundryConfig.pause.labelOffsetY}}px</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelGlow"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.labelGlow" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.labelGlow}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.labelGlow}}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="yf-pause-toggle-grid">
+        <div class="yf-foundry-toggle-card">
+            <span>{{localize "YOUR_FLAVOR.Config.Foundry.HidePauseLabel"}}</span>
+            <label class="yf-toggle-switch yf-toggle-mini">
+                <input type="checkbox" name="foundry.pause.hideLabel" {{#if foundryConfig.pause.hideLabel}}checked{{/if}}>
+                <span class="yf-toggle-slider"></span>
+            </label>
+        </div>
+        <div class="yf-foundry-toggle-card">
+            <span>{{localize "YOUR_FLAVOR.Config.Foundry.PauseLabelUppercase"}}</span>
+            <label class="yf-toggle-switch yf-toggle-mini">
+                <input type="checkbox" name="foundry.pause.labelUppercase" {{#if foundryConfig.pause.labelUppercase}}checked{{/if}}>
+                <span class="yf-toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+</section>
+
+<section class="yf-section yf-foundry-pause-section is-bar">
+    <div class="yf-section-header">
+        <i class="fas fa-grip-lines"></i>
+        <h3>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarSection"}}</h3>
+    </div>
+    <p class="yf-section-hint">{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarHint"}}</p>
+    <div class="yf-pause-control-grid">
+        <div class="yf-control-row is-color">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarColor"}}</label>
+            <div class="yf-color-row">
+                <input type="color" name="foundry.pause.barColor" class="yf-color-swatch yf-nullable-color {{#unless foundryConfig.pause.barColor}}is-stock{{/unless}}" value="{{#if foundryConfig.pause.barColor}}{{foundryConfig.pause.barColor}}{{else}}#000000{{/if}}" data-nullable-color="true" data-stock="{{#if foundryConfig.pause.barColor}}false{{else}}true{{/if}}" data-stock-label="{{localize 'YOUR_FLAVOR.Config.Foundry.StockInheritColor'}}" data-clear-title="{{localize 'YOUR_FLAVOR.Config.Foundry.ClearColorOverride'}}">
+                {{#unless foundryConfig.pause.barColor}}<small>{{localize "YOUR_FLAVOR.Config.Foundry.StockInheritColor"}}</small>{{/unless}}
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarOpacity"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.barOpacity" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.barOpacity}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.barOpacity}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarHeight"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.barHeight" class="yf-range" min="80" max="360" step="5" value="{{foundryConfig.pause.barHeight}}">
+                <span class="yf-range-value">{{foundryConfig.pause.barHeight}}px</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarWidth"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.barWidth" class="yf-range" min="35" max="100" step="5" value="{{foundryConfig.pause.barWidth}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.barWidth}}%</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarBlur"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.barBlur" class="yf-range" min="0" max="16" step="1" value="{{foundryConfig.pause.barBlur}}">
+                <span class="yf-range-value">{{foundryConfig.pause.barBlur}}px</span>
+            </div>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarShape"}}</label>
+            <select name="foundry.pause.barShape" class="yf-select yf-refined-select">
+                {{#each pauseBarShapes}}
+                <option value="{{this.id}}" {{#if (eq this.id ../foundryConfig.pause.barShape)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="yf-control-row">
+            <label>{{localize "YOUR_FLAVOR.Config.Foundry.PauseBarBorder"}}</label>
+            <div class="yf-range-wrapper">
+                <input type="range" name="foundry.pause.barBorderStrength" class="yf-range" min="0" max="100" step="5" value="{{foundryConfig.pause.barBorderStrength}}" data-unit="%">
+                <span class="yf-range-value">{{foundryConfig.pause.barBorderStrength}}%</span>
+            </div>
+        </div>
+    </div>
+</section>

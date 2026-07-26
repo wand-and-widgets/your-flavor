@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Export AND import of a saved visual.
+       The previous glyph was a box with one arrow leaving it: it showed only
+       half the action, and "box + diagonal arrow" is the generic system icon
+       for "open external link", which is why it did not read as sharing a
+       preset. Two opposing arrows over a tray is the long-standing shape for
+       moving something in and out, and it names both buttons beside it. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7df95"/>
+      <stop offset=".5" stop-color="#c18e34"/>
+      <stop offset="1" stop-color="#684310"/>
+    </linearGradient>
+  </defs>
+  <!-- The tray the visual leaves from and lands in. -->
+  <path d="M9 42v6a6 6 0 0 0 6 6h34a6 6 0 0 0 6-6v-6"
+        fill="#2b190d" stroke="url(#g)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Out (export): shaft plus head, drawn as one stroke so the joint stays crisp at 40px. -->
+  <path d="M23 41V13m-7.5 7.5L23 13l7.5 7.5"
+        fill="none" stroke="url(#g)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- In (import): the mirror, pointing down into the tray. -->
+  <path d="M41 13v28m7.5-7.5L41 41l-7.5-7.5"
+        fill="none" stroke="url(#g)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Warm highlight along the leading edge of each arrow, matching the other glyphs. -->
+  <path d="M23 15.5v9M41 38.5v-9"
+        fill="none" stroke="#ffe6a2" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+</svg>

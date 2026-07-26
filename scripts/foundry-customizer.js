@@ -783,7 +783,7 @@ export class FoundryCustomizer {
         }
 
         this._ensureStyleElement();
-        this._styleElement.textContent = this._buildCss(sanitized);
+        this._writeStyleText(this._styleElement, this._buildCss(sanitized));
         document.body.classList.add('yf-foundry-customized');
         this._syncSidebarExpandedClass();
         this._applyComponentTransforms(sanitized);
@@ -808,7 +808,7 @@ export class FoundryCustomizer {
         }
 
         this._ensurePreviewStyleElement();
-        this._previewStyleElement.textContent = this._buildCss(sanitized);
+        this._writeStyleText(this._previewStyleElement, this._buildCss(sanitized));
         document.body.classList.add('yf-foundry-customized');
         this._syncSidebarExpandedClass();
         this._applyComponentTransforms(sanitized);
@@ -1543,6 +1543,23 @@ export class FoundryCustomizer {
                 this.refreshArrangeMode();
             }
         }, 0);
+    }
+
+    /* Assigning textContent makes the browser reparse the whole sheet even when
+     * the new text is identical to the old. The sheet is ~1.2 MB / 2000 rules
+     * and the write measured ~12.6 ms (314 ms over 25 writes during a drag,
+     * 2026-07-26); comparing the string first costs a fraction of that.
+     *
+     * Honest scope: in the drags measured the generated CSS DID change on every
+     * step, so this guard never fired there - it is insurance for the paths that
+     * re-apply an unchanged config (settings re-reads, refreshFromSettings, a
+     * preset applied twice), not the fix for a slow drag. The slow drag was a
+     * forced reflow, handled in flavor-config-app.js. */
+    _writeStyleText(element, css) {
+        if (!element) return false;
+        if (element.textContent === css) return false;
+        element.textContent = css;
+        return true;
     }
 
     _ensureStyleElement() {
@@ -3427,9 +3444,11 @@ ${this._scopeSelectorForArea('sidebar', '.sidebar-popout')} {
     color: var(--yf-sidebar-text) !important;
 }
 
+/* The rail must not be lifted above the panel, or any contact reads as overlap
+ * through the panel's translucency. Only its outer corners are rounded. */
 ${this._scopeSelectorsForArea('sidebar', ['#sidebar-tabs'])} {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: auto !important;
     box-sizing: border-box !important;
     width: var(--yf-sidebar-rail-width) !important;
     padding: var(--yf-sidebar-rail-padding) max(4px, calc((var(--yf-sidebar-rail-width) - var(--yf-sidebar-tab-size)) / 2)) !important;
@@ -3438,6 +3457,7 @@ ${this._scopeSelectorsForArea('sidebar', ['#sidebar-tabs'])} {
     border-radius: var(--yf-sidebar-panel-radius) 0 0 var(--yf-sidebar-panel-radius) !important;
     background: var(--yf-sidebar-rail-bg) !important;
 }
+
 
 ${this._scopeSelectorsForArea('sidebar', ['#sidebar-tabs > menu'])} {
     gap: var(--yf-sidebar-tab-gap) !important;
@@ -3494,11 +3514,20 @@ ${this._scopeSelectorsForArea('sidebar', ['#sidebar-tabs .notification-pip.activ
 }
 
 ${this._scopeSelectorsForArea('sidebar', ['#sidebar-content .sidebar-tab:not(.sidebar-popout)', '.sidebar-popout'])} {
-    border-radius: var(--yf-sidebar-panel-radius) 0 0 var(--yf-sidebar-panel-radius) !important;
     border: var(--yf-sidebar-panel-border-width) solid var(--yf-sidebar-panel-border) !important;
     background: var(--yf-sidebar-panel-bg) !important;
     box-shadow: var(--yf-sidebar-panel-shadow) !important;
     overflow: hidden !important;
+}
+
+/* Square where it meets the rail: a radius here cuts a notch into the seam that the
+ * translucent panel background shows straight through. The popout floats, so it keeps its corners. */
+${this._scopeSelectorsForArea('sidebar', ['#sidebar-content .sidebar-tab:not(.sidebar-popout)'])} {
+    border-radius: 0 !important;
+}
+
+${this._scopeSelectorsForArea('sidebar', ['.sidebar-popout'])} {
+    border-radius: var(--yf-sidebar-panel-radius) !important;
 }
 
 ${this._scopeSelectorsForArea('sidebar', [
@@ -3601,8 +3630,27 @@ ${this._scopeSelectorsForArea('sidebar', [
     min-height: var(--yf-sidebar-folder-height) !important;
     line-height: var(--yf-sidebar-folder-height) !important;
     padding: max(3px, calc((var(--yf-sidebar-folder-height) - 18px) / 2)) var(--yf-sidebar-panel-padding) !important;
-    background: var(--yf-sidebar-folder-bg) !important;
     color: var(--yf-sidebar-text) !important;
+}
+
+/* Folder colour is a core Foundry feature: picking one writes an inline
+ * background-color straight onto the header element. An !important background
+ * here outranked that inline value, so applying any theme silently flattened
+ * every colour-coded folder in the world to a single shade - the user's own
+ * organisation, erased by a theme.
+ *
+ * The theme now paints only folders that have NOT been given a colour, which is
+ * the precedence Foundry uses on its own: an explicit per-folder choice wins,
+ * everything else follows the theme. Matching on the inline attribute rather
+ * than dropping !important keeps this independent of cascade order against
+ * core's own sidebar rules.
+ *
+ * NOTE: this comment lives inside a template literal - no backticks here. */
+${this._scopeSelectorsForArea('sidebar', [
+    '#sidebar-content li.folder > .folder-header:not([style*="background-color"])',
+    '.sidebar-popout li.folder > .folder-header:not([style*="background-color"])'
+])} {
+    background: var(--yf-sidebar-folder-bg) !important;
 }
 
 ${this._scopeSelectorsForArea('sidebar', [
@@ -3613,11 +3661,27 @@ ${this._scopeSelectorsForArea('sidebar', [
     line-height: var(--yf-sidebar-folder-height) !important;
 }
 
+/* The indent rail is geometry and always follows the theme. */
 ${this._scopeSelectorsForArea('sidebar', [
     '#sidebar-content .directory .directory-item .subdirectory',
     '.sidebar-popout .directory .directory-item .subdirectory'
 ])} {
     border-left-width: var(--yf-sidebar-folder-indent) !important;
+}
+
+/* The rail COLOUR is the same user choice P11-033 rescued on the header: a
+ * coloured folder gets that colour painted inline on its contents list too
+ * (Foundry writes "border-left-color: #3a2417" straight onto ol.subdirectory).
+ * This rule kept its !important after P11-033, so half the feature stayed
+ * broken - the header showed the user's colour and the spine below it showed
+ * the theme's. Measured in the live world: 7 of 7 coloured folders overridden.
+ * Same precedence rule as the header: explicit per-folder choice wins.
+ *
+ * NOTE: this comment lives inside a template literal - no backticks here. */
+${this._scopeSelectorsForArea('sidebar', [
+    '#sidebar-content .directory .directory-item .subdirectory:not([style*="border-left-color"])',
+    '.sidebar-popout .directory .directory-item .subdirectory:not([style*="border-left-color"])'
+])} {
     border-left-color: var(--yf-sidebar-folder-bg) !important;
 }
 
@@ -3658,16 +3722,19 @@ ${layoutEnabled ? '' : this._scopeSelectorsForArea('sidebar', ['#sidebar']) + ' 
         const hoverColor = this._hexToRgba(resolvedTheme.accentColor, sidebar.hoverStrength / 100);
         const activeColor = this._hexToRgba(resolvedTheme.accentColor, sidebar.activeStrength / 100);
         const activeSoft = this._hexToRgba(resolvedTheme.accentColor, Math.min(0.34, Math.max(0.12, sidebar.activeStrength / 220)));
-        const railBg = this._hexToRgba(resolvedTheme.surfaceBackground, 0.58);
-        const panelBg = this._hexToRgba(resolvedTheme.windowBackground, 0.94);
+        // Surfaces derive from the user's theme hues; only their opacity is configurable,
+        // so a transformer can change depth and weight without ever repainting a colour.
+        const railBg = this._hexToRgba(resolvedTheme.surfaceBackground, sidebar.railOpacity / 100);
+        const panelBg = this._hexToRgba(resolvedTheme.windowBackground, sidebar.panelOpacity / 100);
         const panelBorder = this._hexToRgba(resolvedTheme.accentColor, Math.max(0.18, sidebar.activeStrength / 180));
-        const folderBg = this._hexToRgba(resolvedTheme.windowHeaderBackground, 0.96);
-        const inputBg = this._hexToRgba(resolvedTheme.surfaceBackground, 0.78);
-        const actionBg = this._hexToRgba(resolvedTheme.surfaceBackground, 0.42);
+        const folderBg = this._hexToRgba(resolvedTheme.windowHeaderBackground, sidebar.folderOpacity / 100);
+        const inputBg = this._hexToRgba(resolvedTheme.surfaceBackground, sidebar.inputOpacity / 100);
+        const actionBg = this._hexToRgba(resolvedTheme.surfaceBackground, sidebar.actionOpacity / 100);
+        const tabRestBg = this._hexToRgba('#000000', sidebar.tabRestStrength / 100);
 
         return {
             railBackground: this._optionalCssColor(sidebar.railBackgroundColor, railBg),
-            tabBackground: this._optionalCssColor(sidebar.tabBackgroundColor, 'rgba(0, 0, 0, 0.14)'),
+            tabBackground: this._optionalCssColor(sidebar.tabBackgroundColor, tabRestBg),
             tabHoverBackground: this._optionalCssColor(sidebar.tabHoverBackgroundColor, activeSoft),
             tabActiveBackground: this._optionalCssColor(sidebar.tabActiveBackgroundColor, activeSoft),
             panelBackground: this._optionalCssColor(sidebar.panelBackgroundColor, panelBg),
@@ -5583,13 +5650,23 @@ ${this._scopeSelector('#pause.yf-pause-enhanced figcaption')} {
         const sourceFieldOverrides = this._isPlainObject(config?.fieldOverrides)
             ? this._sanitizeFieldOverrides(config.fieldOverrides)
             : null;
+        /* `config || {}` guarded null/undefined but not a string or a number,
+         * and mergeObject throws "One of original or other are not Objects!" on
+         * those. That matters because this runs on the boot path from
+         * refreshFromSettings: a world setting that somehow holds a scalar -
+         * hand-edited, half-migrated, restored from a bad backup - took the
+         * whole module down before the API was ever exposed. A scalar carries no
+         * settings anyway, so falling back to defaults is the honest reading. */
         const merged = foundry.utils.mergeObject(
             foundry.utils.deepClone(DEFAULT_FOUNDRY_CUSTOMIZATION),
-            foundry.utils.deepClone(config || {})
+            foundry.utils.deepClone(this._isPlainObject(config) ? config : {})
         );
         if (sourceFieldOverrides !== null) merged.fieldOverrides = sourceFieldOverrides;
 
         merged.enabled = Boolean(merged.enabled);
+        merged.preserveCustomIconColors = merged.preserveCustomIconColors !== false;
+        merged.preserveCustomFonts = merged.preserveCustomFonts !== false;
+        merged.themeFontsCustomized = merged.themeFontsCustomized === true;
 
         // Categories
         const catDefaults = DEFAULT_FOUNDRY_CUSTOMIZATION.categories;

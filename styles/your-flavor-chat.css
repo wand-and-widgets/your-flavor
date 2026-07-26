@@ -1,0 +1,2027 @@
+/* Your Flavor — Chat Basics approved redesign */
+
+/* Window and exact composition */
+.your-flavor-config:has(.yf-active-chat) {
+    overflow: hidden;
+    border: 1px solid #6f4d1c;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px #1c1009,
+        0 0 0 3px #8a6428,
+        0 22px 65px rgba(0, 0, 0, .58);
+}
+
+.your-flavor-config:has(.yf-active-chat) .window-header {
+    min-height: 52px;
+    padding: 7px 13px;
+    color: #ead38d;
+    background:
+        linear-gradient(180deg, rgba(10, 6, 3, .28), rgba(8, 5, 3, .7)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    border-bottom: 1px solid #795520;
+    box-shadow:
+        inset 0 1px rgba(255, 235, 167, .1),
+        inset 0 -2px rgba(0, 0, 0, .55);
+}
+
+.your-flavor-config:has(.yf-active-chat) .window-header .window-title {
+    color: #d9b85f;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-shadow: 0 2px 2px #0a0603;
+}
+
+.your-flavor-config:has(.yf-active-chat) .window-header .header-control {
+    min-width: 32px;
+    min-height: 32px;
+    border: 1px solid rgba(174, 128, 50, .62);
+    border-radius: 5px;
+    color: #f1dfaa;
+    background: linear-gradient(#452b18, #21130b);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .12),
+        0 2px 4px rgba(0, 0, 0, .4);
+}
+
+.your-flavor-config:has(.yf-active-chat) .window-header .header-control:hover {
+    color: #fff0bd;
+    border-color: #d2a750;
+    background: linear-gradient(#51351e, #29180e);
+}
+
+.your-flavor-config:has(.yf-active-chat) .window-header .header-control:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, .42);
+}
+
+.yf-config-container.yf-active-chat {
+    --yfp-paper: #f2e7d1;
+    --yfp-paper-light: #faf3e4;
+    --yfp-paper-warm: #ead8b6;
+    --yfp-paper-deep: #d9c39b;
+    --yfp-ink: #392718;
+    --yfp-ink-dim: #705a3e;
+    --yfp-ink-faint: #9b825d;
+    --yfp-brass: #946d25;
+    --yfp-brass-light: #d9bd70;
+    --yfp-brass-dark: #59400f;
+    --yfp-danger-ink: #6f3514;
+    --yfp-success: #6f9b50;
+    --yfp-motion-fast: 140ms;
+    --yfp-focus: 0 0 0 2px #fff4d2, 0 0 0 4px #946d25;
+    --yfp-plaque-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .82),
+        inset 0 -2px 5px rgba(91, 61, 28, .12),
+        0 2px 2px rgba(70, 40, 13, .18),
+        0 8px 18px rgba(70, 40, 13, .11);
+    --yfp-plaque-shadow-hover:
+        inset 0 1px 0 rgba(255, 255, 255, .94),
+        inset 0 -2px 5px rgba(91, 61, 28, .1),
+        0 3px 3px rgba(70, 40, 13, .2),
+        0 14px 26px rgba(70, 40, 13, .16);
+    --yfp-plaque-shadow-pressed:
+        inset 0 3px 7px rgba(67, 40, 17, .18),
+        inset 0 -1px 0 rgba(255, 255, 255, .52),
+        0 1px 1px rgba(70, 40, 13, .18);
+    grid-template-columns: minmax(364px, 412px) 14px minmax(0, 1fr);
+    grid-template-rows: 58px 60px minmax(0, 1fr) 84px;
+    gap: 0;
+    color: var(--yfp-ink);
+    background:
+        radial-gradient(1100px 420px at 15% -7%, rgba(255, 255, 247, .82), transparent 62%),
+        radial-gradient(800px 560px at 96% 112%, rgba(161, 119, 58, .16), transparent 64%),
+        linear-gradient(rgba(242, 231, 209, .74), rgba(242, 231, 209, .74)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 820px auto repeat,
+        var(--yfp-paper);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-active-chat .yf-controls-panel,
+.yf-active-chat .yf-controls-scroll {
+    display: contents;
+}
+
+.yf-active-chat .yf-config-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+
+.yf-active-chat .yf-chat-context {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+
+.yf-active-chat .yf-preview-panel {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.yf-active-chat .yf-chat-editor {
+    grid-column: 3;
+    grid-row: 3;
+}
+
+.yf-active-chat .yf-config-footer {
+    grid-column: 1 / -1;
+    grid-row: 4;
+}
+
+/* Shared navigation */
+.yf-active-chat .yf-config-toolbar {
+    z-index: 25;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 292px);
+    align-items: stretch;
+    min-width: 0;
+    min-height: 58px;
+    background:
+        linear-gradient(rgba(249, 241, 224, .84), rgba(235, 219, 188, .84)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 640px auto repeat;
+    border-bottom: 1px solid rgba(125, 88, 31, .45);
+    box-shadow: 0 3px 10px rgba(71, 42, 15, .08);
+}
+
+.yf-active-chat .yf-config-toolbar .yf-control-search {
+    order: initial;
+    align-self: center;
+    margin: 0 20px 0 12px;
+}
+
+.yf-active-chat .yf-control-search input {
+    height: 38px;
+    padding: 7px 12px 7px 38px;
+    border: 1px solid rgba(125, 88, 31, .36);
+    border-radius: 7px;
+    color: var(--yfp-ink);
+    background: rgba(255, 252, 242, .76);
+    box-shadow:
+        inset 0 1px 3px rgba(99, 65, 24, .08),
+        0 1px rgba(255, 255, 255, .72);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-active-chat .yf-control-search::before {
+    left: 13px;
+    top: 8px;
+    color: var(--yfp-ink-dim);
+}
+
+.yf-active-chat .yf-tab-bar {
+    align-self: stretch;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.yf-active-chat .yf-tab {
+    position: relative;
+    flex: 0 1 auto;
+    min-width: 110px;
+    min-height: 58px;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 0;
+    border-right: 1px solid rgba(127, 92, 41, .2);
+    border-radius: 0;
+    color: #594326;
+    background: rgba(255, 250, 238, .18);
+    box-shadow: none;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    transition: background var(--yfp-motion-fast) ease, color var(--yfp-motion-fast) ease;
+}
+
+.yf-active-chat .yf-tab:hover {
+    color: #2f2013;
+    background: rgba(255, 251, 242, .64);
+}
+
+.yf-active-chat .yf-tab.active {
+    min-width: 168px;
+    color: #2e1e11;
+    background: rgba(255, 252, 244, .78);
+    box-shadow: inset 0 -4px #b47b22;
+}
+
+.yf-active-chat .yf-tab-icon {
+    width: 23px;
+    height: 23px;
+}
+
+.yf-active-chat .yf-tab-icon > i {
+    display: none;
+}
+
+.yf-active-chat .yf-tab-rich-icon {
+    display: block;
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+    filter: sepia(.32) saturate(.8) brightness(.68);
+}
+
+.yf-active-chat .yf-tab.active .yf-tab-rich-icon {
+    filter: sepia(.55) saturate(1.35) brightness(.63);
+}
+
+.yf-active-chat .yf-dirty-indicator {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 7px;
+    height: 7px;
+    background: #c78b31;
+    box-shadow: 0 0 0 2px rgba(255, 246, 218, .72);
+}
+
+/* Context rail */
+.yf-chat-context {
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    height: 48px;
+    margin: 6px 24px;
+    padding: 5px 18px;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+    color: var(--yfp-ink);
+    background:
+        linear-gradient(rgba(255, 251, 239, .72), rgba(238, 220, 186, .72)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 520px auto;
+    border: 1px solid rgba(128, 90, 31, .38);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .86),
+        inset 0 -2px 5px rgba(91, 61, 28, .09),
+        0 2px 8px rgba(70, 40, 13, .09);
+}
+
+.yf-chat-context-profile,
+.yf-chat-context-enable {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 10px;
+}
+
+.yf-chat-context-profile {
+    flex: 1 1 auto;
+}
+
+.yf-chat-context-icon {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    color: #72511b;
+    font-size: 16px;
+}
+
+.yf-chat-context-label,
+.yf-chat-context-enable-label {
+    color: #644b2d;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.yf-chat-context .yf-actor-select,
+.yf-chat-context-identity {
+    width: 360px;
+    min-width: 210px;
+    height: 38px;
+}
+
+.yf-chat-context-identity {
+    display: flex;
+    align-items: center;
+    padding: 0 13px;
+    border: 1px solid rgba(129, 91, 34, .3);
+    border-radius: 5px;
+    background: rgba(255, 252, 244, .58);
+    color: var(--yfp-ink);
+    font-size: 14px;
+}
+
+.yf-chat-context-readonly {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--yfp-ink-dim);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+}
+
+.yf-active-chat .yf-toggle-switch {
+    width: 54px;
+    height: 29px;
+}
+
+.yf-active-chat .yf-toggle-slider {
+    border: 1px solid #73531d;
+    border-radius: 999px;
+    background: #b89e71;
+    box-shadow: inset 0 2px 5px rgba(50, 31, 10, .22), 0 1px rgba(255, 255, 255, .68);
+}
+
+.yf-active-chat .yf-toggle-slider::before {
+    width: 23px;
+    height: 23px;
+    left: 2px;
+    bottom: 2px;
+    background: #f8eed8;
+    box-shadow: 0 2px 4px rgba(62, 39, 10, .36), inset 0 1px white;
+}
+
+.yf-active-chat .yf-toggle-switch input:checked + .yf-toggle-slider {
+    border-color: #77510f;
+    background: linear-gradient(#d69a2e, #a96810);
+}
+
+.yf-active-chat .yf-toggle-switch input:checked + .yf-toggle-slider::before {
+    transform: translateX(25px);
+}
+
+.yf-active-chat .yf-toggle-switch input:focus-visible + .yf-toggle-slider {
+    box-shadow: var(--yfp-focus);
+}
+
+/* Workbench surfaces */
+.yf-active-chat .yf-preview-panel,
+.yf-active-chat .yf-chat-step,
+.yf-active-chat .yf-chat-html-entry,
+.yf-active-chat .yf-chat-html-mode {
+    position: relative;
+    min-width: 0;
+    border: 1px solid rgba(126, 87, 28, .38);
+    color: var(--yfp-ink);
+    background:
+        linear-gradient(rgba(250, 243, 228, .8), rgba(236, 219, 187, .8)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 680px auto repeat,
+        var(--yfp-paper);
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 252, 243, .4),
+        inset 0 0 24px rgba(98, 66, 24, .06);
+}
+
+.yf-active-chat .yf-preview-panel::before,
+.yf-active-chat .yf-chat-step::before,
+.yf-active-chat .yf-chat-html-mode::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    z-index: 0;
+    pointer-events: none;
+    border: 1px solid rgba(141, 99, 34, .18);
+    clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+
+.yf-active-chat .yf-preview-panel > *,
+.yf-active-chat .yf-chat-step > *,
+.yf-active-chat .yf-chat-html-mode > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Left live proof */
+.yf-active-chat .yf-preview-panel {
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    min-height: 0;
+    margin: 10px 0 8px 24px;
+    padding: 15px 14px 13px;
+    overflow: hidden;
+    border-right: 1px solid rgba(126, 87, 28, .38);
+    clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+
+.yf-chat-panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.yf-chat-panel-heading h2 {
+    flex: none;
+    margin: 0;
+    color: #382718;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-chat-panel-heading > span {
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(90deg, #9b7434, transparent);
+}
+
+.yf-chat-fixtures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 9px;
+    min-width: 0;
+}
+
+.yf-chat-fixture {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-width: 0;
+    min-height: 40px;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+    color: #49351f;
+    background:
+        linear-gradient(rgba(255, 248, 231, .78), rgba(229, 208, 168, .78)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 360px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+    transition: transform var(--yfp-motion-fast) ease, box-shadow var(--yfp-motion-fast) ease, color var(--yfp-motion-fast) ease;
+}
+
+.yf-chat-fixture::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: url("../assets/ui/chat-basics/frames/mini-plaque-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-chat-fixture img {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.yf-chat-fixture > i {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: #74531b;
+    font-size: 18px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.yf-chat-fixture span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-chat-fixture:hover {
+    color: #2f2013;
+    transform: translateY(-2px);
+    box-shadow: var(--yfp-plaque-shadow-hover);
+}
+
+.yf-chat-fixture:active {
+    transform: translateY(1px);
+    box-shadow: var(--yfp-plaque-shadow-pressed);
+}
+
+.yf-chat-fixture.is-active {
+    color: #3d290d;
+    background:
+        linear-gradient(rgba(255, 246, 216, .9), rgba(222, 190, 126, .86)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 360px auto;
+    box-shadow:
+        inset 0 0 0 2px rgba(164, 111, 25, .74),
+        inset 0 0 0 4px rgba(255, 239, 193, .52),
+        0 3px 8px rgba(89, 56, 12, .2);
+}
+
+.yf-chat-proof-stack {
+    display: grid;
+    flex: 1 1 auto;
+    align-content: start;
+    gap: 11px;
+    min-height: 0;
+    padding-right: 2px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 87, 30, .5) transparent;
+}
+
+.yf-chat-proof-state {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    min-width: 0;
+}
+
+.yf-chat-proof-label {
+    color: #6f593c;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+}
+
+.yf-active-chat .yf-preview-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 96px;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(53, 31, 8, .26);
+}
+
+.yf-active-chat .yf-preview-card .yf-preview-avatar {
+    width: 42px;
+    height: 42px;
+}
+
+.yf-active-chat .yf-preview-card .yf-preview-name {
+    font-size: 14px;
+}
+
+.yf-active-chat .yf-preview-card .yf-preview-time,
+.yf-active-chat .yf-preview-card .yf-preview-content {
+    font-size: 12px;
+}
+
+.yf-active-chat .yf-preview-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 2px 0 0;
+    padding: 0;
+    border: 0;
+    color: #55793c;
+    background: transparent;
+    font-size: 13px;
+}
+
+.yf-active-chat .yf-preview-status.disabled {
+    color: #8a6740;
+}
+
+.yf-active-chat .yf-contrast-diagnostics {
+    margin-top: auto;
+    padding: 11px 13px;
+    border: 1px solid rgba(155, 103, 24, .5);
+    border-radius: 3px;
+    color: #6f4715;
+    background:
+        linear-gradient(rgba(250, 232, 190, .78), rgba(226, 190, 122, .58)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 420px auto,
+        var(--yfp-paper-warm);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .62),
+        0 3px 8px rgba(70, 40, 13, .1);
+    font-size: 11px;
+}
+
+.yf-active-chat .yf-contrast-header {
+    color: #765019;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+}
+
+.yf-active-chat .yf-contrast-summary,
+.yf-active-chat .yf-contrast-more {
+    color: #785326;
+}
+
+.yf-active-chat .yf-contrast-ratio {
+    border: 1px solid rgba(148, 102, 34, .34);
+    color: #4e3213;
+    background: rgba(255, 249, 231, .46);
+}
+
+/* Right workbench */
+.yf-active-chat .yf-chat-editor {
+    display: grid;
+    /* Row 1 holds the presets section, and .yf-chat-step clips what does not
+     * fit, so a fixed budget here silently amputates the gallery whenever the
+     * section grows. That is exactly what happened twice: the preset carousel
+     * added a control band and the original 475px budget started cutting the
+     * SECOND CARD ROW - its tag row and area icons never rendered. Replacing it
+     * with a measured constant only moved the problem, because the constant was
+     * calibrated against a fixture that had fewer category chips and no page
+     * counter than the shipped section.
+     *
+     * `auto` ends the whole class of bug: the row asks for exactly what its
+     * content needs, so no future control can be added at the cost of the
+     * bottom row. The two rows below stay fixed, and the window has room -
+     * 1040 minus the 58px toolbar and 84px footer leaves 898, against roughly
+     * 830 used here. */
+    grid-template-rows: auto 242px 44px;
+    gap: 3px;
+    min-width: 0;
+    min-height: 0;
+    margin: 10px 24px 8px 0;
+}
+
+.yf-active-chat .yf-chat-presets {
+    grid-row: 1;
+}
+
+.yf-active-chat .yf-chat-customization {
+    grid-row: 2;
+}
+
+.yf-active-chat .yf-chat-html-entry {
+    grid-row: 3;
+}
+
+.yf-active-chat .yf-chat-html-mode {
+    grid-row: 1 / -1;
+}
+
+.yf-active-chat .yf-chat-editor:has(.yf-chat-notice) {
+    display: block;
+}
+
+.yf-active-chat .yf-chat-step {
+    min-height: 0;
+    margin: 0;
+    /* Trimmed with the carousel and grid spacing to give the gallery back the
+     * 28px its bottom card row was losing; see the carousel rule. */
+    padding: 5px 11px 6px;
+    overflow: hidden;
+    clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+
+.yf-chat-step-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    min-height: 37px;
+}
+
+.yf-chat-step-number {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #8d6423;
+    border-radius: 50%;
+    color: #5d4115;
+    background: radial-gradient(circle at 38% 30%, #fff7df, #dfc896);
+    box-shadow:
+        inset 0 0 0 3px rgba(128, 88, 26, .1),
+        0 2px 4px rgba(67, 41, 11, .16);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.yf-chat-step-header h2 {
+    flex: none;
+    margin: 0;
+    color: #382718;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: .025em;
+}
+
+.yf-chat-step-rule {
+    flex: 1 1 80px;
+    min-width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, #9b7434, transparent);
+}
+
+.yf-chat-step-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex: none;
+}
+
+.yf-chat-action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 140px;
+    min-height: 34px;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 0;
+    color: #513918;
+    background:
+        linear-gradient(rgba(255, 247, 226, .84), rgba(226, 201, 153, .84)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 320px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+    transition: transform var(--yfp-motion-fast) ease, box-shadow var(--yfp-motion-fast) ease;
+}
+
+.yf-chat-action::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: url("../assets/ui/chat-basics/frames/mini-plaque-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-chat-action-gold {
+    isolation: isolate;
+    min-width: 162px;
+    color: #fff0b9;
+    text-shadow: 0 1px #3d2708;
+    background: transparent;
+}
+
+.yf-chat-action-gold::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    clip-path: polygon(
+        4.375% 2.778%,
+        95.625% 2.778%,
+        99.375% 19.444%,
+        99.375% 80.556%,
+        95.625% 97.222%,
+        4.375% 97.222%,
+        .625% 80.556%,
+        .625% 19.444%
+    );
+    background: linear-gradient(#bd8e2e, #755116);
+}
+
+.yf-chat-action-gold::after {
+    background-image: url("../assets/ui/overview/frames/gold-button-frame-v1.svg");
+}
+
+.yf-chat-action:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--yfp-plaque-shadow-hover);
+}
+
+.yf-chat-action:active {
+    transform: translateY(1px);
+    box-shadow: var(--yfp-plaque-shadow-pressed);
+}
+
+.yf-active-chat .yf-category-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    margin: 0 0 4px;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.yf-active-chat .yf-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 1 1 0;
+    min-width: 96px;
+    min-height: 34px;
+    padding: 5px 12px;
+    border: 1px solid rgba(119, 81, 25, .42);
+    border-radius: 3px;
+    color: #614b30;
+    background:
+        linear-gradient(rgba(255, 248, 232, .72), rgba(230, 210, 172, .72)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 300px auto;
+    box-shadow: var(--yfp-plaque-shadow);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.yf-active-chat .yf-tag:hover {
+    color: #33220f;
+    transform: translateY(-1px);
+    border-color: #9a7129;
+    background:
+        linear-gradient(rgba(255, 251, 240, .9), rgba(234, 214, 174, .88)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 300px auto;
+    box-shadow: var(--yfp-plaque-shadow-hover);
+}
+
+.yf-active-chat .yf-tag:active {
+    transform: translateY(1px);
+    box-shadow: var(--yfp-plaque-shadow-pressed);
+}
+
+.yf-active-chat .yf-tag.active,
+.yf-active-chat .yf-tag-fav.active {
+    color: #3c280d;
+    border-color: #8d621d;
+    background:
+        linear-gradient(rgba(255, 243, 210, .96), rgba(218, 184, 116, .92)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 300px auto;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 245, 214, .78),
+        0 2px 6px rgba(75, 46, 11, .19);
+}
+
+.yf-active-chat .yf-tag i,
+.yf-active-chat .yf-tag-fav i {
+    color: #74531a;
+    font-size: 11px;
+}
+
+.yf-active-chat .yf-randomizer-panel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(128px, 1fr)) auto;
+    align-items: end;
+    gap: 8px;
+    min-height: 42px;
+    margin: 0 0 4px;
+    padding: 5px 8px;
+    border: 1px solid rgba(125, 88, 31, .28);
+    border-radius: 4px;
+    background: rgba(247, 237, 216, .42);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .52);
+}
+
+.yf-active-chat .yf-randomizer-panel label {
+    gap: 2px;
+}
+
+.yf-active-chat .yf-randomizer-panel label > span {
+    color: #725b3c;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 9px;
+    letter-spacing: .045em;
+}
+
+.yf-active-chat .yf-select {
+    height: 30px;
+    padding: 0 28px 0 10px;
+    border: 1px solid rgba(124, 86, 29, .34);
+    border-radius: 4px;
+    color: #3f2d1b;
+    background-color: rgba(255, 251, 240, .7);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23634a27' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 12px;
+    box-shadow: inset 0 1px 2px rgba(69, 42, 12, .07);
+}
+
+.yf-active-chat .yf-select:hover {
+    border-color: #9a7129;
+    background-color: rgba(255, 252, 244, .94);
+}
+
+.yf-active-chat .yf-randomizer-context {
+    align-self: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+}
+
+.yf-active-chat .yf-randomizer-context span {
+    min-height: 27px;
+    padding: 4px 7px;
+    border: 1px solid rgba(126, 88, 31, .28);
+    border-radius: 4px;
+    color: #705a3e;
+    background: rgba(255, 250, 236, .5);
+    font-size: 9px;
+}
+
+.yf-active-chat .yf-randomizer-context i {
+    color: #8f6721;
+}
+
+/* Exactly two rows, no scrolling: the carousel pages the gallery now, so the grid
+ * shows one page and never grows a scrollbar of its own. */
+.yf-active-chat .yf-layout-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    /* 145px is what the card's four bands actually occupy (72 sample + two
+     * ~15px pill rows + 18 icons + 12 gaps + 13 padding = 145). The extra 5px
+     * it used to carry was being paid for out of the row below, which is what
+     * clipped the bottom cards. */
+    grid-template-rows: repeat(2, 145px);
+    align-content: start;
+    gap: 6px;
+    min-height: 0;
+    height: auto;
+    padding: 0 4px 2px;
+    overflow: hidden;
+}
+
+.yf-active-chat .yf-layout-option {
+    position: relative;
+    display: grid;
+    grid-template-rows: 72px auto auto 18px;
+    align-content: start;
+    justify-items: stretch;
+    gap: 4px;
+    min-width: 0;
+    min-height: 145px;
+    padding: 7px 8px 6px;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+    color: #604b31;
+    background:
+        linear-gradient(rgba(248, 239, 220, .78), rgba(220, 200, 164, .72)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 360px auto;
+    box-shadow:
+        0 2px 3px rgba(61, 37, 9, .16),
+        0 7px 13px rgba(61, 37, 9, .1);
+    transition: transform var(--yfp-motion-fast) ease, box-shadow var(--yfp-motion-fast) ease;
+}
+
+.yf-active-chat .yf-layout-option::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: url("../assets/ui/chat-basics/frames/preset-card-frame-v1.svg") center / 100% 100% no-repeat;
+    opacity: .76;
+}
+
+.yf-active-chat .yf-layout-option:hover {
+    border: 0;
+    color: #3b2917;
+    transform: translateY(-2px);
+    background:
+        linear-gradient(rgba(255, 249, 234, .9), rgba(231, 210, 173, .86)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 360px auto;
+    box-shadow:
+        0 4px 5px rgba(61, 37, 9, .18),
+        0 13px 22px rgba(61, 37, 9, .16);
+}
+
+.yf-active-chat .yf-layout-option:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 4px 8px rgba(63, 39, 10, .17), 0 1px 2px rgba(61, 37, 9, .14);
+}
+
+.yf-active-chat .yf-layout-option.selected {
+    border: 0;
+    color: #3b280e;
+    background:
+        linear-gradient(rgba(255, 244, 214, .96), rgba(218, 185, 119, .9)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 360px auto;
+    box-shadow:
+        inset 0 0 0 2px #9a6b1a,
+        inset 0 0 0 4px rgba(255, 239, 195, .76),
+        0 3px 5px rgba(61, 37, 9, .22),
+        0 10px 18px rgba(61, 37, 9, .14);
+}
+
+.yf-active-chat .yf-layout-option.selected::after {
+    opacity: 1;
+    filter: saturate(1.2) brightness(.92);
+}
+
+.yf-active-chat .yf-layout-option[style*="display: none"] {
+    display: none !important;
+}
+
+.yf-active-chat .yf-layout-sample,
+.yf-active-chat .yf-layout-empty {
+    position: relative;
+    z-index: 1;
+    min-height: 72px;
+    margin: 0;
+    padding: 10px 11px;
+    border-radius: 4px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(31, 19, 8, .24);
+}
+
+.yf-active-chat .yf-layout-sample b {
+    font-size: 15px;
+}
+
+.yf-active-chat .yf-layout-sample i {
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.yf-active-chat .yf-layout-empty {
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    color: #725b3f;
+    background: rgba(255, 252, 243, .4);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+}
+
+/* The class is shared by the "no preset matches" placeholder and by the inner
+ * body of the none/custom cards, so the `display: grid` above was overriding
+ * the placeholder's own `hidden` attribute: it kept occupying a grid cell and
+ * pushed an empty third row into a two-row gallery. */
+.yf-active-chat .yf-layout-empty[hidden] {
+    display: none;
+}
+
+.yf-active-chat .yf-layout-empty i {
+    font-size: 21px;
+    color: #866526;
+}
+
+.yf-active-chat .yf-layout-metadata,
+.yf-active-chat .yf-layout-tag-row,
+.yf-active-chat .yf-layout-areas {
+    position: relative;
+    z-index: 2;
+    flex-wrap: nowrap;
+    gap: 4px;
+    min-height: 15px;
+    overflow: hidden;
+}
+
+.yf-active-chat .yf-layout-meta-pill,
+.yf-active-chat .yf-layout-tag {
+    min-height: 15px;
+    padding: 1px 5px;
+    border: 1px solid rgba(117, 82, 30, .32);
+    border-radius: 999px;
+    color: #6d593e;
+    background: rgba(255, 250, 236, .46);
+    font-size: 9px;
+}
+
+.yf-active-chat .yf-layout-meta-pill i {
+    font-size: 8px;
+}
+
+.yf-active-chat .yf-layout-tag {
+    max-width: 62px;
+}
+
+.yf-active-chat .yf-layout-areas {
+    color: #6a5436;
+    font-size: 10px;
+}
+
+.yf-active-chat .yf-fav-btn {
+    z-index: 7;
+    top: auto;
+    right: 5px;
+    bottom: 4px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #6c5638;
+    background: transparent;
+    opacity: .72;
+    font-size: 13px;
+}
+
+.yf-active-chat .yf-layout-option:hover .yf-fav-btn,
+.yf-active-chat .yf-fav-btn.active {
+    opacity: 1;
+}
+
+.yf-active-chat .yf-fav-btn:hover {
+    color: #a77518;
+    background: rgba(255, 247, 220, .7);
+}
+
+.yf-active-chat .yf-fav-btn.active {
+    color: #a46c0b;
+}
+
+.yf-active-chat .yf-preset-edited-badge {
+    z-index: 7;
+    left: 6px;
+    bottom: 7px;
+    width: 19px;
+    height: 19px;
+    border-color: #9a6b1a;
+    color: #7b5412;
+    background: #f0dba9;
+    font-size: 9px;
+}
+
+/* Make It Yours */
+.yf-active-chat .yf-chat-customization {
+    padding-bottom: 0;
+}
+
+.yf-active-chat .yf-chat-control-board {
+    display: grid;
+    grid-template-columns: 18% 28% 27% 27%;
+    min-width: 0;
+    height: 196px;
+    padding: 9px 10px;
+    border: 1px solid rgba(124, 85, 27, .45);
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+    background:
+        linear-gradient(rgba(255, 249, 233, .64), rgba(229, 208, 169, .6)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 560px auto;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .74),
+        inset 0 -3px 8px rgba(84, 54, 16, .07);
+}
+
+.yf-chat-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    padding: 0 13px;
+    border-left: 1px solid rgba(128, 91, 35, .24);
+}
+
+.yf-chat-control-group:first-child {
+    padding-left: 2px;
+    border-left: 0;
+}
+
+.yf-chat-control-group:last-child {
+    padding-right: 2px;
+}
+
+.yf-chat-control-group h3 {
+    margin: 0 0 1px;
+    color: #554022;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+}
+
+.yf-chat-field,
+.yf-chat-color-field {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.yf-chat-field > label,
+.yf-chat-color-field > label {
+    color: #5d4a31;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.yf-chat-field-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    min-width: 0;
+    color: #5d4a31;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.yf-chat-field-label label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-chat-control-palette .yf-chat-color-field {
+    grid-template-columns: 54px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+}
+
+.yf-chat-control-frame .yf-chat-field {
+    grid-template-columns: 66px minmax(0, 1fr);
+    align-items: center;
+    gap: 5px;
+}
+
+.yf-chat-control-palette .yf-chat-color-field > label,
+.yf-chat-control-frame .yf-chat-field > label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-active-chat .yf-token-control {
+    grid-template-columns: minmax(0, 1fr) auto 26px;
+    gap: 5px;
+}
+
+/* The range input stops shrinking at its intrinsic ~72px. Once it hits that floor the
+ * wrapper can no longer fit its grid column, so it overflowed and slid under the state
+ * badge — the badge appeared to sit on top of the value readout below ~280px.
+ *
+ * Shrink order is deliberate: the slider gives way first down to a 96px floor, then the
+ * badge truncates, and below 230px the badge leaves entirely so the slider stays usable.
+ * The badge is the least important of the three — its meaning is also in its title
+ * attribute and in the status colour of the row. */
+.yf-active-chat .yf-chat-field {
+    container: yf-chat-field / inline-size;
+}
+
+.yf-active-chat .yf-token-control {
+    grid-template-columns: minmax(96px, 1fr) minmax(0, auto) 26px;
+}
+
+.yf-active-chat .yf-token-control > .yf-range-wrapper {
+    min-width: 0;
+    /* The 17px thumb rides a 4px track, so it sticks ~6.5px out of the
+     * wrapper's content box on both sides. `overflow: hidden` here (added to
+     * stop the range pushing into the badge) sliced the thumb flat top and
+     * bottom. Horizontal spill is now held by the grid columns above plus
+     * `flex: 1 1 0; min-width: 0` on the range itself, so clipping is no
+     * longer what keeps the row intact - and CSS cannot clip one axis only
+     * (a hidden axis forces the other to auto). Padding reserves the thumb's
+     * room instead; verify-chat-basics-contract still checks the shrink order. */
+    padding-block: 7px;
+    overflow: visible;
+}
+
+.yf-active-chat .yf-token-control > .yf-range-wrapper > .yf-range {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.yf-active-chat .yf-token-control > .yf-range-wrapper > .yf-range-value {
+    flex: 0 0 auto;
+}
+
+.yf-active-chat .yf-token-control > .yf-token-badge {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@container yf-chat-field (max-width: 230px) {
+    .yf-active-chat .yf-token-control {
+        grid-template-columns: minmax(96px, 1fr) 26px;
+    }
+
+    .yf-active-chat .yf-token-control > .yf-token-badge {
+        display: none;
+    }
+}
+
+.yf-active-chat .yf-token-control-compact {
+    grid-template-columns: minmax(0, 1fr) 26px;
+}
+
+.yf-active-chat .yf-token-color-control,
+.yf-active-chat .yf-token-color-control.yf-color-palette-host {
+    grid-template-columns: 25px 25px minmax(54px, 1fr) auto 26px;
+    gap: 4px;
+}
+
+.yf-active-chat .yf-token-color-control code {
+    min-width: 0;
+    overflow: hidden;
+    color: #59472f;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.yf-active-chat .yf-color-swatch {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #8b6b37;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .45);
+}
+
+.yf-active-chat .yf-color-palette-button,
+.yf-active-chat .yf-color-palette-native,
+.yf-active-chat .yf-color-clear-button,
+.yf-active-chat .yf-token-reset {
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid rgba(122, 86, 30, .32);
+    border-radius: 4px;
+    color: #725b39;
+    background: rgba(255, 248, 229, .55);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .56);
+}
+
+.yf-active-chat .yf-color-palette-button:hover,
+.yf-active-chat .yf-token-reset:hover {
+    color: #4a310d;
+    border-color: #9b7127;
+    background: rgba(255, 250, 236, .94);
+    transform: translateY(-1px);
+}
+
+.yf-active-chat .yf-token-badge {
+    height: 17px;
+    min-width: 35px;
+    padding: 0 3px;
+    border: 1px solid rgba(123, 85, 28, .3);
+    border-radius: 3px;
+    color: #786342;
+    background: rgba(255, 250, 236, .45);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 7px;
+}
+
+.yf-active-chat .yf-token-control.is-preset .yf-token-badge,
+.yf-active-chat .is-preset > .yf-token-badge {
+    color: #7c5717;
+    border-color: rgba(151, 104, 27, .48);
+    background: rgba(231, 201, 138, .3);
+}
+
+.yf-active-chat .yf-token-control.is-custom .yf-token-badge,
+.yf-active-chat .is-custom > .yf-token-badge {
+    color: #6c4612;
+    border-color: rgba(153, 101, 23, .56);
+    background: rgba(214, 166, 79, .26);
+}
+
+.yf-active-chat .yf-range-wrapper {
+    gap: 6px;
+}
+
+.yf-active-chat .yf-range {
+    height: 4px;
+    background:
+        radial-gradient(circle, #77561d 0 2px, transparent 2.5px) 0 50% / 25% 8px repeat-x,
+        linear-gradient(#8d6a31, #8d6a31) center / 100% 1px no-repeat;
+}
+
+.yf-active-chat .yf-range::-webkit-slider-thumb {
+    width: 17px;
+    height: 17px;
+    border: 1px solid #65440f;
+    background: radial-gradient(circle at 36% 30%, #e4c679, #9b6a20 72%);
+    box-shadow: 0 2px 4px rgba(63, 38, 9, .35), inset 0 1px rgba(255, 255, 255, .52);
+}
+
+.yf-active-chat .yf-range::-moz-range-thumb {
+    width: 17px;
+    height: 17px;
+    border: 1px solid #65440f;
+    background: radial-gradient(circle at 36% 30%, #e4c679, #9b6a20 72%);
+}
+
+.yf-active-chat .yf-range-value {
+    min-width: 40px;
+    padding: 3px 6px;
+    border: 1px solid rgba(126, 88, 31, .25);
+    border-radius: 3px;
+    color: #5d451f;
+    background: rgba(255, 250, 236, .55);
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 9px;
+}
+
+.yf-chat-effect-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto 26px;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: #5d4a31;
+    font-size: 10px;
+}
+
+.yf-active-chat .yf-toggle-mini {
+    width: 39px;
+    height: 22px;
+}
+
+.yf-active-chat .yf-toggle-mini .yf-toggle-slider::before {
+    width: 16px;
+    height: 16px;
+}
+
+.yf-active-chat .yf-toggle-mini input:checked + .yf-toggle-slider::before {
+    transform: translateX(17px);
+}
+
+.yf-chat-effects-nested {
+    display: grid;
+    gap: 6px;
+    margin-left: 7px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(128, 91, 35, .28);
+}
+
+/* Custom HTML mode */
+.yf-active-chat .yf-chat-html-entry {
+    min-height: 44px;
+    overflow: hidden;
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+.yf-active-chat .yf-chat-html-entry-button {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    margin: 0;
+    padding: 5px 14px;
+    border: 0;
+    color: #554127;
+    background: transparent;
+    text-align: left;
+}
+
+.yf-active-chat .yf-chat-html-entry-button > i:first-child {
+    color: #9a6d22;
+    font-size: 14px;
+}
+
+.yf-active-chat .yf-chat-html-entry-button > span {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.yf-active-chat .yf-chat-html-entry-button strong {
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .025em;
+}
+
+.yf-active-chat .yf-chat-html-entry-button small {
+    overflow: hidden;
+    color: #7a6346;
+    font-size: 10px;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-active-chat .yf-chat-html-entry-button > i:last-child {
+    justify-self: end;
+    color: #8d6423;
+    transition: transform var(--yfp-motion-fast) ease;
+}
+
+.yf-active-chat .yf-chat-html-entry-button:hover {
+    color: #34220f;
+    background: rgba(255, 251, 240, .48);
+}
+
+.yf-active-chat .yf-chat-html-entry-button:hover > i:last-child {
+    transform: translateX(2px);
+}
+
+.yf-active-chat .yf-chat-html-mode {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 16px;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 22px 24px 24px;
+    overflow: hidden;
+    clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+}
+
+.yf-active-chat .yf-chat-html-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(139, 99, 34, .34);
+}
+
+.yf-active-chat .yf-chat-html-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.yf-active-chat .yf-chat-html-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #8d6423;
+    border-radius: 50%;
+    color: #5d4115;
+    background: radial-gradient(circle at 38% 30%, #fff7df, #dfc896);
+    box-shadow:
+        inset 0 0 0 3px rgba(128, 88, 26, .1),
+        0 2px 4px rgba(67, 41, 11, .16);
+}
+
+.yf-active-chat .yf-chat-html-title p,
+.yf-active-chat .yf-chat-html-title h2 {
+    margin: 0;
+}
+
+.yf-active-chat .yf-chat-html-title p {
+    color: #8b6c43;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.yf-active-chat .yf-chat-html-title h2 {
+    color: #382718;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: .025em;
+}
+
+.yf-active-chat .yf-chat-html-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: none;
+    min-height: 38px;
+    margin: 0;
+    padding: 7px 13px;
+    border: 1px solid rgba(130, 91, 31, .5);
+    border-radius: 4px;
+    color: #533b1d;
+    background: linear-gradient(rgba(255, 250, 235, .88), rgba(221, 198, 154, .88));
+    box-shadow: inset 0 1px rgba(255, 255, 255, .74), 0 2px 4px rgba(77, 48, 17, .12);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.yf-active-chat .yf-chat-html-back:hover {
+    color: #2f1d0d;
+    border-color: #a4792c;
+    background: linear-gradient(#fff9e9, #e4cc9e);
+}
+
+.yf-active-chat :is(.yf-chat-html-entry-button, .yf-chat-html-back):focus-visible {
+    outline: 2px solid #946d25;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px #fff4d2, 0 0 0 6px #946d25;
+}
+
+.yf-active-chat .yf-warning-box {
+    color: #6f4715;
+    background: rgba(173, 111, 25, .12);
+    border-color: rgba(155, 96, 18, .35);
+}
+
+.yf-active-chat .yf-chat-html-warning {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 10px;
+    margin: 0;
+    padding: 11px 13px;
+}
+
+.yf-active-chat .yf-chat-html-warning > i {
+    margin-top: 2px;
+    color: #a66e17;
+}
+
+.yf-active-chat .yf-chat-html-warning > div {
+    display: grid;
+    gap: 2px;
+}
+
+.yf-active-chat .yf-chat-html-warning strong {
+    color: #5b3511;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+}
+
+.yf-active-chat .yf-chat-html-field {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-active-chat .yf-chat-html-field > label {
+    color: #493219;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+}
+
+.yf-active-chat .yf-chat-html-textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 15px 16px;
+    resize: none;
+    overflow: auto;
+    border: 1px solid rgba(125, 87, 30, .52);
+    border-radius: 4px;
+    color: #2f2419;
+    background:
+        linear-gradient(rgba(255, 252, 244, .92), rgba(246, 237, 219, .92)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 620px auto repeat;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .46),
+        inset 0 3px 8px rgba(77, 48, 17, .08);
+    font-family: "Courier Prime", Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 4;
+    white-space: pre;
+}
+
+.yf-active-chat .yf-chat-html-textarea:focus {
+    border-color: #9f7428;
+    outline: none;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .5),
+        0 0 0 2px #fff4d2,
+        0 0 0 4px #946d25;
+}
+
+/* Notices */
+.yf-chat-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(147, 94, 20, .34);
+    color: #6e4919;
+    background: rgba(205, 149, 57, .13);
+    font-size: 12px;
+}
+
+/* Full-width wooden footer */
+.yf-active-chat .yf-config-footer {
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+    min-height: 84px;
+    padding: 12px 22px;
+    color: #d8c18f;
+    background:
+        linear-gradient(180deg, rgba(8, 5, 3, .42), rgba(9, 5, 3, .72)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    border-top: 1px solid #7a5621;
+    box-shadow:
+        inset 0 1px rgba(255, 235, 167, .08),
+        inset 0 3px 8px rgba(0, 0, 0, .25);
+}
+
+.yf-active-chat .yf-footer-left,
+.yf-active-chat .yf-footer-right {
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+
+.yf-active-chat .yf-footer-right {
+    justify-self: end;
+}
+
+.yf-active-chat .yf-chat-footer-button,
+.yf-active-chat .yf-chat-save-button {
+    position: relative;
+    min-height: 46px;
+    padding: 9px 19px;
+    border: 1px solid #654718;
+    border-radius: 0;
+    color: #e9d49c;
+    background:
+        linear-gradient(rgba(73, 45, 22, .7), rgba(28, 16, 8, .82)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 300px auto;
+    box-shadow:
+        inset 0 1px rgba(255, 239, 190, .1),
+        inset 0 -3px 5px rgba(0, 0, 0, .26),
+        0 3px 5px rgba(0, 0, 0, .3);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-active-chat .yf-chat-footer-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: url("../assets/ui/chat-basics/frames/mini-plaque-frame-v1.svg") center / 100% 100% no-repeat;
+    opacity: .72;
+}
+
+.yf-active-chat .yf-chat-footer-button:hover {
+    color: #fff0b6;
+    border-color: #9a7027;
+    transform: translateY(-2px);
+    background:
+        linear-gradient(rgba(87, 55, 27, .75), rgba(35, 20, 9, .86)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 300px auto;
+    box-shadow: 0 7px 12px rgba(0, 0, 0, .32);
+}
+
+.yf-active-chat .yf-chat-footer-button:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 4px 7px rgba(0, 0, 0, .38), 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.yf-active-chat .yf-chat-save-button {
+    min-width: 148px;
+    border: 0;
+    color: #fff1bf;
+    text-shadow: 0 1px 1px #342006;
+    background: linear-gradient(#b98d32, #795518);
+}
+
+.yf-active-chat .yf-chat-save-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: url("../assets/ui/overview/frames/gold-button-frame-v1.svg") center / 100% 100% no-repeat;
+}
+
+.yf-active-chat .yf-chat-save-button:hover {
+    color: #fff5cf;
+    transform: translateY(-2px);
+    background: linear-gradient(#c99c3b, #855f1c);
+    box-shadow: 0 9px 16px rgba(0, 0, 0, .28);
+}
+
+.yf-active-chat .yf-chat-save-button:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 4px 7px rgba(55, 32, 4, .3), 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.yf-chat-save-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 0;
+    color: #cfb987;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-chat-save-dot {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #a98a4f;
+    border-radius: 50%;
+    background: #79a252;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, .24), inset 0 1px rgba(255, 255, 255, .5);
+}
+
+.yf-chat-save-state.is-dirty {
+    color: #e0bd73;
+}
+
+.yf-chat-save-state.is-dirty .yf-chat-save-dot {
+    background: #c58232;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, .24), 0 0 10px rgba(197, 130, 50, .35), inset 0 1px rgba(255, 255, 255, .48);
+}
+
+/* Disabled and focus states */
+.yf-active-chat :is(button, input, select, textarea):disabled {
+    opacity: .46;
+    filter: saturate(.55);
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.yf-active-chat .yf-layout-option:focus-visible {
+    outline: 2px solid #946d25;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px #fff4d2, 0 0 0 6px #946d25;
+}
+
+/* Responsive composition */
+@container yf-controls-panel (max-width: 1380px) {
+    .yf-active-chat .yf-tab {
+        min-width: 70px;
+        padding-inline: 10px;
+    }
+
+    .yf-active-chat .yf-tab:not(.active) .yf-tab-label {
+        display: none;
+    }
+
+    .yf-active-chat .yf-tab.active {
+        min-width: 150px;
+    }
+
+    .yf-active-chat .yf-chat-action {
+        min-width: 116px;
+        padding-inline: 10px;
+    }
+
+    .yf-active-chat .yf-chat-action-gold {
+        min-width: 138px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .yf-active-chat :is(
+        .yf-chat-fixture,
+        .yf-chat-action,
+        .yf-tag,
+        .yf-layout-option,
+        .yf-chat-footer-button,
+        .yf-chat-save-button,
+        .yf-token-reset,
+        .yf-chat-html-entry-button,
+        .yf-chat-html-back
+    ):is(:hover, :active) {
+        transform: none;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * CHAT BASIC · PRESET CAROUSEL
+ * Mirrors the Foundry Global theme carousel: side arrows plus page dots, so the
+ * gallery stops being an endless wall and reads the same way in both tabs.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* Measured in the real window: the presets section needed 498px and its row
+ * allotted 470, and the 28px difference was being taken out of the bottom card
+ * row (its tag line and area icons). Rows 2 and 3 of the editor have no slack
+ * (0px and 2px), so the space is reclaimed from dead spacing here instead of
+ * from card content - the cards stay at their designed 150px. */
+.yf-active-chat .yf-layout-carousel {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 4px;
+}
+
+.yf-active-chat .yf-layout-carousel[hidden] {
+    display: none;
+}
+
+.yf-active-chat .yf-layout-arrow {
+    display: inline-grid;
+    place-items: center;
+    /* Sized with the carousel band: the arrows dictate its height, and that
+     * height was coming out of the gallery's bottom row. 32px stays well above
+     * the 24px minimum tap target. */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: #6f4a15;
+    background: rgba(255, 250, 236, .72);
+    border: 1px solid rgba(135, 91, 29, .42);
+    border-radius: 50%;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .76),
+        0 2px 5px rgba(72, 43, 15, .12);
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.yf-active-chat .yf-layout-arrow:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .82),
+        0 4px 9px rgba(72, 43, 15, .18);
+}
+
+.yf-active-chat .yf-layout-arrow:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.yf-active-chat .yf-layout-arrow:disabled {
+    opacity: .38;
+    cursor: default;
+}
+
+.yf-active-chat .yf-layout-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 0;
+    color: #6d573a;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.yf-active-chat .yf-layout-pagination > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.yf-active-chat .yf-layout-pagination button {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 9px;
+    min-width: 9px;
+    max-width: 9px;
+    height: 9px;
+    min-height: 9px;
+    max-height: 9px;
+    padding: 0;
+    line-height: 0;
+    appearance: none;
+    background: rgba(126, 88, 32, .28);
+    border: 1px solid rgba(126, 88, 32, .42);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 140ms ease, background 140ms ease;
+}
+
+.yf-active-chat .yf-layout-pagination button.is-active {
+    background: #a87524;
+    border-color: #7c5417;
+    transform: scale(1.24);
+}
+
+.yf-active-chat .yf-layout-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 22px 12px;
+    color: #7a6244;
+    font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .yf-active-chat .yf-layout-arrow,
+    .yf-active-chat .yf-layout-pagination button {
+        transition: none;
+    }
+
+    .yf-active-chat .yf-layout-arrow:hover:not(:disabled),
+    .yf-active-chat .yf-layout-arrow:active:not(:disabled) {
+        transform: none;
+    }
+}

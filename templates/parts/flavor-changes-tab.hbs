@@ -1,0 +1,127 @@
+<div class="yf-configuration-workbench">
+    <aside class="yf-configuration-summary" aria-labelledby="yf-configuration-title">
+        <header class="yf-configuration-summary-header">
+            <span class="yf-configuration-emblem" aria-hidden="true">
+                <img src="modules/your-flavor/assets/ui/overview/icons/configuration-glyph-v1.svg" alt="">
+            </span>
+            <span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Configuration.Kicker"}}</small>
+                <h2 id="yf-configuration-title">{{localize "YOUR_FLAVOR.Studio.Configuration.Title"}}</h2>
+                <p>{{localize "YOUR_FLAVOR.Studio.Configuration.Sub"}}</p>
+            </span>
+        </header>
+
+        <div class="yf-configuration-scope-row" aria-label="{{localize 'YOUR_FLAVOR.Studio.Configuration.ScopeLabel'}}">
+            <span><i class="fas fa-globe" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Configuration.WorldSettings"}}</span>
+            {{#if changes.isGM}}<span><i class="fas fa-shield-halved" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Configuration.GMControls"}}</span>{{/if}}
+            <span><i class="fas fa-floppy-disk" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Configuration.OneSave"}}</span>
+        </div>
+
+        <div class="yf-configuration-summary-heading">
+            <span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Configuration.CurrentDraft"}}</small>
+                <strong>{{localize "YOUR_FLAVOR.Studio.Configuration.WorkingChanges"}}</strong>
+            </span>
+            <small>{{localize "YOUR_FLAVOR.Studio.Configuration.OpenHint"}}</small>
+        </div>
+
+        {{#unless changes.hasAny}}<div class="yf-configuration-empty">{{changes.emptyText}}</div>{{/unless}}
+
+        <div class="yf-configuration-summary-list">
+            {{#each changes.rows}}
+            <article class="yf-configuration-summary-row {{#if this.hasWork}}has-work{{/if}}">
+                <span class="yf-configuration-row-icon" aria-hidden="true"><i class="{{this.icon}}"></i></span>
+                <span class="yf-configuration-row-copy"><strong>{{this.label}}</strong><small>{{this.summary}}</small></span>
+                <button type="button" class="yf-configuration-open" data-action="switchTab" data-tab="{{this.id}}">
+                    {{../changes.goToLabel}} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </article>
+            {{/each}}
+        </div>
+
+        <p class="yf-configuration-summary-note"><i class="fas fa-circle-info" aria-hidden="true"></i><span>{{localize "YOUR_FLAVOR.Studio.Configuration.WorkingSummary"}}</span></p>
+    </aside>
+
+    <section class="yf-configuration-settings" aria-labelledby="yf-configuration-behavior-title">
+        <header class="yf-configuration-settings-header">
+            <span>
+                <small>{{localize "YOUR_FLAVOR.Studio.Configuration.SettingsKicker"}}</small>
+                <h3 id="yf-configuration-behavior-title">{{localize "YOUR_FLAVOR.Studio.Configuration.BehaviorTitle"}}</h3>
+                <p>{{localize "YOUR_FLAVOR.Studio.Configuration.BehaviorHint"}}</p>
+            </span>
+            {{#if changes.isGM}}<span class="yf-configuration-gm-pill"><i class="fas fa-shield-halved" aria-hidden="true"></i> {{localize "YOUR_FLAVOR.Studio.Configuration.GMView"}}</span>{{/if}}
+        </header>
+
+        <div class="yf-configuration-settings-scroll">
+            {{#if changes.isGM}}
+            <section class="yf-configuration-group">
+                <header><span><strong>{{localize "YOUR_FLAVOR.Studio.Configuration.CoreTitle"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.CoreHint"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Configuration.WorldGM"}}</em></header>
+                <label class="yf-configuration-setting-row">
+                    <span><strong>{{localize "YOUR_FLAVOR.Settings.ModuleEnabled.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.ModuleEnabledHint"}}</small></span>
+                    <span class="yf-toggle-switch"><input type="checkbox" name="settings.moduleEnabled" {{#if changes.settings.moduleEnabled}}checked{{/if}}><span class="yf-toggle-slider"></span></span>
+                </label>
+                {{#if changes.showFoundryControls}}
+                <label class="yf-configuration-setting-row is-featured">
+                    <span><strong>{{localize "YOUR_FLAVOR.Studio.Configuration.FoundryMasterLabel"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.FoundryMasterHint"}}</small></span>
+                    <span class="yf-toggle-switch"><input type="checkbox" name="foundry.enabled" {{#if foundryConfig.enabled}}checked{{/if}}><span class="yf-toggle-slider"></span></span>
+                </label>
+                <label class="yf-configuration-setting-row">
+                    <span><strong>{{localize "YOUR_FLAVOR.Settings.ShareFoundryCustomization.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.ShareFoundryHint"}}</small></span>
+                    <span class="yf-toggle-switch"><input type="checkbox" name="settings.shareFoundryCustomization" {{#if changes.settings.shareFoundryCustomization}}checked{{/if}}><span class="yf-toggle-slider"></span></span>
+                </label>
+                {{/if}}
+            </section>
+
+            {{#if changes.showFoundryControls}}
+            <section class="yf-configuration-group">
+                <header><span><strong>{{localize "YOUR_FLAVOR.Config.Foundry.CategoriesSection"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.ModulesHint"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Configuration.FoundryShell"}}</em></header>
+                <div class="yf-configuration-gate-grid">
+                    <label><span><i class="fas fa-palette"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Theme"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.theme" {{#if foundryConfig.categories.theme}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-font"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Fonts"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.fonts" {{#if foundryConfig.categories.fonts}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-icons"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Icons"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.icons" {{#if foundryConfig.categories.icons}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-eye"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Visibility"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.visibility" {{#if foundryConfig.categories.visibility}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-arrows-alt"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Layout"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.layout" {{#if foundryConfig.categories.layout}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-puzzle-piece"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Components"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.components" {{#if foundryConfig.categories.components}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-circle-pause"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.Pause"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.pause" {{#if foundryConfig.categories.pause}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                    <label><span><i class="fas fa-code"></i> {{localize "YOUR_FLAVOR.Config.Foundry.Categories.CustomCSS"}}</span><span class="yf-toggle-switch yf-toggle-mini"><input type="checkbox" name="foundry.categories.customCss" {{#if foundryConfig.categories.customCss}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                </div>
+            </section>
+            {{/if}}
+
+            <section class="yf-configuration-group">
+                <header><span><strong>{{localize "YOUR_FLAVOR.Studio.Configuration.PlayerTitle"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.PlayerHint"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Configuration.WorldGM"}}</em></header>
+                <label class="yf-configuration-setting-row"><span><strong>{{localize "YOUR_FLAVOR.Settings.AllowPlayerCustomization.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.AllowPlayerCustomization.Hint"}}</small></span><span class="yf-toggle-switch"><input type="checkbox" name="settings.allowPlayerCustomization" {{#if changes.settings.allowPlayerCustomization}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                <label class="yf-configuration-setting-row"><span><strong>{{localize "YOUR_FLAVOR.Settings.AllowCustomHtml.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.AllowCustomHtml.Hint"}}</small></span><span class="yf-toggle-switch"><input type="checkbox" name="settings.allowCustomHtml" {{#if changes.settings.allowCustomHtml}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+                <label class="yf-configuration-select-row">
+                    <span><strong>{{localize "YOUR_FLAVOR.Settings.ForcePlayerLayout.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.ForcePlayerLayout.Hint"}}</small></span>
+                    <select name="settings.forcePlayerLayout">{{#each changes.settings.forcePlayerLayoutChoices}}<option value="{{this.id}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>{{/each}}</select>
+                </label>
+                <label class="yf-configuration-select-row">
+                    <span><strong>{{localize "YOUR_FLAVOR.Settings.MessageStylingPolicy.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.MessageStylingPolicy.Hint"}}</small></span>
+                    <select name="settings.messageStylingPolicy">{{#each changes.settings.messageStylingPolicyChoices}}<option value="{{this.id}}" {{#if this.isSelected}}selected{{/if}}>{{this.label}}</option>{{/each}}</select>
+                </label>
+                <label class="yf-configuration-setting-row"><span><strong>{{localize "YOUR_FLAVOR.Settings.ApplyToWhispers.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.ApplyToWhispers.Hint"}}</small></span><span class="yf-toggle-switch"><input type="checkbox" name="settings.applyToWhispers" {{#if changes.settings.applyToWhispers}}checked{{/if}}><span class="yf-toggle-slider"></span></span></label>
+            </section>
+
+            {{#if changes.showFoundryControls}}
+            <details class="yf-configuration-css-disclosure">
+                <summary><span><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><strong>{{localize "YOUR_FLAVOR.Studio.Configuration.CustomCssOpen"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.CustomCssHint"}}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
+                <div class="yf-configuration-css-editor">
+                    <div class="yf-warning-box"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i><span>{{localize "YOUR_FLAVOR.Config.Foundry.CustomCSSWarning"}}</span></div>
+                    <label for="yf-configuration-custom-css">{{localize "YOUR_FLAVOR.Config.Foundry.CustomCSSSection"}}</label>
+                    <textarea id="yf-configuration-custom-css" name="foundry.customCss" class="yf-textarea yf-css-editor" spellcheck="false" placeholder="{{localize 'YOUR_FLAVOR.Config.Foundry.CustomCSSPlaceholder'}}">{{foundryConfig.customCss}}</textarea>
+                </div>
+            </details>
+            {{/if}}
+            {{/if}}
+
+            <section class="yf-configuration-group">
+                <header><span><strong>{{localize "YOUR_FLAVOR.Studio.Configuration.WindowTitle"}}</strong><small>{{localize "YOUR_FLAVOR.Studio.Configuration.WindowHint"}}</small></span><em>{{localize "YOUR_FLAVOR.Studio.Configuration.ThisClient"}}</em></header>
+                <label class="yf-configuration-select-row">
+                    <span><strong>{{localize "YOUR_FLAVOR.Settings.UIScale.Name"}}</strong><small>{{localize "YOUR_FLAVOR.Settings.UIScale.Hint"}}</small></span>
+                    <select name="clientSetting.uiScale">{{#each changes.uiScaleChoices}}<option value="{{this.value}}" {{#if this.isSelected}}selected{{/if}}>{{this.value}}%</option>{{/each}}</select>
+                </label>
+            </section>
+        </div>
+    </section>
+</div>

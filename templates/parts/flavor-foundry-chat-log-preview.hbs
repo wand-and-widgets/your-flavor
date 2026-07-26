@@ -1,0 +1,102 @@
+<aside class="yf-preview-panel yf-foundry-chat-log-preview">
+    <header class="yf-foundry-chat-log-preview-header">
+        <span class="yf-foundry-chat-log-preview-medallion" aria-hidden="true">
+            <i class="fas fa-comments"></i>
+        </span>
+        <span class="yf-foundry-chat-log-preview-copy">
+            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.ChatLogPreviewTitle"}}</strong>
+            <small>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewDraftHint"}}</small>
+        </span>
+        <span class="yf-foundry-chat-log-preview-hint">
+            {{localize "YOUR_FLAVOR.Config.Foundry.AreaPreviewDescriptions.ChatLog"}}
+        </span>
+    </header>
+
+    <div class="yf-preview-container yf-foundry-preview-container">
+        <div class="yf-foundry-area-focus">
+            <div class="yf-foundry-area-pane is-draft">
+                <div class="{{foundryAreaPreviewAfter.className}}" data-preview-state="after" data-preview-area="chatLog" style="{{foundryAreaPreviewAfter.style}}">
+                    <div class="yf-foundry-area-real-snapshot" data-foundry-real-snapshot aria-hidden="true"></div>
+                    <div class="yf-foundry-area-fixture yf-area-fixture-chatlog" data-foundry-preview-component="chatLog">
+                        <section class="yf-chatlog-preview-panel" aria-hidden="true">
+                            <div class="yf-chatlog-preview-toolbar">
+                                <span class="yf-chatlog-preview-roll-mode">
+                                    <i class="fas fa-dice-d20"></i>
+                                    <span>{{localize "CHAT.RollPublic"}}</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                                <span class="yf-chatlog-preview-toolbar-spacer"></span>
+                                <span class="yf-chatlog-preview-toolbar-button"><i class="fas fa-search"></i></span>
+                                <span class="yf-chatlog-preview-toolbar-button"><i class="fas fa-cog"></i></span>
+                                <span class="yf-chatlog-preview-toolbar-button"><i class="fas fa-comment-dots"></i></span>
+                            </div>
+                            <div class="yf-chatlog-preview-log">
+                                <article class="yf-chatlog-preview-message is-whisper">
+                                    <header class="yf-chatlog-preview-header">
+                                        <strong class="yf-chatlog-preview-sender">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatSenderGM"}}</strong>
+                                        <span class="yf-chatlog-preview-meta">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatTimeNow"}}</span>
+                                        <span class="yf-chatlog-preview-actions"><i class="fas fa-ellipsis-vertical"></i></span>
+                                    </header>
+                                    <div class="yf-chatlog-preview-content">
+                                        <span class="yf-chatlog-preview-badge">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatWhisperBadge"}}</span>
+                                        {{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatMessageWhisper"}}
+                                    </div>
+                                </article>
+                                <article class="yf-chatlog-preview-message is-long is-hover">
+                                    <header class="yf-chatlog-preview-header">
+                                        <strong class="yf-chatlog-preview-sender">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatSenderOne"}}</strong>
+                                        <span class="yf-chatlog-preview-meta">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatTimeEarlier"}}</span>
+                                        <span class="yf-chatlog-preview-actions"><i class="fas fa-ellipsis-vertical"></i></span>
+                                    </header>
+                                    <div class="yf-chatlog-preview-content">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatMessageLong"}}</div>
+                                </article>
+                                <article class="yf-chatlog-preview-message is-roll is-context">
+                                    <header class="yf-chatlog-preview-header">
+                                        <strong class="yf-chatlog-preview-sender">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatSenderTwo"}}</strong>
+                                        <span class="yf-chatlog-preview-meta">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatTimeNow"}}</span>
+                                        <span class="yf-chatlog-preview-actions"><i class="fas fa-ellipsis-vertical"></i></span>
+                                    </header>
+                                    <div class="yf-chatlog-preview-content">
+                                        <div class="yf-chatlog-preview-roll">
+                                            <span>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatRollFormula"}}</span>
+                                            <strong>{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatRollTotal"}}</strong>
+                                        </div>
+                                    </div>
+                                </article>
+                                <article class="yf-chatlog-preview-message is-blind">
+                                    <header class="yf-chatlog-preview-header">
+                                        <strong class="yf-chatlog-preview-sender">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatSenderGM"}}</strong>
+                                        <span class="yf-chatlog-preview-meta">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatTimeEarlier"}}</span>
+                                        <span class="yf-chatlog-preview-actions"><i class="fas fa-ellipsis-vertical"></i></span>
+                                    </header>
+                                    <div class="yf-chatlog-preview-content">
+                                        <span class="yf-chatlog-preview-badge">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatBlindBadge"}}</span>
+                                        {{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatMessageBlind"}}
+                                    </div>
+                                </article>
+                                <span class="yf-chatlog-preview-scrollbar"></span>
+                            </div>
+                            <form class="yf-chatlog-preview-form">
+                                <div class="yf-chatlog-preview-input">{{localize "YOUR_FLAVOR.Config.Foundry.PreviewChatComposer"}}</div>
+                                <span class="yf-chatlog-preview-composer-button"><i class="fas fa-face-smile"></i></span>
+                                <span class="yf-chatlog-preview-composer-button"><i class="fas fa-paper-plane"></i></span>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="yf-preview-note">
+        <i class="fas fa-bolt"></i>
+        <span>{{localize "YOUR_FLAVOR.Config.Foundry.LivePreviewNote"}}</span>
+    </div>
+    <div class="yf-preview-status {{#if foundryConfig.enabled}}enabled{{else}}disabled{{/if}}">
+        {{#if foundryConfig.enabled}}
+            <i class="fas fa-check-circle"></i> {{localize "YOUR_FLAVOR.Config.Foundry.LiveApplied"}}
+        {{else}}
+            <i class="fas fa-power-off"></i> {{localize "YOUR_FLAVOR.Config.Foundry.DisabledState"}}
+        {{/if}}
+    </div>
+</aside>

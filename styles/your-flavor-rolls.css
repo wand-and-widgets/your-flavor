@@ -1,0 +1,1716 @@
+/* Your Flavor — Rolls clean fixed-size redesign */
+
+/* Fixed Chat Basic / Rolls workspace */
+.your-flavor-config.yf-fixed-chat-rolls-size .window-resize-handle,
+.your-flavor-config.yf-fixed-chat-rolls-size .window-resizable-handle {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.your-flavor-config:has(.yf-active-rolls) {
+    overflow: hidden;
+    border: 1px solid #6f4d1c;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px #1c1009,
+        0 0 0 3px #8a6428,
+        0 22px 65px rgba(0, 0, 0, .54);
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header {
+    min-height: 52px;
+    padding: 7px 13px;
+    color: #ead38d;
+    background:
+        linear-gradient(180deg, rgba(10, 6, 3, .24), rgba(8, 5, 3, .68)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    border-bottom: 1px solid #795520;
+    box-shadow:
+        inset 0 1px rgba(255, 235, 167, .1),
+        inset 0 -2px rgba(0, 0, 0, .55);
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header .window-icon {
+    display: none;
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header .window-title {
+    color: #d9b85f;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .055em;
+    text-shadow: 0 2px 2px #0a0603;
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header .header-control {
+    min-width: 32px;
+    min-height: 32px;
+    border: 1px solid rgba(174, 128, 50, .62);
+    border-radius: 5px;
+    color: #f1dfaa;
+    background: linear-gradient(#452b18, #21130b);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .12),
+        0 2px 4px rgba(0, 0, 0, .4);
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header .header-control:hover {
+    color: #fff0bd;
+    border-color: #d2a750;
+    background: linear-gradient(#51351e, #29180e);
+}
+
+.your-flavor-config:has(.yf-active-rolls) .window-header .header-control:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, .42);
+}
+
+/* One immutable composition */
+.yf-config-container.yf-active-rolls {
+    --yfr-preview-width: 508px;
+    --yfr-workbench-gap: 14px;
+    --yfr-paper: #f2e7d1;
+    --yfr-paper-light: #faf3e4;
+    --yfr-paper-warm: #ead8b6;
+    --yfr-ink: #392718;
+    --yfr-ink-dim: #705a3e;
+    --yfr-ink-faint: #9b825d;
+    --yfr-brass: #946d25;
+    --yfr-brass-light: #d9bd70;
+    --yfr-brass-dark: #59400f;
+    --yfr-critical: #6f9b50;
+    --yfr-critical-deep: #315428;
+    --yfr-failure: #b55d4e;
+    --yfr-failure-deep: #6e3029;
+    --yfr-motion: 120ms;
+    --yfr-focus: 0 0 0 2px #fff4d2, 0 0 0 4px #946d25;
+    --yfr-panel-shadow:
+        inset 0 1px rgba(255, 255, 255, .86),
+        inset 0 -2px 8px rgba(83, 51, 18, .06),
+        0 4px 12px rgba(66, 39, 13, .09);
+    grid-template-columns: 20px var(--yfr-preview-width) var(--yfr-workbench-gap) minmax(0, 1fr) 20px;
+    grid-template-rows: 58px 60px minmax(0, 1fr) 84px;
+    gap: 0;
+    color: var(--yfr-ink);
+    background:
+        radial-gradient(1100px 420px at 15% -7%, rgba(255, 255, 247, .82), transparent 62%),
+        radial-gradient(800px 560px at 96% 112%, rgba(161, 119, 58, .14), transparent 64%),
+        linear-gradient(rgba(242, 231, 209, .76), rgba(242, 231, 209, .76)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 820px auto repeat,
+        var(--yfr-paper);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-active-rolls .yf-controls-panel,
+.yf-active-rolls .yf-controls-scroll {
+    display: contents;
+}
+
+.yf-active-rolls .yf-config-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+
+.yf-active-rolls .yf-rolls-context {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+
+.yf-active-rolls .yf-rolls-preview {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.yf-active-rolls .yf-rolls-editor {
+    grid-column: 4;
+    grid-row: 3;
+}
+
+.yf-active-rolls .yf-config-footer {
+    grid-column: 1 / -1;
+    grid-row: 4;
+}
+
+/* Text-only navigation */
+.yf-active-rolls .yf-config-toolbar {
+    z-index: 25;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 292px;
+    min-width: 0;
+    min-height: 58px;
+    background:
+        linear-gradient(rgba(249, 241, 224, .86), rgba(235, 219, 188, .86)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 640px auto repeat;
+    border-bottom: 1px solid rgba(125, 88, 31, .38);
+    box-shadow: 0 3px 10px rgba(71, 42, 15, .07);
+}
+
+.yf-active-rolls .yf-tab-bar {
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.yf-active-rolls .yf-tab {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 58px;
+    padding: 5px 7px;
+    border: 0;
+    border-right: 1px solid rgba(127, 92, 41, .16);
+    border-radius: 0;
+    color: #594326;
+    background: transparent;
+    box-shadow: none;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .018em;
+    transition:
+        color var(--yfr-motion) ease,
+        background var(--yfr-motion) ease,
+        box-shadow var(--yfr-motion) ease;
+}
+
+.yf-active-rolls .yf-tab-icon {
+    display: none;
+}
+
+.yf-active-rolls .yf-tab-label {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-active-rolls .yf-tab:hover {
+    color: #2f2013;
+    background: rgba(255, 251, 242, .58);
+}
+
+.yf-active-rolls .yf-tab:active {
+    background: rgba(223, 191, 129, .28);
+    box-shadow: inset 0 2px 5px rgba(75, 42, 11, .12);
+}
+
+.yf-active-rolls .yf-tab.active {
+    color: #2e1e11;
+    background: rgba(255, 249, 234, .68);
+    box-shadow: inset 0 -3px #ae761c;
+}
+
+.yf-active-rolls .yf-tab:focus-visible {
+    z-index: 3;
+    outline: 2px solid #946d25;
+    outline-offset: -3px;
+}
+
+.yf-active-rolls .yf-dirty-indicator {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c78b31;
+    box-shadow: 0 0 0 2px rgba(255, 246, 218, .72);
+}
+
+.yf-active-rolls .yf-tab.active .yf-dirty-indicator {
+    background: #c78b31;
+    box-shadow: 0 0 0 2px rgba(255, 246, 218, .72);
+}
+
+.yf-active-rolls .yf-config-toolbar .yf-control-search {
+    order: initial;
+    align-self: center;
+    margin: 0 18px 0 12px;
+}
+
+.yf-active-rolls .yf-control-search input {
+    width: 100%;
+    height: 36px;
+    padding: 7px 11px 7px 37px;
+    border: 1px solid rgba(125, 88, 31, .34);
+    border-radius: 6px;
+    color: var(--yfr-ink);
+    background: rgba(255, 252, 242, .76);
+    box-shadow:
+        inset 0 1px 3px rgba(99, 65, 24, .07),
+        0 1px rgba(255, 255, 255, .72);
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-active-rolls .yf-control-search::before {
+    left: 13px;
+    top: 7px;
+    color: var(--yfr-ink-dim);
+}
+
+.yf-active-rolls .yf-control-search input:focus {
+    border-color: var(--yfr-brass);
+    outline: 0;
+    box-shadow: var(--yfr-focus);
+}
+
+/* Context strip */
+.yf-active-rolls .yf-rolls-context {
+    z-index: 8;
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) minmax(230px, 1.1fr) minmax(180px, .8fr) minmax(250px, 1.15fr);
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    height: 46px;
+    margin: 6px 20px 8px;
+    padding: 0 18px;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+    border: 1px solid rgba(137, 96, 32, .35);
+    color: var(--yfr-ink);
+    background:
+        linear-gradient(rgba(255, 250, 238, .78), rgba(232, 214, 181, .7)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 520px auto;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .72),
+        0 3px 8px rgba(75, 45, 14, .07);
+}
+
+.yf-rolls-context-title,
+.yf-rolls-context-profile,
+.yf-rolls-context-theme,
+.yf-rolls-context-enable {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+}
+
+.yf-rolls-context-title {
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.yf-rolls-context-profile,
+.yf-rolls-context-theme {
+    gap: 6px;
+}
+
+.yf-rolls-context-profile {
+    justify-content: flex-end;
+    padding-right: 40px;
+}
+
+.yf-rolls-context-theme {
+    justify-content: flex-start;
+}
+
+.yf-rolls-context-profile small,
+.yf-rolls-context-theme small {
+    color: var(--yfr-ink-dim);
+    font-size: 12px;
+}
+
+.yf-rolls-context-profile strong,
+.yf-rolls-context-theme strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #3b2817;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-rolls-context-enable {
+    justify-content: flex-end;
+    gap: 12px;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-rolls-context-readonly {
+    color: #734827;
+    font-size: 11px;
+}
+
+/* Tactile toggles */
+.yf-active-rolls .yf-toggle-switch {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 54px;
+    height: 29px;
+}
+
+.yf-active-rolls .yf-toggle-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.yf-active-rolls .yf-toggle-slider {
+    position: absolute;
+    inset: 0;
+    border: 1px solid #8b6526;
+    border-radius: 999px;
+    background: linear-gradient(#d5c39e, #bba47a);
+    box-shadow:
+        inset 0 2px 4px rgba(69, 43, 13, .26),
+        0 1px rgba(255, 255, 255, .74);
+    cursor: pointer;
+    transition: background var(--yfr-motion) ease, border-color var(--yfr-motion) ease;
+}
+
+.yf-active-rolls .yf-toggle-slider::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 21px;
+    height: 21px;
+    border: 1px solid rgba(87, 58, 22, .48);
+    border-radius: 50%;
+    background: #fffdf7;
+    box-shadow: 0 2px 4px rgba(57, 34, 10, .3);
+    transition: transform var(--yfr-motion) ease;
+}
+
+.yf-active-rolls .yf-toggle-switch input:checked + .yf-toggle-slider {
+    border-color: #9b6616;
+    background: linear-gradient(#d89a2d, #a96812);
+}
+
+.yf-active-rolls .yf-toggle-switch input:checked + .yf-toggle-slider::before {
+    transform: translateX(25px);
+}
+
+.yf-active-rolls .yf-toggle-switch input:focus-visible + .yf-toggle-slider {
+    box-shadow: var(--yfr-focus);
+}
+
+.yf-active-rolls .yf-toggle-switch:hover .yf-toggle-slider {
+    border-color: #a97928;
+}
+
+.yf-active-rolls .yf-toggle-switch:has(input:disabled):hover .yf-toggle-slider {
+    border-color: #8b6526;
+}
+
+.yf-active-rolls .yf-toggle-mini {
+    width: 52px;
+    height: 28px;
+}
+
+.yf-active-rolls .yf-toggle-mini .yf-toggle-slider::before {
+    width: 20px;
+    height: 20px;
+}
+
+.yf-active-rolls .yf-toggle-mini input:checked + .yf-toggle-slider::before {
+    transform: translateX(24px);
+}
+
+/* Shared parchment sections */
+.yf-active-rolls .yf-rolls-preview,
+.yf-active-rolls .yf-roll-anatomy,
+.yf-active-rolls .yf-roll-outcomes,
+.yf-active-rolls .yf-roll-systems,
+.yf-active-rolls .yf-rolls-gate {
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid rgba(137, 96, 32, .38);
+    color: var(--yfr-ink);
+    background:
+        linear-gradient(rgba(255, 251, 241, .74), rgba(238, 223, 194, .68)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 680px auto repeat,
+        var(--yfr-paper);
+    box-shadow: var(--yfr-panel-shadow);
+}
+
+/* Live roll preview */
+.yf-active-rolls .yf-rolls-preview {
+    position: relative;
+    display: grid;
+    grid-template-rows: 35px 34px minmax(0, 1fr) 34px 123px;
+    gap: 8px;
+    margin: 12px 0 18px;
+    padding: 12px 14px;
+    overflow: hidden;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+}
+
+.yf-active-rolls .yf-rolls-preview:has(.yf-contrast-diagnostics.is-empty) {
+    grid-template-rows: 35px 34px minmax(0, 1fr) 34px;
+}
+
+.yf-active-rolls .yf-rolls-preview::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    pointer-events: none;
+    border: 1px solid rgba(148, 109, 37, .22);
+}
+
+.yf-rolls-panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.yf-rolls-panel-heading::before,
+.yf-rolls-panel-heading::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(137, 96, 32, .56);
+}
+
+.yf-rolls-panel-heading h2,
+.yf-roll-section-heading h2,
+.yf-roll-section-label {
+    margin: 0;
+    color: #432b18;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-weight: 500;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-rolls-panel-heading h2 {
+    flex: 0 0 auto;
+    font-size: 19px;
+}
+
+.yf-roll-preview-modes {
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 0;
+}
+
+.yf-roll-preview-mode {
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid rgba(131, 91, 30, .28);
+    border-right-width: 0;
+    border-radius: 0;
+    color: #5d4428;
+    background: rgba(255, 251, 240, .58);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .7);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 11px;
+    transition:
+        color var(--yfr-motion) ease,
+        background var(--yfr-motion) ease,
+        box-shadow var(--yfr-motion) ease;
+}
+
+.yf-roll-preview-mode:first-child {
+    border-radius: 5px 0 0 5px;
+}
+
+.yf-roll-preview-mode:last-child {
+    border-right-width: 1px;
+    border-radius: 0 5px 5px 0;
+}
+
+.yf-roll-preview-mode:hover {
+    color: #382514;
+    background: rgba(255, 247, 225, .9);
+}
+
+.yf-roll-preview-mode:active {
+    box-shadow: inset 0 3px 6px rgba(83, 52, 16, .14);
+}
+
+.yf-roll-preview-mode.is-active {
+    z-index: 2;
+    border-color: #b67c21;
+    color: #4a2f12;
+    background: linear-gradient(rgba(237, 190, 91, .62), rgba(217, 155, 45, .42));
+    box-shadow:
+        inset 0 1px rgba(255, 249, 222, .82),
+        0 2px 5px rgba(79, 49, 14, .12);
+}
+
+.yf-active-rolls .yf-roll-preview-mode:focus-visible {
+    z-index: 3;
+    outline: 0;
+    box-shadow: var(--yfr-focus);
+}
+
+.yf-roll-proof-state {
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 24px auto;
+    align-content: start;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-roll-proof-label {
+    align-self: center;
+    color: #513720;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.yf-active-rolls .yf-roll-preview-card {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 !important;
+    padding: 0;
+    animation: none !important;
+    border-radius: 3px;
+    justify-self: stretch;
+}
+
+.yf-active-rolls .yf-rolls-preview .yf-preview-card.yf-card .dice-rolls .roll.yf-roll-surface-terms {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    flex: 0 0 28px;
+    width: 28px;
+    min-width: 28px;
+    max-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
+    padding: 0;
+    line-height: 1;
+}
+
+.yf-active-rolls .yf-roll-preview-saved {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr) 88px;
+    align-items: center;
+    min-height: 72px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(122, 91, 45, .56);
+    color: #3d2d20;
+    background:
+        linear-gradient(180deg, rgba(255, 252, 242, .82), rgba(224, 208, 178, .72)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 520px auto repeat,
+        #e8dcc5;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .82),
+        inset 0 -8px 18px rgba(92, 61, 24, .07);
+}
+
+/*
+ * Runtime layouts still contribute roll-surface variables, but their
+ * decorative message effects must not move or cover this compact comparison.
+ */
+.yf-active-rolls .yf-roll-preview-saved::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    z-index: 0 !important;
+    background:
+        radial-gradient(ellipse at 0% 50%, rgba(93, 62, 27, .15), transparent 42%),
+        radial-gradient(ellipse at 100% 50%, rgba(93, 62, 27, .15), transparent 42%) !important;
+    pointer-events: none !important;
+}
+
+.yf-active-rolls .yf-roll-preview-saved::after {
+    content: none !important;
+    display: none !important;
+}
+
+.yf-active-rolls .yf-roll-preview-saved > * {
+    position: relative;
+    z-index: 1;
+}
+
+.yf-roll-saved-formula {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    border-right: 1px solid rgba(84, 72, 54, .3);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 22px;
+}
+
+.yf-active-rolls .yf-roll-preview-saved .yf-roll-saved-formula.yf-roll-surface-formula {
+    display: grid !important;
+    place-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    border-color: rgba(117, 87, 43, .46) !important;
+    color: #3b2a1d !important;
+    background: rgba(141, 105, 48, .08) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+}
+
+.yf-roll-saved-terms,
+.yf-roll-preview-draft .dice-rolls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0 14px;
+    list-style: none;
+}
+
+.yf-roll-saved-terms .roll,
+.yf-roll-preview-draft .dice-rolls .roll {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 48px;
+    border: 1px solid rgba(76, 68, 56, .5);
+    border-radius: 4px;
+    background: rgba(255, 253, 245, .44);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .64);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 22px;
+}
+
+.yf-active-rolls .yf-roll-preview-saved .yf-roll-saved-terms.yf-roll-surface-terms {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    color: #473426 !important;
+    background: transparent !important;
+}
+
+.yf-active-rolls .yf-roll-preview-saved .yf-roll-saved-terms .roll.yf-roll-surface-terms {
+    display: grid !important;
+    place-items: center !important;
+    width: 46px !important;
+    height: 46px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-color: rgba(101, 75, 41, .52) !important;
+    color: #473426 !important;
+    background: rgba(255, 249, 234, .58) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+}
+
+.yf-roll-saved-total {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    border-left: 1px solid rgba(84, 72, 54, .34);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 38px;
+}
+
+.yf-active-rolls .yf-roll-preview-saved .yf-roll-saved-total.yf-roll-surface-total {
+    display: grid !important;
+    place-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-color: rgba(117, 87, 43, .48) !important;
+    color: #332318 !important;
+    background: rgba(163, 120, 49, .1) !important;
+    box-shadow: none !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+}
+
+.yf-active-rolls .yf-roll-preview-draft {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 112px;
+    grid-template-rows: 72px 62px minmax(0, 1fr);
+    gap: 0;
+    min-height: 0;
+    padding: 16px 16px 16px 58px;
+    overflow: hidden;
+    border: 2px solid #3f3a32;
+    color: #d5d0c5;
+    background: linear-gradient(145deg, #181a1b, #0e1011);
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 255, 255, .025),
+        inset 0 12px 28px rgba(255, 255, 255, .025),
+        0 4px 10px rgba(45, 29, 12, .18);
+}
+
+.yf-roll-preview-draft::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 28px !important;
+    right: auto !important;
+    top: 38px !important;
+    bottom: 35px !important;
+    width: 1px !important;
+    height: auto !important;
+    transform: none !important;
+    background: rgba(191, 144, 53, .66) !important;
+    pointer-events: none !important;
+}
+
+.yf-roll-preview-draft::after {
+    content: none !important;
+    display: none !important;
+}
+
+.yf-roll-anatomy-row {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-roll-anatomy-row.is-formula {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+
+.yf-roll-anatomy-row.is-terms {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+}
+
+.yf-roll-anatomy-row.is-tooltip {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.yf-roll-anatomy-row.is-total {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    display: grid;
+    place-items: center;
+    margin-left: 14px;
+}
+
+.yf-roll-anatomy-marker {
+    position: absolute;
+    left: -50px;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    transform: translateY(-50%);
+    border: 1px solid #a67b2f;
+    border-radius: 50%;
+    color: #4a3218;
+    background: #fff6df;
+    box-shadow:
+        inset 0 0 0 2px rgba(190, 142, 49, .18),
+        0 2px 4px rgba(0, 0, 0, .28);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.yf-roll-anatomy-marker::after {
+    content: "";
+    position: absolute;
+    left: 29px;
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background: rgba(191, 144, 53, .72);
+}
+
+.yf-roll-preview-draft .dice-formula {
+    display: grid;
+    place-items: center;
+    height: 56px;
+    border: 1px solid rgba(132, 124, 111, .24);
+    border-radius: 4px;
+    color: #d9d3c8;
+    background: rgba(255, 255, 255, .02);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 30px;
+}
+
+.yf-active-rolls .yf-roll-preview-draft .dice-formula.yf-roll-surface-formula {
+    display: grid !important;
+    place-items: center !important;
+    box-sizing: border-box !important;
+    height: 56px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+}
+
+.yf-active-rolls .yf-roll-preview-draft .dice-rolls.yf-roll-surface-terms {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    height: 48px !important;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    gap: 8px !important;
+    list-style: none !important;
+}
+
+.yf-active-rolls .yf-roll-preview-draft .dice-rolls .roll.yf-roll-surface-terms {
+    display: grid !important;
+    place-items: center !important;
+    box-sizing: border-box !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+    vertical-align: middle !important;
+}
+
+.yf-roll-modifier {
+    color: #d4cec2;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 21px;
+}
+
+.yf-roll-preview-draft .dice-tooltip {
+    height: 100%;
+    padding: 10px 14px;
+    border: 1px solid rgba(125, 119, 107, .25);
+    border-radius: 3px;
+    color: #d9d3c8;
+    background: rgba(0, 0, 0, .3);
+}
+
+.yf-roll-preview-draft .tooltip-part {
+    display: grid;
+    grid-template-rows: repeat(3, 22px);
+    gap: 0;
+    align-content: center;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.yf-roll-preview-draft .tooltip-part .dice {
+    display: contents;
+}
+
+.yf-roll-preview-draft .dice .part-formula {
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-roll-preview-draft .dice .part-total,
+.yf-roll-tooltip-modifier {
+    font-size: 14px;
+}
+
+.yf-roll-preview-draft .dice .part-formula,
+.yf-roll-preview-draft .dice .part-total,
+.yf-roll-preview-draft .yf-roll-tooltip-modifier {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 22px;
+    margin: 0;
+    padding: 0;
+    line-height: 18px;
+    text-align: left;
+}
+
+.yf-roll-preview-draft .is-total .dice-total {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 102px;
+    border: 1px solid rgba(132, 124, 111, .24);
+    border-radius: 4px;
+    color: #d8d2c7;
+    background: rgba(255, 255, 255, .025);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 48px;
+}
+
+.yf-active-rolls .yf-roll-preview-draft .is-total .dice-total.yf-roll-surface-total {
+    display: grid !important;
+    place-items: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 102px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: normal !important;
+}
+
+.yf-active-rolls .yf-preview-status {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 34px;
+    color: #4f733c;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.yf-roll-status-dot {
+    width: 9px;
+    height: 9px;
+    border: 1px solid #4f7439;
+    border-radius: 50%;
+    background: #7ba657;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .45);
+}
+
+.yf-active-rolls .yf-preview-status.disabled {
+    color: #80513b;
+}
+
+.yf-active-rolls .yf-preview-status.disabled .yf-roll-status-dot {
+    border-color: #7f4e38;
+    background: #b46f55;
+}
+
+/* Same warning, same markup, same panel position as Chat Basic and Cards - so
+ * it has to look the same. This rule had drifted: no paper grain, a different
+ * border and ink, 4px corners against their 3px, and only the inset shadow.
+ * Structural bits Rolls needs (stacking, height clamps, clipping) stay. */
+.yf-active-rolls .yf-contrast-diagnostics {
+    z-index: 1;
+    min-height: 0;
+    max-height: none;
+    margin-top: auto;
+    padding: 11px 13px;
+    overflow: hidden;
+    border: 1px solid rgba(155, 103, 24, .5);
+    border-radius: 3px;
+    color: #6f4715;
+    background:
+        linear-gradient(rgba(250, 232, 190, .78), rgba(226, 190, 122, .58)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 420px auto,
+        var(--yfp-paper-warm);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .62),
+        0 3px 8px rgba(70, 40, 13, .1);
+}
+
+.yf-active-rolls .yf-contrast-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    /* Matched to Chat Basic and Cards. */
+    color: #765019;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-active-rolls .yf-contrast-summary,
+.yf-active-rolls .yf-contrast-list {
+    color: #785326;
+    opacity: 1;
+    font-size: 12px;
+}
+
+.yf-active-rolls .yf-contrast-list {
+    display: grid;
+    gap: 2px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.yf-active-rolls .yf-contrast-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* The ratio reads as a chip in Chat Basic and Cards; here it was bare text, and
+ * bolder than theirs. Same chip, same weight. */
+.yf-active-rolls .yf-contrast-ratio {
+    border: 1px solid rgba(148, 102, 34, .34);
+    color: #4e3213;
+    background: rgba(255, 249, 231, .46);
+    white-space: nowrap;
+}
+
+.yf-active-rolls .yf-contrast-diagnostics.is-empty {
+    display: none;
+}
+
+/* Right editor */
+.yf-active-rolls .yf-rolls-editor {
+    display: grid;
+    grid-template-rows: 400px 178px 154px;
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+    margin: 12px 0 18px;
+    overflow: hidden;
+}
+
+.yf-active-rolls .yf-roll-anatomy,
+.yf-active-rolls .yf-roll-outcomes,
+.yf-active-rolls .yf-roll-systems {
+    overflow: hidden;
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+.yf-active-rolls .yf-roll-anatomy,
+.yf-active-rolls .yf-roll-outcomes {
+    display: grid;
+    grid-template-rows: 41px minmax(0, 1fr);
+    padding: 0 12px 12px;
+}
+
+.yf-active-rolls .yf-roll-anatomy {
+    grid-template-rows: 52px minmax(0, 1fr);
+}
+
+.yf-roll-section-heading {
+    display: grid;
+    grid-template-columns: 34px auto minmax(32px, 1fr);
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: 40px;
+}
+
+.yf-roll-section-number {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(139, 98, 33, .58);
+    border-radius: 50%;
+    color: #5b3a17;
+    background: rgba(255, 248, 229, .76);
+    box-shadow: inset 0 0 0 2px rgba(190, 142, 49, .11);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+}
+
+.yf-roll-section-heading h2,
+.yf-roll-section-label {
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.yf-roll-section-rule {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(139, 98, 33, .62), rgba(139, 98, 33, .08));
+}
+
+.yf-roll-anatomy-flow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: 10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-roll-anatomy-column {
+    display: grid;
+    grid-template-rows: max-content max-content;
+    align-content: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-active-rolls .yf-roll-surface-card {
+    display: grid;
+    grid-template-rows: 38px auto;
+    gap: 0;
+    min-width: 0;
+    min-height: 0;
+    height: max-content;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(135, 96, 37, .28);
+    border-radius: 5px;
+    background: rgba(255, 252, 243, .36);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .62);
+}
+
+.yf-active-rolls .yf-roll-surface-header {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    border-bottom: 1px solid rgba(135, 96, 37, .22);
+    background: rgba(239, 223, 192, .35);
+}
+
+.yf-active-rolls .yf-roll-surface-header h3,
+.yf-roll-outcome-content h3 {
+    margin: 0;
+    color: #4a3019;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: .025em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.yf-active-rolls .yf-roll-field-list,
+.yf-roll-outcome-fields {
+    display: grid;
+    align-content: start;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-active-rolls .yf-roll-field,
+.yf-active-rolls .yf-roll-field.yf-color-palette-host {
+    display: grid;
+    grid-template-columns: minmax(92px, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 16px 4px 12px;
+    border-bottom: 1px solid rgba(135, 96, 37, .16);
+}
+
+.yf-active-rolls .yf-roll-field:last-child {
+    border-bottom: 0;
+}
+
+.yf-active-rolls .yf-roll-field-label {
+    min-width: 0;
+    color: #62492f;
+    font-family: "YF Crimson", Georgia, serif;
+    font-size: 13px;
+    letter-spacing: .015em;
+    text-transform: uppercase;
+}
+
+.yf-active-rolls .yf-roll-field-controls {
+    display: grid;
+    grid-template-columns: 58px 82px 92px;
+    align-items: center;
+    gap: 8px;
+}
+
+.yf-roll-color-well {
+    position: relative;
+    display: block;
+    width: 58px;
+    height: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(86, 68, 47, .55);
+    border-radius: 3px;
+    background:
+        linear-gradient(var(--yf-roll-swatch-display), var(--yf-roll-swatch-display)),
+        conic-gradient(#ddd 25%, #fff 0 50%, #ddd 0 75%, #fff 0) 0 0 / 10px 10px;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .55),
+        0 1px 2px rgba(70, 45, 15, .16);
+}
+
+.yf-roll-color-well .yf-color-swatch {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+}
+
+.yf-roll-color-well .yf-color-palette-button {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    color: transparent;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.yf-active-rolls .yf-roll-color-well :is(.yf-color-palette-button, .yf-color-swatch):focus-visible {
+    outline: 0;
+    box-shadow: none;
+}
+
+.yf-roll-color-well:hover {
+    border-color: #9b6f25;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .68),
+        0 2px 4px rgba(70, 45, 15, .2);
+}
+
+.yf-active-rolls .yf-roll-color-well:focus-within {
+    box-shadow: var(--yfr-focus);
+}
+
+.yf-active-rolls .yf-token-badge,
+.yf-active-rolls .yf-token-reset {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid rgba(137, 96, 32, .28);
+    border-radius: 4px;
+    color: #5a3c25;
+    background: linear-gradient(rgba(255, 252, 243, .82), rgba(231, 211, 173, .7));
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .72),
+        0 2px 4px rgba(75, 45, 14, .1);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .025em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.yf-active-rolls .yf-roll-field.is-custom .yf-token-badge {
+    border-color: rgba(148, 102, 28, .55);
+    color: #5f3b0f;
+    background: rgba(235, 199, 126, .42);
+}
+
+.yf-active-rolls .yf-token-reset {
+    width: 92px;
+    cursor: pointer;
+    transition:
+        color var(--yfr-motion) ease,
+        background var(--yfr-motion) ease,
+        border-color var(--yfr-motion) ease,
+        box-shadow var(--yfr-motion) ease;
+}
+
+.yf-active-rolls .yf-token-reset:hover {
+    color: #3e2815;
+    border-color: #a7772b;
+    background: rgba(255, 244, 218, .86);
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .82),
+        0 2px 4px rgba(75, 45, 14, .13);
+}
+
+.yf-active-rolls .yf-token-reset:active {
+    background: rgba(229, 206, 162, .66);
+    box-shadow: inset 0 2px 4px rgba(75, 45, 14, .14);
+    transform: translateY(1px);
+}
+
+.yf-active-rolls .yf-token-reset:focus-visible {
+    outline: 0;
+    box-shadow: var(--yfr-focus);
+}
+
+/* Outcome states */
+.yf-roll-outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-roll-outcome-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 82px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(135, 96, 37, .28);
+    border-left: 3px solid var(--yfr-critical);
+    border-radius: 5px;
+    background: rgba(255, 252, 243, .4);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .66);
+}
+
+.yf-roll-outcome-card.is-failure {
+    border-left-color: var(--yfr-failure);
+}
+
+.yf-roll-outcome-content {
+    display: grid;
+    grid-template-rows: 32px minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+}
+
+.yf-roll-outcome-content h3 {
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid rgba(135, 96, 37, .18);
+    background: rgba(239, 223, 192, .28);
+    font-size: 14px;
+}
+
+.yf-roll-outcome-fields .yf-roll-field,
+.yf-active-rolls .yf-roll-outcome-fields .yf-roll-field.yf-color-palette-host {
+    grid-template-columns: minmax(58px, 1fr) auto;
+    min-height: 37px;
+    padding-inline: 10px;
+}
+
+.yf-roll-outcome-fields .yf-roll-field-controls {
+    grid-template-columns: 44px 62px 68px;
+    gap: 6px;
+}
+
+.yf-roll-outcome-fields .yf-roll-color-well {
+    width: 44px;
+    height: 27px;
+}
+
+.yf-roll-outcome-fields .yf-token-badge {
+    width: 62px;
+    padding-inline: 5px;
+    font-size: 10px;
+}
+
+.yf-roll-outcome-fields .yf-token-reset {
+    width: 68px;
+    padding-inline: 5px;
+    font-size: 10px;
+}
+
+.yf-roll-outcome-sample {
+    position: relative;
+    z-index: 2;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    margin: 12px 10px 12px 0;
+    border: 1px solid var(--yfr-critical);
+    border-radius: 4px;
+    color: var(--yfr-critical-deep);
+    background:
+        linear-gradient(rgba(255, 254, 248, .9), rgba(239, 224, 194, .84)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 220px auto;
+    font-family: "YF Cinzel", Georgia, serif;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .88),
+        0 2px 6px rgba(66, 40, 14, .09);
+    font-size: 34px;
+}
+
+.yf-roll-outcome-card.is-failure .yf-roll-outcome-sample {
+    border-color: var(--yfr-failure);
+    color: var(--yfr-failure-deep);
+}
+
+/* System coverage */
+.yf-active-rolls .yf-roll-systems {
+    display: grid;
+    grid-template-rows: 48px minmax(0, 1fr);
+    margin: 0;
+    padding: 0 14px 14px;
+}
+
+.yf-roll-system-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+}
+
+.yf-roll-system-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 52px;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    height: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(135, 96, 37, .3);
+    border-radius: 6px;
+    background:
+        radial-gradient(280px 86px at 10% 0, rgba(255, 255, 255, .68), transparent 72%),
+        linear-gradient(rgba(255, 251, 239, .66), rgba(235, 215, 178, .62));
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .74),
+        0 2px 6px rgba(78, 46, 15, .09);
+    cursor: pointer;
+    transition: background var(--yfr-motion) ease;
+}
+
+.yf-roll-system-card.is-current {
+    border-left: 3px solid #b47b22;
+    background:
+        radial-gradient(280px 86px at 10% 0, rgba(255, 255, 255, .72), transparent 72%),
+        linear-gradient(rgba(255, 246, 221, .78), rgba(230, 201, 145, .68));
+}
+
+.yf-roll-system-card:hover {
+    background: rgba(255, 247, 226, .54);
+}
+
+.yf-roll-system-card:focus-within {
+    box-shadow: inset var(--yfr-focus);
+}
+
+.yf-roll-system-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.yf-roll-system-copy strong {
+    overflow: hidden;
+    color: #4b321d;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.yf-roll-system-copy small {
+    color: #80694c;
+    font-size: 10px;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.yf-roll-system-card.is-current .yf-roll-system-copy small {
+    color: #a26812;
+    font-weight: 600;
+}
+
+/* Permission gates */
+.yf-active-rolls .yf-rolls-gate {
+    grid-row: 1 / -1;
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    text-align: center;
+}
+
+.yf-rolls-gate h2 {
+    margin: 0 0 8px;
+    color: #5b3618;
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 18px;
+}
+
+.yf-rolls-gate p {
+    margin: 0;
+    color: var(--yfr-ink-dim);
+}
+
+/* Footer */
+.yf-active-rolls .yf-config-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+    min-height: 84px;
+    padding: 12px 22px;
+    border-top: 1px solid #76531f;
+    background:
+        linear-gradient(180deg, rgba(10, 6, 3, .28), rgba(8, 5, 3, .72)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 720px auto repeat,
+        #28170f;
+    box-shadow:
+        inset 0 2px rgba(255, 226, 145, .08),
+        0 -5px 14px rgba(69, 39, 12, .12);
+}
+
+.yf-active-rolls .yf-footer-left,
+.yf-active-rolls .yf-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.yf-active-rolls .yf-footer-right {
+    justify-content: flex-end;
+}
+
+.yf-active-rolls .yf-rolls-footer-button,
+.yf-active-rolls .yf-rolls-save-button {
+    min-width: 140px;
+    min-height: 46px;
+    padding: 9px 16px;
+    border: 1px solid rgba(155, 110, 38, .58);
+    border-radius: 4px;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 0 calc(100% - 7px), 0 7px);
+    color: #ead7a1;
+    background:
+        linear-gradient(rgba(63, 37, 20, .78), rgba(28, 16, 10, .86)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 320px auto;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .1),
+        inset 0 -3px rgba(0, 0, 0, .24),
+        0 3px 7px rgba(0, 0, 0, .24);
+    font-family: "YF Cinzel", Georgia, serif;
+    font-size: 12px;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+    transition:
+        color var(--yfr-motion) ease,
+        border-color var(--yfr-motion) ease,
+        background var(--yfr-motion) ease,
+        box-shadow var(--yfr-motion) ease;
+}
+
+.yf-active-rolls .yf-rolls-footer-button:hover,
+.yf-active-rolls .yf-rolls-save-button:hover {
+    color: #fff0bd;
+    border-color: #d0a34d;
+    background:
+        linear-gradient(rgba(78, 48, 27, .84), rgba(34, 20, 12, .9)),
+        url("../assets/ui/overview/textures/walnut-grain-v2.webp") center / 320px auto;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .13),
+        0 5px 10px rgba(0, 0, 0, .28);
+}
+
+.yf-active-rolls .yf-rolls-footer-button:active,
+.yf-active-rolls .yf-rolls-save-button:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, .35);
+}
+
+.yf-active-rolls .yf-rolls-footer-button:focus-visible,
+.yf-active-rolls .yf-rolls-save-button:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 2px #28170f, 0 0 0 4px #d3a84f;
+}
+
+.yf-active-rolls .yf-rolls-save-button {
+    min-width: 156px;
+    border-color: #c18a2f;
+    color: #fff1c2;
+    background:
+        linear-gradient(rgba(201, 137, 30, .94), rgba(149, 85, 9, .96)),
+        url("../assets/ui/overview/frames/gold-button-frame-v1.svg") center / 100% 100% no-repeat;
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 223, 137, .34),
+        inset 0 -4px rgba(84, 42, 5, .25),
+        0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.yf-rolls-save-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #e0cf9c;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.yf-rolls-save-dot {
+    width: 11px;
+    height: 11px;
+    border: 1px solid #4e7137;
+    border-radius: 50%;
+    background: #7ca75a;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .42);
+}
+
+.yf-rolls-save-state.is-dirty {
+    color: #f0c875;
+}
+
+.yf-rolls-save-state.is-dirty .yf-rolls-save-dot {
+    border-color: #8c5e19;
+    background: #d39b38;
+}
+
+/* Popover and disabled states */
+.yf-color-palette-popover[data-yf-owner-tab="rolls"] {
+    --yf-text-secondary: #5f472e;
+    --yf-accent-primary: #946d25;
+    --yf-border-medium: rgba(125, 88, 31, .56);
+    z-index: 100000;
+    border-color: rgba(125, 88, 31, .56);
+    color: #392718;
+    background:
+        radial-gradient(360px 120px at 18% 0%, rgba(255, 255, 250, .62), transparent 74%),
+        linear-gradient(rgba(250, 243, 228, .86), rgba(229, 207, 169, .84)),
+        url("../assets/ui/overview/textures/paper-grain-v2.webp") center / 520px auto,
+        #f2e7d1;
+    box-shadow:
+        inset 0 1px rgba(255, 255, 255, .78),
+        0 18px 44px rgba(49, 29, 10, .38);
+}
+
+.yf-color-palette-popover[data-yf-owner-tab="rolls"] .yf-color-palette-code {
+    color: #5f472e;
+}
+
+.yf-active-rolls :is(button, input, select, textarea):disabled {
+    cursor: not-allowed;
+    opacity: .48;
+    filter: saturate(.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .yf-active-rolls *,
+    .yf-active-rolls *::before,
+    .yf-active-rolls *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .yf-active-rolls :is(button, .yf-tab, .yf-token-reset):active {
+        transform: none !important;
+    }
+}

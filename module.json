@@ -2,7 +2,7 @@
   "id": "your-flavor",
   "title": "Your Flavor",
   "description": "A full visual customization studio for Foundry VTT. Theme chat messages, rolls, item and system cards, the Foundry shell, interface icons, and shared table visuals with presets, live preview, safe roll/card handling, visual sharing, diagnostics, and GM controls.",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "compatibility": {
     "minimum": "13",
     "verified": "14"
@@ -15,8 +15,18 @@
       "flags": {}
     }
   ],
-  "esmodules": ["scripts/your-flavor.js"],
-  "styles": ["styles/your-flavor.css"],
+  "esmodules": [
+    "scripts/your-flavor.js"
+  ],
+  "styles": [
+    "styles/your-flavor.css",
+    "styles/your-flavor-studio.css",
+    "styles/your-flavor-materials.css",
+    "styles/your-flavor-chat.css",
+    "styles/your-flavor-rolls.css",
+    "styles/your-flavor-overview.css",
+    "styles/your-flavor-shell.css"
+  ],
   "languages": [
     {
       "lang": "en",

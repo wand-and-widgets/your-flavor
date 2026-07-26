@@ -1,0 +1,54 @@
+<aside class="yf-preview-panel yf-cards-preview" aria-label="{{localize 'YOUR_FLAVOR.Config.CardsDesign.LivePreview'}}">
+    <div class="yf-cards-panel-heading">
+        <h2>{{localize "YOUR_FLAVOR.Config.CardsDesign.LivePreview"}}</h2>
+        <span aria-hidden="true"></span>
+    </div>
+
+    <nav class="yf-cards-fixtures" aria-label="{{localize 'YOUR_FLAVOR.Config.CardsDesign.FixturePicker'}}">
+        {{#each previewFixtures}}
+        <button type="button"
+                class="yf-cards-fixture {{#if this.isActive}}is-active{{/if}}"
+                data-action="switchPreviewFixture"
+                data-fixture="{{this.id}}"
+                aria-pressed="{{#if this.isActive}}true{{else}}false{{/if}}"
+                title="{{this.description}}">
+            <img src="{{this.iconAsset}}" alt="" aria-hidden="true">
+            <span class="yf-cards-fixture-label">{{this.label}}</span>
+            <small>{{this.groupLabel}}</small>
+        </button>
+        {{/each}}
+    </nav>
+
+    {{#if previewCompare}}
+    <div class="yf-cards-proof-stack">
+        <section class="yf-cards-proof-state">
+            <span class="yf-cards-proof-label">{{previewCompare.afterLabel}}</span>
+            <article class="yf-preview-card yf-preview-compare-card yf-card yf-card-{{previewCompare.afterLayout}} {{previewCompare.fixture.messageClassString}}"
+                     data-preview-slot="comparison"
+                     data-preview-state="after"
+                     data-preview-fixture="{{previewCompare.fixture.id}}"
+                     data-fixture-classes="{{previewCompare.fixture.messageClassString}}">
+                <div class="yf-preview-header">
+                    <img src="{{previewCompare.fixture.speaker.avatar}}" alt="{{previewCompare.fixture.speaker.name}}" class="yf-preview-avatar">
+                    <div class="yf-preview-header-text">
+                        <span class="yf-preview-name">{{previewCompare.fixture.speaker.name}}</span>
+                        <span class="yf-preview-time">{{previewCompare.fixture.timestamp}}</span>
+                    </div>
+                </div>
+                <div class="yf-preview-content">{{{previewCompare.fixture.html}}}</div>
+            </article>
+        </section>
+    </div>
+    {{/if}}
+
+    <div class="yf-preview-status {{#if cardTabs.enabled}}enabled{{else}}disabled{{/if}}" role="status">
+        <span class="yf-cards-status-dot" aria-hidden="true"></span>
+        {{#if cardTabs.enabled}}
+        {{localize "YOUR_FLAVOR.Config.CardsDesign.LiveActive"}}
+        {{else}}
+        {{localize "YOUR_FLAVOR.Config.CardsDesign.LiveInactive"}}
+        {{/if}}
+    </div>
+
+    <div class="yf-contrast-diagnostics is-empty" data-contrast-diagnostics role="region"></div>
+</aside>

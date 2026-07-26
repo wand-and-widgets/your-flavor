@@ -5,6 +5,7 @@
 
 import { DEFAULT_CONFIG } from '../constants.js';
 import { getChatPreset } from '../chat-presets.js';
+import { CHAT_RANDOMIZER_ANY, getChatRandomizerCandidates } from '../chat-randomizer.js';
 
 export const CHAT_CUSTOMIZATION_TOKEN_KEYS = [
     'fontFamily',
@@ -31,24 +32,87 @@ export class FlavorChatTabController {
     }
 
     filterLayoutsByCategory(element, category) {
-        if (!element) return;
+        this.filterLayouts(element, { category });
+    }
+
+    /**
+     * Filter the preset gallery by the category tags AND by the tone/intensity/motion
+     * selects. Those three used to feed the randomizer only, so they read as filters
+     * sitting above the gallery while changing nothing in it.
+     */
+    filterLayouts(element, { category = null, constraints = null, page = 0, pageSize = 0 } = {}) {
+        if (!element) return null;
 
         const favorites = this.manager.getFavorites();
-        const layouts = element.querySelectorAll('.yf-layout-option');
-        layouts.forEach(layout => {
+        const allowedByConstraints = this.#buildConstraintAllowList(constraints);
+        const layouts = [...element.querySelectorAll('.yf-layout-option')];
+        const eligible = [];
+        const pinned = [];
+
+        for (const layout of layouts) {
             const layoutCategory = layout.dataset.category;
             const layoutId = layout.dataset.layout;
+            // 'none' and 'custom' are escape hatches: never filtered, never paged away.
+            if (layoutId === 'none' || layoutId === 'custom') {
+                pinned.push(layout);
+                continue;
+            }
 
             let shouldShow;
             if (category === 'favorites') {
-                shouldShow = favorites.includes(layoutId) || layoutId === 'none' || layoutId === 'custom';
+                shouldShow = favorites.includes(layoutId);
             } else if (category === null) {
                 shouldShow = true;
             } else {
-                shouldShow = layoutCategory === category || layoutId === 'none' || layoutId === 'custom';
+                shouldShow = layoutCategory === category;
             }
-            layout.style.display = shouldShow ? '' : 'none';
-        });
+
+            if (shouldShow && allowedByConstraints) {
+                shouldShow = allowedByConstraints.has(layoutId);
+            }
+
+            if (shouldShow) eligible.push(layout);
+            else layout.style.display = 'none';
+        }
+
+        const size = pageSize > 0 ? pageSize : eligible.length || 1;
+        const pageCount = Math.max(1, Math.ceil(eligible.length / size));
+        const current = Math.max(0, Math.min(page, pageCount - 1));
+        const start = current * size;
+        const shown = eligible.slice(start, start + size);
+        const shownSet = new Set(shown);
+
+        for (const layout of eligible) layout.style.display = shownSet.has(layout) ? '' : 'none';
+        for (const layout of pinned) layout.style.display = '';
+
+        const empty = element.querySelector('[data-layout-empty]');
+        if (empty) empty.hidden = eligible.length > 0;
+
+        return {
+            total: eligible.length,
+            page: current,
+            pageCount,
+            first: eligible.length ? start + 1 : 0,
+            last: start + shown.length
+        };
+    }
+
+    /**
+     * @returns {Set<string>|null} allowed preset ids, or null when nothing is constrained.
+     */
+    #buildConstraintAllowList(constraints) {
+        if (!constraints) return null;
+        const narrowed = ['tone', 'intensity', 'motion']
+            .some(key => constraints[key] && constraints[key] !== CHAT_RANDOMIZER_ANY);
+        if (!narrowed) return null;
+
+        return new Set(
+            getChatRandomizerCandidates({
+                tone: constraints.tone,
+                intensity: constraints.intensity,
+                motion: constraints.motion
+            }).map(preset => preset.id)
+        );
     }
 
     applyPreset(config, presetId) {

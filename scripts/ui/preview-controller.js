@@ -198,6 +198,8 @@ const FOUNDRY_REAL_PREVIEW_TARGETS = Object.freeze({
 });
 
 export class FlavorPreviewController {
+    _dismissedContrastFingerprints = new Map();
+
     constructor({ app }) {
         this.app = app;
     }
@@ -273,6 +275,7 @@ export class FlavorPreviewController {
                     cards: cardConfig.cards
                 });
             }
+            this.applyRollPreviewOutcome(previewCard, previewCard.dataset.previewRollOutcome);
             const classification = this.getFixtureSurfaceClassification(fixtureClasses);
             renderMessageSurfaces(previewCard, classification, {
                 rolls: this.canStyleRollSurfaces(cardConfig, classification),
@@ -282,10 +285,16 @@ export class FlavorPreviewController {
 
         const statusEl = app.element?.querySelector('.yf-preview-status');
         if (statusEl) {
-            statusEl.className = `yf-preview-status ${config.enabled ? 'enabled' : 'disabled'}`;
-            statusEl.innerHTML = config.enabled
-                ? `<i class="fas fa-check-circle"></i> ${this.localize('YOUR_FLAVOR.Config.StatusEnabled')}`
-                : `<i class="fas fa-times-circle"></i> ${this.localize('YOUR_FLAVOR.Config.StatusDisabled')}`;
+            const rollsEnabled = app._activeTab !== 'rolls' || config?.rolls?.enabled !== false;
+            const previewEnabled = config.enabled && rollsEnabled;
+            statusEl.className = `yf-preview-status ${previewEnabled ? 'enabled' : 'disabled'}`;
+            statusEl.innerHTML = app._activeTab === 'rolls'
+                ? previewEnabled
+                    ? `<span class="yf-roll-status-dot" aria-hidden="true"></span>${this.localize('YOUR_FLAVOR.Config.RollsDesign.LiveActive')}`
+                    : `<span class="yf-roll-status-dot" aria-hidden="true"></span>${this.localize('YOUR_FLAVOR.Config.RollsDesign.LiveInactive')}`
+                : config.enabled
+                    ? `<i class="fas fa-check-circle"></i> ${this.localize('YOUR_FLAVOR.Config.StatusEnabled')}`
+                    : `<i class="fas fa-times-circle"></i> ${this.localize('YOUR_FLAVOR.Config.StatusDisabled')}`;
         }
 
         this.applyChatLogPreview();
@@ -333,18 +342,66 @@ export class FlavorPreviewController {
         const container = this.app.element?.querySelector('[data-contrast-diagnostics]');
         if (!container) return;
 
-        const warnings = this.getActiveContrastWarnings();
+        const domain = this.getActiveContrastDomain();
+        const warnings = this.getContrastWarnings(domain);
+        const fingerprint = this.getContrastWarningFingerprint(warnings);
         container.replaceChildren();
-        container.classList.toggle('is-empty', warnings.length === 0);
-        if (warnings.length === 0) return;
+        container.removeAttribute('aria-labelledby');
+
+        if (warnings.length === 0) {
+            this._dismissedContrastFingerprints.delete(domain);
+            container.classList.add('is-empty');
+            container.classList.remove('is-dismissed');
+            return;
+        }
+
+        const isDismissed = this._dismissedContrastFingerprints.get(domain) === fingerprint;
+        if (!isDismissed) this._dismissedContrastFingerprints.delete(domain);
+        container.classList.toggle('is-empty', isDismissed);
+        container.classList.toggle('is-dismissed', isDismissed);
+        if (isDismissed) return;
 
         const header = document.createElement('div');
         header.className = 'yf-contrast-header';
+        const title = document.createElement('span');
+        const titleId = `${this.app.id || MODULE_ID}-contrast-title`;
+        title.id = titleId;
+        title.textContent = this.localize('YOUR_FLAVOR.Config.Contrast.Title');
+        /* The warning icon used to be skipped on the Rolls tab, which left the
+         * same warning looking like a different component there. Rolls now
+         * shares the panel styling of Chat Basic and Cards, so it carries the
+         * same icon: a per-tab exception here is how the three drifted apart. */
         const icon = document.createElement('i');
         icon.className = 'fas fa-triangle-exclamation';
-        const title = document.createElement('span');
-        title.textContent = this.localize('YOUR_FLAVOR.Config.Contrast.Title');
-        header.append(icon, title);
+        icon.setAttribute('aria-hidden', 'true');
+        header.appendChild(icon);
+        header.appendChild(title);
+
+        const dismissLabel = this.localize('YOUR_FLAVOR.Config.Contrast.Dismiss');
+        const dismissButton = document.createElement('button');
+        dismissButton.type = 'button';
+        dismissButton.className = 'yf-contrast-dismiss';
+        dismissButton.title = dismissLabel;
+        dismissButton.setAttribute('aria-label', dismissLabel);
+        const dismissIcon = document.createElement('i');
+        dismissIcon.className = 'fas fa-xmark';
+        dismissIcon.setAttribute('aria-hidden', 'true');
+        dismissButton.appendChild(dismissIcon);
+        dismissButton.addEventListener('click', () => {
+            this._dismissedContrastFingerprints.set(domain, fingerprint);
+            const focusTarget = container.closest('.yf-preview-panel')?.querySelector('h2, h3');
+            this.updateContrastDiagnostics();
+            if (focusTarget instanceof HTMLElement) {
+                const hadTabIndex = focusTarget.hasAttribute('tabindex');
+                if (!hadTabIndex) focusTarget.tabIndex = -1;
+                focusTarget.focus({ preventScroll: true });
+                if (!hadTabIndex) {
+                    focusTarget.addEventListener('blur', () => focusTarget.removeAttribute('tabindex'), { once: true });
+                }
+            }
+        });
+        header.appendChild(dismissButton);
+        container.setAttribute('aria-labelledby', titleId);
         container.appendChild(header);
 
         const summary = document.createElement('div');
@@ -380,8 +437,24 @@ export class FlavorPreviewController {
     }
 
     getActiveContrastWarnings() {
-        const scope = this.app._getActivePreviewMode?.() === 'foundry' ? 'foundry' : 'chat';
-        return this.getContrastWarnings(scope);
+        return this.getContrastWarnings(this.getActiveContrastDomain());
+    }
+
+    getActiveContrastDomain() {
+        return this.app._getActivePreviewMode?.() === 'foundry' ? 'foundry' : 'chat';
+    }
+
+    getContrastWarningFingerprint(warnings = []) {
+        return warnings
+            .map(warning => [
+                warning.id,
+                warning.foreground,
+                warning.background,
+                warning.ratio,
+                warning.minimum
+            ].join('|'))
+            .sort()
+            .join('||');
     }
 
     getContrastWarnings(scope = 'chat', config = null) {
@@ -2691,6 +2764,21 @@ export class FlavorPreviewController {
             ? classification.systemId
             : 'generic';
         return rolls?.systems?.[systemId]?.enabled !== false;
+    }
+
+    applyRollPreviewOutcome(root, outcomeId = '') {
+        if (!root?.querySelectorAll || !outcomeId) return;
+
+        const outcomeClasses = outcomeId === 'critical'
+            ? ['critical', 'success']
+            : outcomeId === 'failure'
+                ? ['failure', 'fumble']
+                : [];
+
+        for (const total of root.querySelectorAll('.dice-total')) {
+            total.classList.remove('critical', 'success', 'failure', 'fumble');
+            total.classList.add(...outcomeClasses);
+        }
     }
 
     canStyleCardSurfaces(config, classification) {
