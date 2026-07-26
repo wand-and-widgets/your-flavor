@@ -52,9 +52,11 @@ const ROLL_SURFACES = Object.freeze({
 
 const CARD_SURFACES = Object.freeze({
     itemTitle: [
-        '.card-header',
-        '.item-card .card-header',
-        '.chat-card .card-header',
+        '.card-header:not(.description)',
+        '.item-card .card-header:not(.description)',
+        '.chat-card .card-header:not(.description)',
+        '.chat-card .card-header.description > .summary',
+        '.chat-card .description > .summary',
         '.action-card header',
         '.spell-card header',
         '.yf-preview-item-card .card-header',

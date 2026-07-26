@@ -2,7 +2,7 @@
   "id": "your-flavor",
   "title": "Your Flavor",
   "description": "A full visual customization studio for Foundry VTT. Theme chat messages, rolls, item and system cards, the Foundry shell, interface icons, and shared table visuals with presets, live preview, safe roll/card handling, visual sharing, diagnostics, and GM controls.",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "compatibility": {
     "minimum": "13",
     "verified": "14"

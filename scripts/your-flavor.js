@@ -563,15 +563,33 @@ class YourFlavor {
     _applyMessageClassification(element, classification, config = null) {
         if (usesSafeFallbackClassification(classification)) {
             element.classList.add('yf-message-safe-fallback');
+            element.classList.remove('yf-message-card-surfaces-enabled');
             element.dataset.yfFallback = classification.safeFallback;
             clearMessageSurfaces(element);
             return;
         }
 
+        const canStyleRollSurfaces = this._canStyleRollSurfaces(config, classification);
+        const canStyleCardSurfaces = this._canStyleCardSurfaces(config, classification);
+        const cardSurfacesEnabled = Boolean(classification?.isCard && canStyleCardSurfaces);
+
+        element.classList.remove('yf-message-safe-fallback');
+        element.classList.toggle('yf-message-card-surfaces-enabled', cardSurfacesEnabled);
         delete element.dataset.yfFallback;
+
+        // A supported system card with nested styling disabled must retain its
+        // native text colors. Otherwise the themed outer message color can
+        // inherit into a light system card and make its content unreadable.
+        if (classification?.isCard && !canStyleCardSurfaces) {
+            element.classList.add('yf-message-safe-fallback');
+            element.dataset.yfFallback = 'card-surfaces-disabled';
+            clearMessageSurfaces(element);
+            return;
+        }
+
         renderMessageSurfaces(element, classification, {
-            rolls: this._canStyleRollSurfaces(config, classification),
-            cards: this._canStyleCardSurfaces(config, classification)
+            rolls: canStyleRollSurfaces,
+            cards: canStyleCardSurfaces
         });
     }
 

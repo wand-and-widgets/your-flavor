@@ -2501,6 +2501,16 @@ ${this._areaSelector(['windows'])} {
     transition: opacity 0.16s ease, filter 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease !important;
 }
 
+/* D&D 5e places its vertical sheet rail just outside the application frame.
+ * Preserve that system contract instead of clipping the rail with the themed
+ * window frame overflow rule above. */
+${this._scopeSelectorsForArea('windows', [
+    '.application.dnd5e2.vertical-tabs',
+    '.window-app.dnd5e2.vertical-tabs'
+])} {
+    overflow: visible !important;
+}
+
 ${this._areaSelector(['windows'], ':not(.minimized):not(.minimizing):not(.maximizing):not(:hover):not(:focus-within)')} {
     opacity: var(--yf-windows-inactive-opacity);
     filter: saturate(0.92) brightness(0.96);

@@ -2,6 +2,17 @@
 
 All notable changes to the Your Flavor module will be documented in this file.
 
+## [5.0.1] - 2026-07-26
+
+### Fixed
+
+- D&D 5e character-sheet controls that sit outside the main window frame are
+  no longer clipped when Foundry Windows styling is active.
+- D&D 5e item and activity cards now preserve the configured title, body,
+  button, border, and text colours in the live chat log.
+- Supported system cards now retain their native internal colours when Cards
+  styling is disabled, preventing unreadable text on light card surfaces.
+
 ## [5.0.0] - 2026-07-26
 
 Your Flavor 5.0 is a complete visual and usability redesign of the module.

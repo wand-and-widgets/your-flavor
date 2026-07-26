@@ -6332,6 +6332,41 @@ body.yf-icon-selection-active :is(i, img, svg, button, a, [role="button"], [data
     border-radius: var(--yf-radius-sm, 4px);
 }
 
+/*
+ * D&D 5e 5.x activity cards are enriched inside a .dnd5e2 chat-message root.
+ * Keep a direct, configuration-gated compatibility path so the live card
+ * remains faithful to the Cards preview even if the system refreshes its
+ * descendant markup after Your Flavor marks the known surfaces.
+ */
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .description {
+    background: var(--yf-card-body-bg, transparent) !important;
+    color: var(--yf-card-body-text, var(--yf-chat-content-text, var(--yf-text-color))) !important;
+    border-color: var(--yf-card-title-accent, var(--yf-chat-outer-border-color, var(--yf-border-color))) !important;
+}
+
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .description > .summary {
+    background: var(--yf-card-title-bg, rgba(0, 0, 0, 0.2)) !important;
+    color: var(--yf-card-title-text, var(--yf-chat-header-text, var(--yf-name-color))) !important;
+    border-color: var(--yf-card-title-accent, var(--yf-chat-outer-border-color, var(--yf-border-color))) !important;
+}
+
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .description > .summary *,
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .description > .details * {
+    color: inherit !important;
+}
+
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .description > .details,
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .card-footer {
+    background: var(--yf-card-body-bg, transparent) !important;
+    color: var(--yf-card-body-text, var(--yf-chat-content-text, var(--yf-text-color))) !important;
+}
+
+.chat-message.yf-card.yf-message-card-surfaces-enabled:is(.dnd5e2, .dnd5e) .chat-card .card-buttons button {
+    background: var(--yf-card-button-bg, rgba(255, 255, 255, 0.08)) !important;
+    color: var(--yf-card-button-text, var(--yf-chat-content-text, var(--yf-text-color))) !important;
+    border-color: var(--yf-card-button-border, var(--yf-chat-outer-border-color, var(--yf-border-color))) !important;
+}
+
 .chat-message.yf-card .yf-card-surface-tables,
 .yf-preview-card.yf-card .yf-card-surface-tables {
     border-color: var(--yf-card-table-border, var(--yf-chat-outer-border-color, var(--yf-border-color))) !important;
