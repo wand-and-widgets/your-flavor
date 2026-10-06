@@ -17,3 +17,17 @@ node_modules/
 *.zip
 dist/
 build/
+
+# Local configuration and working material
+.env
+.env.*
+.claude/
+.codex/
+*.local.md
+design/
+releases/
+assets/showcase/
+*_PROMPT.md
+*_PLAN.md
+*_NOTES.md
+FOUNDRY_RELEASE_PROCESS.md

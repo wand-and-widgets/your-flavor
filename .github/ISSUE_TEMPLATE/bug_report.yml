@@ -1,0 +1,52 @@
+name: Bug report
+description: Report something that is not working.
+body:
+  - type: input
+    id: module_version
+    attributes:
+      label: Module version
+      placeholder: For example, 5.0.1
+    validations:
+      required: true
+  - type: input
+    id: foundry_version
+    attributes:
+      label: Foundry VTT version
+    validations:
+      required: true
+  - type: input
+    id: game_system
+    attributes:
+      label: Game system and version
+      placeholder: Include the system version as well as its name.
+    validations:
+      required: true
+  - type: dropdown
+    id: user_role
+    attributes:
+      label: Who sees the problem?
+      options:
+        - GM
+        - Player
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Explain what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the setting, action, or example that triggers the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Screenshots and other context
+      description: Mention other modules involved if known. Remove private campaign details, account information, and credentials from screenshots or logs.
